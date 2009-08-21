@@ -1810,26 +1810,26 @@ qtO3{qdjTiIaRNVZ0RRC1{{sM_IZ5Za8!veP0000<MNUMnLSTZRkw7E>
 diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
 --- a/layout/reftests/reftest.list
 +++ b/layout/reftests/reftest.list
-@@ -102,16 +102,19 @@ include line-breaking/reftest.list
- include mathml/reftest.list
+@@ -84,16 +84,19 @@ include font-matching/reftest.list
+ include forms/reftest.list
  
- # margin-collapsing
- include margin-collapsing/reftest.list
+ # block-inside-inline splits
+ include ib-split/reftest.list
  
- # marquee/
- include marquee/reftest.list
+ # image/
+ include image/reftest.list
  
-+# moz-image-rect/
-+include moz-image-rect/reftest.list
++# image-rect/
++include image-rect/reftest.list
 +
- # native-theme/
- include native-theme/reftest.list
+ # image-region/
+ include image-region/reftest.list
  
- # object/
- include object/reftest.list
+ # inline borders and padding
+ include inline-borderpadding/reftest.list
  
- # ogg-video/
- include ogg-video/reftest.list
+ # line-breaking/
+ include line-breaking/reftest.list
 diff --git a/layout/style/nsCSSDataBlock.cpp b/layout/style/nsCSSDataBlock.cpp
 --- a/layout/style/nsCSSDataBlock.cpp
 +++ b/layout/style/nsCSSDataBlock.cpp

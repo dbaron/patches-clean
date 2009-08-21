@@ -247,13 +247,13 @@ diff --git a/layout/base/nsCSSRendering.cpp b/layout/base/nsCSSRendering.cpp
        frameType == nsGkAtoms::positionedInlineFrame) {
      // XXXjwalden Strictly speaking this is not quite faithful to how
      // background-break is supposed to interact with background-origin values,
-@@ -1981,42 +1998,20 @@ PaintBackgroundLayer(nsPresContext* aPre
-       }
+@@ -1941,40 +1958,18 @@ PaintBackgroundLayer(nsPresContext* aPre
+       nsMargin padding = geometryFrame->GetUsedPadding();
+       geometryFrame->ApplySkipSides(padding);
+       bgPositioningArea.Deflate(padding);
+       NS_ASSERTION(aLayer.mOrigin == NS_STYLE_BG_ORIGIN_CONTENT,
+                    "unknown background-origin value");
      }
- 
-     offset = bgPositioningArea.TopLeft() - aForFrame->GetOffsetTo(topFrame);
-   } else {
-     offset = bgPositioningArea.TopLeft();
    }
  
 -  nsSize imageSize;
@@ -263,10 +263,7 @@ diff --git a/layout/base/nsCSSRendering.cpp b/layout/base/nsCSSRendering.cpp
 -    imgIRequest *req = aLayer.mImage.GetImageData();
 -    if (!HaveCompleteBackgroundImage(req))
 -      return;
-+  nsSize imageSize = imageRenderer.ComputeSize(bgPositioningArea.Size());
-+  if (imageSize.width <= 0 || imageSize.height <= 0)
-+    return;
- 
+-
 -    req->GetImage(getter_AddRefs(image));
 -    req = nsnull;
 -
@@ -283,16 +280,16 @@ diff --git a/layout/base/nsCSSRendering.cpp b/layout/base/nsCSSRendering.cpp
 -  }
 -
 -  if (imageSize.width == 0 || imageSize.height == 0)
--    return;
--     
-   // Scale the image as specified for background-size and as required for
-   // proper background positioning when background-position is defined with
-   // percentages.
-   float scaleX, scaleY;
-   switch (aLayer.mSize.mWidthType) {
-     case nsStyleBackground::Size::eContain:
-     case nsStyleBackground::Size::eCover: {
-       float scaleFitX = double(bgPositioningArea.width) / imageSize.width;
++  nsSize imageSize = imageRenderer.ComputeSize(bgPositioningArea.Size());
++  if (imageSize.width <= 0 || imageSize.height <= 0)
+     return;
+ 
+   // Compute the anchor point.
+   //
+   // relative to aBorderArea.TopLeft() (which is where the top-left
+   // of aForFrame's border-box will be rendered)
+   nsPoint imageTopLeft, anchor, offset;
+   if (NS_STYLE_BG_ATTACHMENT_FIXED == aLayer.mAttachment) {
 @@ -2072,26 +2067,19 @@ PaintBackgroundLayer(nsPresContext* aPre
      fillArea.width = aBGClipRect.width;
    }
@@ -558,7 +555,7 @@ diff --git a/layout/base/nsPresContext.cpp b/layout/base/nsPresContext.cpp
 diff --git a/layout/generic/nsFrame.cpp b/layout/generic/nsFrame.cpp
 --- a/layout/generic/nsFrame.cpp
 +++ b/layout/generic/nsFrame.cpp
-@@ -4026,17 +4026,17 @@ nsIFrame::CheckInvalidateSizeChange(cons
+@@ -4020,17 +4020,17 @@ nsIFrame::CheckInvalidateSizeChange(cons
      }
    }
  
@@ -1954,7 +1951,7 @@ diff --git a/layout/style/nsCSSDataBlock.cpp b/layout/style/nsCSSDataBlock.cpp
 diff --git a/layout/style/nsCSSDeclaration.cpp b/layout/style/nsCSSDeclaration.cpp
 --- a/layout/style/nsCSSDeclaration.cpp
 +++ b/layout/style/nsCSSDeclaration.cpp
-@@ -288,17 +288,25 @@ nsCSSDeclaration::AppendCSSValueToString
+@@ -295,17 +295,25 @@ nsCSSDeclaration::AppendCSSValueToString
    /* Although Function is backed by an Array, we'll handle it separately
     * because it's a bit quirky.
     */
@@ -2005,16 +2002,16 @@ diff --git a/layout/style/nsCSSKeywordList.h b/layout/style/nsCSSKeywordList.h
 diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
 --- a/layout/style/nsCSSParser.cpp
 +++ b/layout/style/nsCSSParser.cpp
-@@ -102,16 +102,17 @@
- #define VARIANT_ATTR            0x001000  //
- #define VARIANT_IDENTIFIER      0x002000  // D
+@@ -106,16 +106,17 @@
  #define VARIANT_AUTO            0x010000  // A
  #define VARIANT_INHERIT         0x020000  // H eCSSUnit_Initial, eCSSUnit_Inherit
  #define VARIANT_NONE            0x040000  // O
  #define VARIANT_NORMAL          0x080000  // M
  #define VARIANT_SYSFONT         0x100000  // eCSSUnit_System_Font
  #define VARIANT_GRADIENT        0x200000  // eCSSUnit_Gradient
-+#define VARIANT_IMAGE_RECT      0x400000  // eCSSUnit_Function
+ #define VARIANT_CUBIC_BEZIER    0x400000  // CSS transition timing function
+ #define VARIANT_ALL             0x800000  //
++#define VARIANT_IMAGE_RECT    0x01000000  // eCSSUnit_Function
  
  // Common combinations of variants
  #define VARIANT_AL   (VARIANT_AUTO | VARIANT_LENGTH)
@@ -2023,7 +2020,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  #define VARIANT_AHLP (VARIANT_AH | VARIANT_LP)
  #define VARIANT_AHI  (VARIANT_AH | VARIANT_INTEGER)
  #define VARIANT_AHK  (VARIANT_AH | VARIANT_KEYWORD)
-@@ -511,19 +512,21 @@ protected:
+@@ -524,19 +525,21 @@ protected:
    PRBool ParseNonNegativeVariant(nsCSSValue& aValue,
                                   PRInt32 aVariantMask,
                                   const PRInt32 aKeywordTable[]);
@@ -2045,7 +2042,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
      mParsingCompoundProperty = aBool;
    }
    PRBool IsParsingCompoundProperty(void) const {
-@@ -1309,17 +1312,18 @@ CSSParserImpl::GetURLInParens(nsString& 
+@@ -1322,17 +1325,18 @@ CSSParserImpl::GetURLInParens(nsString& 
    aURL = mToken.mIdent;
  
    if ((eCSSToken_String != mToken.mType && eCSSToken_URL != mToken.mType) ||
@@ -2065,7 +2062,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  }
  
  void
-@@ -4524,16 +4528,21 @@ CSSParserImpl::ParseVariant(nsCSSValue& 
+@@ -4546,16 +4550,21 @@ CSSParserImpl::ParseVariant(nsCSSValue& 
        eCSSToken_Function == tk->mType) {
      // a generated gradient
      if (tk->mIdent.LowerCaseEqualsLiteral("-moz-linear-gradient"))
@@ -2087,7 +2084,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
          ((eCSSToken_Function == tk->mType) &&
           (tk->mIdent.LowerCaseEqualsLiteral("rgb") ||
            tk->mIdent.LowerCaseEqualsLiteral("hsl") ||
-@@ -4730,34 +4739,30 @@ CSSParserImpl::ParseAttr(nsCSSValue& aVa
+@@ -4758,34 +4767,30 @@ CSSParserImpl::ParseAttr(nsCSSValue& aVa
          return PR_TRUE;
        }
      }
@@ -2126,7 +2123,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
      new nsCSSValue::URL(uri, buffer, mSheetURL, mSheetPrincipal);
  
    buffer->Release();
-@@ -4765,16 +4770,90 @@ CSSParserImpl::ParseURL(nsCSSValue& aVal
+@@ -4793,16 +4798,90 @@ CSSParserImpl::ParseURL(nsCSSValue& aVal
      mScanner.SetLowLevelError(NS_ERROR_OUT_OF_MEMORY);
      return PR_FALSE;
    }
@@ -2217,7 +2214,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    if (eCSSToken_Function != mToken.mType) {
      UngetToken();
      return PR_FALSE;
-@@ -5598,17 +5677,19 @@ CSSParserImpl::ParseSingleValueProperty(
+@@ -5642,17 +5721,19 @@ CSSParserImpl::ParseSingleValueProperty(
    case eCSSProperty__moz_background_clip:
      // Used only internally.
      return ParseVariant(aValue, VARIANT_HK,
@@ -2238,7 +2235,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
      return ParseVariant(aValue, VARIANT_HK,
                          nsCSSProps::kBackgroundOriginKTable);
    case eCSSProperty_background_repeat:
-@@ -6381,17 +6462,18 @@ CSSParserImpl::ParseBackgroundItem(CSSPa
+@@ -6425,17 +6506,18 @@ CSSParserImpl::ParseBackgroundItem(CSSPa
                                        eCSSProperty_background_color)) {
            return PR_FALSE;
          }
@@ -2261,7 +2258,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
 diff --git a/layout/style/nsCSSValue.cpp b/layout/style/nsCSSValue.cpp
 --- a/layout/style/nsCSSValue.cpp
 +++ b/layout/style/nsCSSValue.cpp
-@@ -427,16 +427,47 @@ PRBool nsCSSValue::IsNonTransparentColor
+@@ -433,16 +433,47 @@ PRBool nsCSSValue::IsNonTransparentColor
    nsDependentString buf;
    return
      (mUnit == eCSSUnit_Color && NS_GET_A(GetColorValue()) > 0) ||
@@ -2330,7 +2327,7 @@ diff --git a/layout/style/nsCSSValue.h b/layout/style/nsCSSValue.h
  #include "nsTArray.h"
  
  class imgIRequest;
-@@ -326,16 +327,21 @@ public:
+@@ -329,16 +330,21 @@ public:
    NS_HIDDEN_(void)  SetNormalValue();
    NS_HIDDEN_(void)  SetSystemFontValue();
    NS_HIDDEN_(void)  SetDummyValue();
@@ -2355,7 +2352,7 @@ diff --git a/layout/style/nsCSSValue.h b/layout/style/nsCSSValue.h
 diff --git a/layout/style/nsComputedDOMStyle.cpp b/layout/style/nsComputedDOMStyle.cpp
 --- a/layout/style/nsComputedDOMStyle.cpp
 +++ b/layout/style/nsComputedDOMStyle.cpp
-@@ -1416,53 +1416,118 @@ nsComputedDOMStyle::GetCSSGradientString
+@@ -1458,53 +1458,118 @@ nsComputedDOMStyle::GetCSSGradientString
      aString.AppendLiteral(")");
    }
  
@@ -2498,7 +2495,7 @@ diff --git a/layout/style/nsComputedDOMStyle.cpp b/layout/style/nsComputedDOMSty
 diff --git a/layout/style/nsComputedDOMStyle.h b/layout/style/nsComputedDOMStyle.h
 --- a/layout/style/nsComputedDOMStyle.h
 +++ b/layout/style/nsComputedDOMStyle.h
-@@ -132,16 +132,19 @@ private:
+@@ -139,16 +139,19 @@ private:
  
    nsresult GetBackgroundList(PRUint8 nsStyleBackground::Layer::* aMember,
                               PRUint32 nsStyleBackground::* aCount,
@@ -2518,7 +2515,7 @@ diff --git a/layout/style/nsComputedDOMStyle.h b/layout/style/nsComputedDOMStyle
    /* Box properties */
    nsresult GetBoxAlign(nsIDOMCSSValue** aValue);
    nsresult GetBoxDirection(nsIDOMCSSValue** aValue);
-@@ -360,16 +363,18 @@ private:
+@@ -373,16 +376,18 @@ private:
    nsresult GetClipPath(nsIDOMCSSValue** aValue);
    nsresult GetFilter(nsIDOMCSSValue** aValue);
    nsresult GetMask(nsIDOMCSSValue** aValue);
@@ -2540,7 +2537,7 @@ diff --git a/layout/style/nsComputedDOMStyle.h b/layout/style/nsComputedDOMStyle
 diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
 --- a/layout/style/nsRuleNode.cpp
 +++ b/layout/style/nsRuleNode.cpp
-@@ -390,16 +390,41 @@ static PRBool SetCoord(const nsCSSValue&
+@@ -391,16 +391,41 @@ static PRBool SetCoord(const nsCSSValue&
      aCoord.SetPercentValue(0.5f);
    }
    else {
@@ -2582,7 +2579,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
   * @return The float percent it corresponds to.
   */
  static float GetFloatFromBoxPosition(PRInt32 aEnumValue)
-@@ -550,16 +575,82 @@ static void SetGradient(const nsCSSValue
+@@ -551,16 +576,82 @@ static void SetGradient(const nsCSSValue
                   "inherit is not a valid color for gradient stops");
      SetColor(valueStop.mColor, NS_RGB(0, 0, 0), aPresContext,
               aContext, stop.mColor, aCanStoreInRuleTree);
@@ -2665,7 +2662,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
  #define SETDSC_INTEGER                0x40   // I
  #define SETDSC_ENUMERATED             0x80   // E
  #define SETDSC_NONE                   0x100  // O
-@@ -3897,41 +3988,25 @@ struct BackgroundItemComputer<nsCSSValue
+@@ -4181,41 +4272,25 @@ struct BackgroundItemComputer<nsCSSValue
                             PRBool& aCanStoreInRuleTree)
    {
      SetDiscrete(aSpecifiedValue->mValue, aComputedValue, aCanStoreInRuleTree,
@@ -2711,7 +2708,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
    nsStyleBackground::Position::PositionCoord
      nsStyleBackground::Position::*result;
    PRPackedBool nsStyleBackground::Position::*isPercent;
-@@ -4160,17 +4235,17 @@ nsRuleNode::ComputeBackgroundData(void* 
+@@ -4444,17 +4519,17 @@ nsRuleNode::ComputeBackgroundData(void* 
      NS_ASSERTION(eCSSUnit_Null == colorData.mBackColor.GetUnit(),
                   "unexpected color unit");
    }
@@ -2730,7 +2727,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
    // background-repeat: enum, inherit, initial [list]
    SetBackgroundList(aContext, colorData.mBackRepeat, bg->mLayers,
                      parentBG->mLayers, &nsStyleBackground::Layer::mRepeat,
-@@ -4518,20 +4593,18 @@ nsRuleNode::ComputeBorderData(void* aSta
+@@ -4802,20 +4877,18 @@ nsRuleNode::ComputeBorderData(void* aSta
      
      // the image
      if (eCSSUnit_Image == arr->Item(0).GetUnit()) {
@@ -2756,7 +2753,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
 diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
 --- a/layout/style/nsStyleStruct.cpp
 +++ b/layout/style/nsStyleStruct.cpp
-@@ -58,16 +58,17 @@
+@@ -61,16 +61,17 @@
  #include "nsIPresShell.h"
  #include "nsIFrame.h"
  #include "nsHTMLReflowState.h"
@@ -2774,7 +2771,7 @@ diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
  
  inline PRBool IsFixedUnit(nsStyleUnit aUnit, PRBool aEnumOK)
  {
-@@ -1311,16 +1312,252 @@ nsStyleGradient::nsStyleGradient(void)
+@@ -1314,16 +1315,252 @@ nsStyleGradient::nsStyleGradient(void)
  {
    mStartX.SetCoordValue(0);
    mStartY.SetCoordValue(0);
@@ -3027,7 +3024,7 @@ diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
    , mClipCount(1)
    , mOriginCount(1)
    , mRepeatCount(1)
-@@ -1392,26 +1629,26 @@ nsChangeHint nsStyleBackground::MaxDiffe
+@@ -1395,26 +1632,26 @@ nsChangeHint nsStyleBackground::MaxDiffe
  }
  #endif
  
@@ -3056,7 +3053,7 @@ diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
  nsStyleBackground::Position::SetInitialValues()
  {
    mXPosition.mFloat = 0.0f;
-@@ -1486,108 +1723,16 @@ PRBool nsStyleBackground::Layer::operato
+@@ -1489,108 +1726,16 @@ PRBool nsStyleBackground::Layer::operato
           mClip == aOther.mClip &&
           mOrigin == aOther.mOrigin &&
           mRepeat == aOther.mRepeat &&
@@ -3160,15 +3157,15 @@ diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
  // --------------------
  // nsStyleDisplay
  //
- 
- nsStyleDisplay::nsStyleDisplay()
+ void nsTimingFunction::AssignFromKeyword(PRInt32 aTimingFunctionType)
  {
-   MOZ_COUNT_CTOR(nsStyleDisplay);
-   mAppearance = NS_THEME_NONE;
+   PR_STATIC_ASSERT(NS_STYLE_TRANSITION_TIMING_FUNCTION_EASE == 0);
+   PR_STATIC_ASSERT(NS_STYLE_TRANSITION_TIMING_FUNCTION_LINEAR == 1);
+   PR_STATIC_ASSERT(NS_STYLE_TRANSITION_TIMING_FUNCTION_EASE_IN == 2);
 diff --git a/layout/style/nsStyleStruct.h b/layout/style/nsStyleStruct.h
 --- a/layout/style/nsStyleStruct.h
 +++ b/layout/style/nsStyleStruct.h
-@@ -185,16 +185,116 @@ private:
+@@ -187,16 +187,116 @@ private:
  
    ~nsStyleGradient() {}
  
@@ -3285,7 +3282,7 @@ diff --git a/layout/style/nsStyleStruct.h b/layout/style/nsStyleStruct.h
    }
  
    nsChangeHint CalcDifference(const nsStyleColor& aOther) const;
-@@ -210,22 +310,16 @@ struct nsStyleColor {
+@@ -212,22 +312,16 @@ struct nsStyleColor {
      aContext->FreeToShell(sizeof(nsStyleColor), this);
    }
  
@@ -3308,7 +3305,7 @@ diff --git a/layout/style/nsStyleStruct.h b/layout/style/nsStyleStruct.h
    void* operator new(size_t sz, nsPresContext* aContext) CPP_THROW_NEW {
      return aContext->AllocateFromShell(sz);
    }
-@@ -297,65 +391,25 @@ struct nsStyleBackground {
+@@ -299,65 +393,25 @@ struct nsStyleBackground {
      void SetInitialValues();
  
      PRBool operator==(const Size& aOther) const;
@@ -3438,3 +3435,27 @@ diff --git a/layout/xul/base/src/tree/src/nsTreeBodyFrame.cpp b/layout/xul/base/
      nsIWidget* widget = nsLeafBoxFrame::GetView()->GetWidget();
      if (widget) {
        nsIntPoint deltaPt(PresContext()->AppUnitsToDevPixels(-delta), 0);
+diff --git a/widget/tests/TestWinTSF.cpp b/widget/tests/TestWinTSF.cpp
+--- a/widget/tests/TestWinTSF.cpp
++++ b/widget/tests/TestWinTSF.cpp
+@@ -54,17 +54,20 @@
+ #include "TestHarness.h"
+ 
+ #define WM_USER_TSF_TEXTCHANGE  (WM_USER + 0x100)
+ 
+ #ifndef MOZILLA_INTERNAL_API
+ // some of the includes make use of internal string types
+ #define nsAString_h___
+ #define nsString_h___
++#define nsStringFwd_h___
+ #define nsReadableUtils_h___
++class nsACString;
++class nsAString;
+ class nsAFlatString;
+ class nsAFlatCString;
+ class nsAdoptingString;
+ class nsAdoptingCString;
+ class nsXPIDLString;
+ template<class T> class nsReadingIterator;
+ #endif
+ 

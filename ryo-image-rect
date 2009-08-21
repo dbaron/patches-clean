@@ -1,0 +1,3440 @@
+From: Ryo Kawaguchi <rkawaguchi@mozilla.com>
+
+Implement background-image: -moz-image-rect(), which allows a region of an image to be used as a background image.  (Bug 113577)  r=roc, dbaron
+
+diff --git a/layout/base/nsCSSRendering.cpp b/layout/base/nsCSSRendering.cpp
+--- a/layout/base/nsCSSRendering.cpp
++++ b/layout/base/nsCSSRendering.cpp
+@@ -76,16 +76,62 @@
+ #include "nsIInterfaceRequestorUtils.h"
+ #include "gfxPlatform.h"
+ #include "gfxImageSurface.h"
+ #include "nsStyleStructInlines.h"
+ #include "nsCSSFrameConstructor.h"
+ 
+ #include "nsCSSRenderingBorders.h"
+ 
++/**
++ * This is a small wrapper class to encapsulate image drawing that can draw an
++ * nsStyleImage image, which may internally be a real image, a sub image, or a
++ * CSS gradient.
++ *
++ * @note Always call the member functions in the order of PrepareImage(),
++ * ComputeSize(), and Draw().
++ */
++class ImageRenderer {
++public:
++  ImageRenderer(nsIFrame* aForFrame, const nsStyleImage& aImage);
++  ~ImageRenderer();
++  /**
++   * Populates member variables to get ready for rendering.
++   * @return PR_TRUE iff the image is ready, and there is at least a pixel to
++   * draw.
++   */
++  PRBool PrepareImage();
++  /**
++   * @return the image size in appunits. CSS gradient images don't have an
++   * intrinsic size so we have to pass in a default that they will use.
++   */
++  nsSize ComputeSize(const nsSize& aDefault);
++  /**
++   * Draws the image to the target rendering context.
++   * @param aRepeat indicates whether the image is to be repeated (tiled)
++   * @see nsLayoutUtils::DrawImage() for other parameters
++   */
++  void Draw(nsPresContext*       aPresContext,
++            nsIRenderingContext& aRenderingContext,
++            const nsRect&        aDest,
++            const nsRect&        aFill,
++            const nsPoint&       aAnchor,
++            const nsRect&        aDirty,
++            PRBool               aRepeat);
++
++private:
++  nsIFrame*                 mForFrame;
++  nsStyleImage              mImage;
++  nsStyleImageType          mType;
++  nsCOMPtr<imgIContainer>   mImageContainer;
++  nsRefPtr<nsStyleGradient> mGradientData;
++  PRBool                    mIsReady;
++  nsSize                    mSize;
++};
++
+ // To avoid storing this data on nsInlineFrame (bloat) and to avoid
+ // recalculating this for each frame in a continuation (perf), hold
+ // a cache of various coordinate information that we need in order
+ // to paint inline backgrounds.
+ struct InlineBackgroundData
+ {
+   InlineBackgroundData()
+       : mFrame(nsnull), mBlockFrame(nsnull)
+@@ -1391,33 +1437,16 @@ IsSolidBorder(const nsStyleBorder& aBord
+     return PR_FALSE;
+   for (PRUint32 i = 0; i < 4; ++i) {
+     if (!IsSolidBorderEdge(aBorder, i))
+       return PR_FALSE;
+   }
+   return PR_TRUE;
+ }
+ 
+-/**
+- * Returns true if the given request is for a background image (that is, it is
+- * non-null) and that image is fully loaded and its size calculated.
+- */
+-static PRBool
+-HaveCompleteBackgroundImage(imgIRequest *aRequest)
+-{
+-  if (!aRequest)
+-    return PR_FALSE;
+-
+-  PRUint32 status = imgIRequest::STATUS_ERROR;
+-  aRequest->GetImageStatus(&status);
+-
+-  return (status & imgIRequest::STATUS_FRAME_COMPLETE) &&
+-         (status & imgIRequest::STATUS_SIZE_AVAILABLE);
+-}
+-
+ static inline void
+ SetupDirtyRects(const nsRect& aBGClipArea, const nsRect& aCallerDirtyRect,
+                 nscoord aAppUnitsPerPixel,
+                 /* OUT: */
+                 nsRect* aDirtyRect, gfxRect* aDirtyRectGfx)
+ {
+   aDirtyRect->IntersectRect(aBGClipArea, aCallerDirtyRect);
+ 
+@@ -1497,36 +1526,26 @@ SetupBackgroundClip(gfxContext *aCtx, PR
+   }
+ }
+ 
+ static nscolor
+ DetermineBackgroundColorInternal(nsPresContext* aPresContext,
+                                  const nsStyleBackground& aBackground,
+                                  nsIFrame* aFrame,
+                                  PRBool& aDrawBackgroundImage,
+-                                 PRBool& aDrawBackgroundColor,
+-                                 nsCOMPtr<imgIRequest>& aBottomImage)
++                                 PRBool& aDrawBackgroundColor)
+ {
+   aDrawBackgroundImage = PR_TRUE;
+   aDrawBackgroundColor = PR_TRUE;
+ 
+   if (aFrame->HonorPrintBackgroundSettings()) {
+     aDrawBackgroundImage = aPresContext->GetBackgroundImageDraw();
+     aDrawBackgroundColor = aPresContext->GetBackgroundColorDraw();
+   }
+ 
+-  if (aBackground.BottomLayer().mImage.GetType() == eBackgroundImage_Image) {
+-    aBottomImage = aBackground.BottomLayer().mImage.GetImageData();
+-    if (!aDrawBackgroundImage || !HaveCompleteBackgroundImage(aBottomImage)) {
+-      aBottomImage = nsnull;
+-    }
+-  } else {
+-    aBottomImage = nsnull;
+-  }
+-
+   nscolor bgColor;
+   if (aDrawBackgroundColor) {
+     bgColor = aBackground.mBackgroundColor;
+     if (NS_GET_A(bgColor) == 0)
+       aDrawBackgroundColor = PR_FALSE;
+   } else {
+     // If GetBackgroundColorDraw() is false, we are still expected to
+     // draw color in the background of any frame that's not completely
+@@ -1544,23 +1563,21 @@ DetermineBackgroundColorInternal(nsPresC
+ 
+ nscolor
+ nsCSSRendering::DetermineBackgroundColor(nsPresContext* aPresContext,
+                                          const nsStyleBackground& aBackground,
+                                          nsIFrame* aFrame)
+ {
+   PRBool drawBackgroundImage;
+   PRBool drawBackgroundColor;
+-  nsCOMPtr<imgIRequest> bottomImage;
+   return DetermineBackgroundColorInternal(aPresContext,
+                                           aBackground,
+                                           aFrame,
+                                           drawBackgroundImage,
+-                                          drawBackgroundColor,
+-                                          bottomImage);
++                                          drawBackgroundColor);
+ }
+ 
+ static gfxFloat
+ ConvertGradientValueToPixels(const nsStyleCoord& aCoord,
+                              nscoord aFillLength,
+                              nscoord aAppUnitsPerPixel)
+ {
+   switch (aCoord.GetUnit()) {
+@@ -1672,24 +1689,21 @@ nsCSSRendering::PaintBackgroundWithSC(ns
+   // (bug 488242).
+   PRBool isCanvasFrame = IsCanvasFrame(aForFrame);
+ 
+   // Determine whether we are drawing background images and/or
+   // background colors.
+   PRBool drawBackgroundImage;
+   PRBool drawBackgroundColor;
+ 
+-  nsCOMPtr<imgIRequest> bottomImage;
+-
+   nscolor bgColor = DetermineBackgroundColorInternal(aPresContext,
+                                                      aBackground,
+                                                      aForFrame,
+                                                      drawBackgroundImage,
+-                                                     drawBackgroundColor,
+-                                                     bottomImage);
++                                                     drawBackgroundColor);
+ 
+   // At this point, drawBackgroundImage and drawBackgroundColor are
+   // true if and only if we are actually supposed to paint an image or
+   // color into aDirtyRect, respectively.
+   if (!drawBackgroundImage && !drawBackgroundColor)
+     return;
+ 
+   // Compute the outermost boundary of the area that might be painted.
+@@ -1760,25 +1774,21 @@ nsCSSRendering::PaintBackgroundWithSC(ns
+     return;
+   }
+ 
+   // Ensure we get invalidated for loads of the image.  We need to do
+   // this here because this might be the only code that knows about the
+   // association of the style data with the frame.
+   aPresContext->SetupBackgroundImageLoaders(aForFrame, &aBackground);
+ 
+-  if (bottomImage &&
++  // We can skip painting the background color if a background image is opaque.
++  if (drawBackgroundColor &&
+       aBackground.BottomLayer().mRepeat == NS_STYLE_BG_REPEAT_XY &&
+-      drawBackgroundColor) {
+-    nsCOMPtr<imgIContainer> image;
+-    bottomImage->GetImage(getter_AddRefs(image));
+-    PRBool isOpaque;
+-    if (NS_SUCCEEDED(image->GetCurrentFrameIsOpaque(&isOpaque)) && isOpaque)
+-      drawBackgroundColor = PR_FALSE;
+-  }
++      aBackground.BottomLayer().mImage.IsOpaque())
++    drawBackgroundColor = PR_FALSE;
+ 
+   // The background color is rendered over the entire dirty area,
+   // even if the image isn't.
+   if (drawBackgroundColor && !isCanvasFrame) {
+     if (!dirtyRectGfx.IsEmpty()) {
+       ctx->NewPath();
+       ctx->Rectangle(dirtyRectGfx, PR_TRUE);
+       ctx->Fill();
+@@ -1887,17 +1897,24 @@ PaintBackgroundLayer(nsPresContext* aPre
+    *   background-image
+    *   background-break, background-origin
+    *   background-attachment (postfix for background-{origin,break} if 'fixed')
+    *   background-size
+    *   background-position
+    *   background-repeat
+    */
+ 
+-  // relative to aBorderArea
++  ImageRenderer imageRenderer(aForFrame, aLayer.mImage);
++  if (!imageRenderer.PrepareImage()) {
++    // There's no image or it's not ready to be painted.
++    return;
++  }
++
++  // Compute background origin area relative to aBorderArea now as we may need
++  // it to compute the effective image size for a CSS gradient.
+   nsRect bgPositioningArea(0, 0, 0, 0);
+ 
+   nsIAtom* frameType = aForFrame->GetType();
+   nsIFrame* geometryFrame = aForFrame;
+   if (frameType == nsGkAtoms::inlineFrame ||
+       frameType == nsGkAtoms::positionedInlineFrame) {
+     // XXXjwalden Strictly speaking this is not quite faithful to how
+     // background-break is supposed to interact with background-origin values,
+@@ -1981,42 +1998,20 @@ PaintBackgroundLayer(nsPresContext* aPre
+       }
+     }
+ 
+     offset = bgPositioningArea.TopLeft() - aForFrame->GetOffsetTo(topFrame);
+   } else {
+     offset = bgPositioningArea.TopLeft();
+   }
+ 
+-  nsSize imageSize;
+-  nsCOMPtr<imgIContainer> image;
+-  if (aLayer.mImage.GetType() == eBackgroundImage_Image) {
+-    // Lookup the image
+-    imgIRequest *req = aLayer.mImage.GetImageData();
+-    if (!HaveCompleteBackgroundImage(req))
+-      return;
++  nsSize imageSize = imageRenderer.ComputeSize(bgPositioningArea.Size());
++  if (imageSize.width <= 0 || imageSize.height <= 0)
++    return;
+ 
+-    req->GetImage(getter_AddRefs(image));
+-    req = nsnull;
+-
+-    nsIntSize imageIntSize;
+-    image->GetWidth(&imageIntSize.width);
+-    image->GetHeight(&imageIntSize.height);
+-
+-    imageSize.width = nsPresContext::CSSPixelsToAppUnits(imageIntSize.width);
+-    imageSize.height = nsPresContext::CSSPixelsToAppUnits(imageIntSize.height);
+-  } else if (aLayer.mImage.GetType() == eBackgroundImage_Gradient) {
+-    imageSize = bgPositioningArea.Size();
+-  } else {
+-    return;
+-  }
+-
+-  if (imageSize.width == 0 || imageSize.height == 0)
+-    return;
+-     
+   // Scale the image as specified for background-size and as required for
+   // proper background positioning when background-position is defined with
+   // percentages.
+   float scaleX, scaleY;
+   switch (aLayer.mSize.mWidthType) {
+     case nsStyleBackground::Size::eContain:
+     case nsStyleBackground::Size::eCover: {
+       float scaleFitX = double(bgPositioningArea.width) / imageSize.width;
+@@ -2072,26 +2067,19 @@ PaintBackgroundLayer(nsPresContext* aPre
+     fillArea.width = aBGClipRect.width;
+   }
+   if (repeat & NS_STYLE_BG_REPEAT_Y) {
+     fillArea.y = aBGClipRect.y;
+     fillArea.height = aBGClipRect.height;
+   }
+   fillArea.IntersectRect(fillArea, aBGClipRect);
+ 
+-  if (aLayer.mImage.GetType() == eBackgroundImage_Image) {
+-    nsLayoutUtils::DrawImage(&aRenderingContext, image,
+-        nsLayoutUtils::GetGraphicsFilterForFrame(aForFrame),
+-        destArea, fillArea, anchor + aBorderArea.TopLeft(), aDirtyRect);
+-  } else {
+-    nsCSSRendering::PaintGradient(aPresContext, aRenderingContext,
+-                  aLayer.mImage.GetGradientData(),
+-                  aDirtyRect, destArea, fillArea,
+-                  (repeat != NS_STYLE_BG_REPEAT_OFF));
+-  }
++  imageRenderer.Draw(aPresContext, aRenderingContext, destArea, fillArea,
++                     anchor + aBorderArea.TopLeft(), aDirtyRect,
++                     (repeat != NS_STYLE_BG_REPEAT_OFF));
+ }
+ 
+ static void
+ DrawBorderImage(nsPresContext*       aPresContext,
+                 nsIRenderingContext& aRenderingContext,
+                 nsIFrame*            aForFrame,
+                 const nsRect&        aBorderArea,
+                 const nsStyleBorder& aBorderStyle,
+@@ -3070,16 +3058,155 @@ nsCSSRendering::GetTextDecorationRectInt
+     }
+     default:
+       NS_ERROR("Invalid decoration value!");
+   }
+   r.pos.y = baseline - NS_floor(offset + 0.5);
+   return r;
+ }
+ 
++// ------------------
++// ImageRenderer
++// ------------------
++ImageRenderer::ImageRenderer(nsIFrame* aForFrame,
++                                       const nsStyleImage& aImage)
++  : mForFrame(aForFrame)
++  , mImage(aImage)
++  , mType(aImage.GetType())
++  , mImageContainer(nsnull)
++  , mGradientData(nsnull)
++  , mIsReady(PR_FALSE)
++  , mSize(0, 0)
++{
++}
++
++ImageRenderer::~ImageRenderer()
++{
++}
++
++PRBool
++ImageRenderer::PrepareImage()
++{
++  if (mImage.IsEmpty() || !mImage.IsComplete()) {
++    // We can not prepare the image for rendering if it is not fully loaded.
++    return PR_FALSE;
++  }
++
++  switch (mType) {
++    case eStyleImageType_Image:
++    {
++      nsCOMPtr<imgIContainer> srcImage;
++      mImage.GetImageData()->GetImage(getter_AddRefs(srcImage));
++      NS_ABORT_IF_FALSE(srcImage, "If srcImage is null, mImage.IsComplete() "
++                                  "should have returned false");
++
++      if (!mImage.GetCropRect()) {
++        mImageContainer.swap(srcImage);
++      } else {
++        nsIntRect actualCropRect;
++        PRBool isEntireImage;
++        PRBool success =
++          mImage.ComputeActualCropRect(actualCropRect, &isEntireImage);
++        NS_ASSERTION(success, "ComputeActualCropRect() should not fail here");
++        if (!success || actualCropRect.IsEmpty()) {
++          // The cropped image has zero size
++          return PR_FALSE;
++        }
++        if (isEntireImage) {
++          // The cropped image is identical to the source image
++          mImageContainer.swap(srcImage);
++        } else {
++          nsCOMPtr<imgIContainer> subImage;
++          nsresult rv = srcImage->ExtractCurrentFrame(actualCropRect,
++                                                      getter_AddRefs(subImage));
++          if (NS_FAILED(rv)) {
++            NS_WARNING("The cropped image contains no pixels to draw; "
++                       "maybe the crop rect is outside the image frame rect");
++            return PR_FALSE;
++          }
++          mImageContainer.swap(subImage);
++        }
++      }
++      mIsReady = PR_TRUE;
++      break;
++    }
++    case eStyleImageType_Gradient:
++      mGradientData = mImage.GetGradientData();
++      mIsReady = PR_TRUE;
++      break;
++    case eStyleImageType_Null:
++    default:
++      break;
++  }
++
++  return mIsReady;
++}
++
++nsSize
++ImageRenderer::ComputeSize(const nsSize& aDefault)
++{
++  NS_ASSERTION(mIsReady, "Ensure PrepareImage() has returned true "
++                         "before calling me");
++
++  switch (mType) {
++    case eStyleImageType_Image:
++    {
++      nsIntSize imageIntSize;
++      mImageContainer->GetWidth(&imageIntSize.width);
++      mImageContainer->GetHeight(&imageIntSize.height);
++
++      mSize.width = nsPresContext::CSSPixelsToAppUnits(imageIntSize.width);
++      mSize.height = nsPresContext::CSSPixelsToAppUnits(imageIntSize.height);
++      break;
++    }
++    case eStyleImageType_Gradient:
++      mSize = aDefault;
++      break;
++    case eStyleImageType_Null:
++    default:
++      mSize.SizeTo(0, 0);
++      break;
++  }
++
++  return mSize;
++}
++
++void
++ImageRenderer::Draw(nsPresContext*       aPresContext,
++                         nsIRenderingContext& aRenderingContext,
++                         const nsRect&        aDest,
++                         const nsRect&        aFill,
++                         const nsPoint&       aAnchor,
++                         const nsRect&        aDirty,
++                         PRBool               aRepeat)
++{
++  if (!mIsReady) {
++    NS_NOTREACHED("Ensure PrepareImage() has returned true before calling me");
++    return;
++  }
++
++  if (aDest.IsEmpty() || aFill.IsEmpty())
++    return;
++
++  switch (mType) {
++    case eStyleImageType_Image:
++      nsLayoutUtils::DrawImage(&aRenderingContext, mImageContainer,
++          nsLayoutUtils::GetGraphicsFilterForFrame(mForFrame),
++          aDest, aFill, aAnchor, aDirty);
++      break;
++    case eStyleImageType_Gradient:
++      nsCSSRendering::PaintGradient(aPresContext, aRenderingContext,
++          mGradientData, aDirty, aDest, aFill, aRepeat);
++      break;
++    case eStyleImageType_Null:
++    default:
++      break;
++  }
++}
++
+ // -----
+ // nsContextBoxBlur
+ // -----
+ gfxContext*
+ nsContextBoxBlur::Init(const gfxRect& aRect, nscoord aBlurRadius,
+                        PRInt32 aAppUnitsPerDevPixel,
+                        gfxContext* aDestinationCtx,
+                        const gfxRect& aDirtyRect)
+diff --git a/layout/base/nsDisplayList.cpp b/layout/base/nsDisplayList.cpp
+--- a/layout/base/nsDisplayList.cpp
++++ b/layout/base/nsDisplayList.cpp
+@@ -602,47 +602,32 @@ nsDisplayBackground::IsOpaque(nsDisplayL
+   if (bottomLayer.mClip != NS_STYLE_BG_CLIP_BORDER ||
+       nsLayoutUtils::HasNonZeroCorner(mFrame->GetStyleBorder()->mBorderRadius))
+     return PR_FALSE;
+ 
+   if (NS_GET_A(bg->mBackgroundColor) == 255 &&
+       !nsCSSRendering::IsCanvasFrame(mFrame))
+     return PR_TRUE;
+ 
+-  if (bottomLayer.mRepeat == NS_STYLE_BG_REPEAT_XY) {
+-    if (bottomLayer.mImage.GetType() == eBackgroundImage_Image) {
+-      nsCOMPtr<imgIContainer> container;
+-      bottomLayer.mImage.GetImageData()->GetImage(getter_AddRefs(container));
+-      if (container) {
+-        PRBool animated;
+-        container->GetAnimated(&animated);
+-        if (!animated) {
+-          PRBool isOpaque;
+-          if (NS_SUCCEEDED(container->GetCurrentFrameIsOpaque(&isOpaque)))
+-            return isOpaque;
+-        }
+-      }
+-    }
+-  }
+-
+-  return PR_FALSE;
++  return bottomLayer.mRepeat == NS_STYLE_BG_REPEAT_XY &&
++         bottomLayer.mImage.IsOpaque();
+ }
+ 
+ PRBool
+ nsDisplayBackground::IsUniform(nsDisplayListBuilder* aBuilder) {
+   // theme background overrides any other background
+   if (mIsThemed)
+     return PR_FALSE;
+ 
+   const nsStyleBackground* bg;
+   PRBool hasBG =
+     nsCSSRendering::FindBackground(mFrame->PresContext(), mFrame, &bg);
+   if (!hasBG)
+     return PR_TRUE;
+-  if (bg->BottomLayer().mImage.GetType() == eBackgroundImage_Null &&
++  if (bg->BottomLayer().mImage.IsEmpty() &&
+       bg->mImageCount == 1 &&
+       !nsLayoutUtils::HasNonZeroCorner(mFrame->GetStyleBorder()->mBorderRadius) &&
+       bg->BottomLayer().mClip == NS_STYLE_BG_CLIP_BORDER)
+     return PR_TRUE;
+   return PR_FALSE;
+ }
+ 
+ PRBool
+diff --git a/layout/base/nsPresContext.cpp b/layout/base/nsPresContext.cpp
+--- a/layout/base/nsPresContext.cpp
++++ b/layout/base/nsPresContext.cpp
+@@ -1263,17 +1263,17 @@ nsPresContext::SetImageLoaders(nsIFrame*
+ }
+ 
+ void
+ nsPresContext::SetupBackgroundImageLoaders(nsIFrame* aFrame,
+                                      const nsStyleBackground* aStyleBackground)
+ {
+   nsRefPtr<nsImageLoader> loaders;
+   NS_FOR_VISIBLE_BACKGROUND_LAYERS_BACK_TO_FRONT(i, aStyleBackground) {
+-    if (aStyleBackground->mLayers[i].mImage.GetType() == eBackgroundImage_Image) {
++    if (aStyleBackground->mLayers[i].mImage.GetType() == eStyleImageType_Image) {
+       imgIRequest *image = aStyleBackground->mLayers[i].mImage.GetImageData();
+       loaders = nsImageLoader::Create(aFrame, image, PR_FALSE, loaders);
+     }
+   }
+   SetImageLoaders(aFrame, BACKGROUND_IMAGE, loaders);
+ }
+ 
+ void
+diff --git a/layout/generic/nsFrame.cpp b/layout/generic/nsFrame.cpp
+--- a/layout/generic/nsFrame.cpp
++++ b/layout/generic/nsFrame.cpp
+@@ -4026,17 +4026,17 @@ nsIFrame::CheckInvalidateSizeChange(cons
+     }
+   }
+ 
+   // Invalidate the old frame background if the frame has a background
+   // whose position depends on the size of the frame
+   const nsStyleBackground *bg = GetStyleBackground();
+   NS_FOR_VISIBLE_BACKGROUND_LAYERS_BACK_TO_FRONT(i, bg) {
+     const nsStyleBackground::Layer &layer = bg->mLayers[i];
+-    if (layer.mImage.GetType() != eBackgroundImage_Null &&
++    if (!layer.mImage.IsEmpty() &&
+         (layer.mPosition.mXIsPercent || layer.mPosition.mYIsPercent)) {
+       Invalidate(nsRect(0, 0, aOldRect.width, aOldRect.height));
+       return;
+     }
+   }
+ }
+ 
+ // Define the MAX_FRAME_DEPTH to be the ContentSink's MAX_REFLOW_DEPTH plus
+diff --git a/layout/reftests/image-rect/background-common-usage-floating-point.html b/layout/reftests/image-rect/background-common-usage-floating-point.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-common-usage-floating-point.html
+@@ -0,0 +1,50 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    test1 and test2 test -moz-image-rect() where the image rect is specified by
++    mixed pixel values and percentage values.
++
++    -moz-image-rect() can also take a floating point value for each side, and
++    each floating point value (after percent to pixel conversion) is rounded to
++    the nearest integer.  test3 and test4 test if the rounding operation is
++    working as expected.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++      #test1 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 32, 100%, 0%);
++      }
++      #test2 {
++        background-image: -moz-image-rect(url(transparent-16x16-in-blue-32x32.png), 0%, 32, 50%, 0);
++      }
++      #test3 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0.3, 16.2, 15.5, 0.4);
++      }
++      #test4 {
++        background-color: yellow;
++        background-image: -moz-image-rect(url(transparent-16x16-in-blue-32x32.png), 51.2%, 100.4%, 99.2%, 48.9%);
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-common-usage-percent.html b/layout/reftests/image-rect/background-common-usage-percent.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-common-usage-percent.html
+@@ -0,0 +1,45 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Tests some common usages of -moz-image-rect() with image rect specified by
++    percentage values.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++      #test1 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0%, 100%, 100%, 0%);
++      }
++      #test2 {
++        background-image: -moz-image-rect(url(transparent-16x16-in-blue-32x32.png), 0%, 100%, 50%, 0%);
++      }
++      #test3 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0%, 50%, 50%, 0%);
++      }
++      #test4 {
++        background-color: yellow;
++        background-image: -moz-image-rect(url(transparent-16x16-in-blue-32x32.png), 50%, 100%, 100%, 50%);
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-common-usage-pixel.html b/layout/reftests/image-rect/background-common-usage-pixel.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-common-usage-pixel.html
+@@ -0,0 +1,45 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Tests some common usages of -moz-image-rect() with image rect specified by
++    pixel values.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++      #test1 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 32, 32, 0);
++      }
++      #test2 {
++        background-image: -moz-image-rect(url(transparent-16x16-in-blue-32x32.png), 0, 32, 16, 0);
++      }
++      #test3 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 16, 16, 0);
++      }
++      #test4 {
++        background-color: yellow;
++        background-image: -moz-image-rect(url(transparent-16x16-in-blue-32x32.png), 16, 32, 32, 16);
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-common-usage-ref.html b/layout/reftests/image-rect/background-common-usage-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-common-usage-ref.html
+@@ -0,0 +1,52 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        background-repeat: no-repeat;
++      }
++      #test1 {
++        width: 32px;
++        height: 32px;
++        background-position: 0px 0px;
++        background-image: url('green-16x16-in-blue-32x32.png');
++      }
++      #test2 {
++        width: 32px;
++        height: 16px;
++        background-position: 0px 0px;
++        background-image: url('transparent-16x16-in-blue-32x32.png');
++      }
++      #test3 {
++        width: 16px;
++        height: 16px;
++        background-position: 0px 0px;
++        background-image: url('green-16x16-in-blue-32x32.png');
++      }
++      #test4 {
++        width: 32px;
++        height: 32px;
++        background-color: yellow;
++        background-position: -16px -16px;
++        background-image: url('transparent-16x16-in-blue-32x32.png');
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-draw-nothing-empty-rect.html b/layout/reftests/image-rect/background-draw-nothing-empty-rect.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-draw-nothing-empty-rect.html
+@@ -0,0 +1,50 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Makes sure that no image is drawn when an empty region of the source image
++    is specified by -moz-image-rect().
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++      /* Zero width and height */
++      #test1 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 0, 0, 0);
++      }
++      /* Negative height */
++      #test2 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 32, 32, 0, 0);
++      }
++      /* Image rect outside the source image */
++      #test3 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 100, 200, 200, 100);
++      }
++      /* Negative height */
++      #test4 {
++        /* It is only after the source image size is available that it can be
++           determined if this image is empty or not. */
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 16, 32, 50%, 16);
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-draw-nothing-invalid-syntax.html b/layout/reftests/image-rect/background-draw-nothing-invalid-syntax.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-draw-nothing-invalid-syntax.html
+@@ -0,0 +1,48 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Tests if the CSS parser can detect wrong syntax of -moz-image-rect() and
++    gracefully fail.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++      #test1 {
++        /* only non-negative values accepted */
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), -1, 16, 16, 0);
++      }
++      #test2 {
++        /* only bare numbers and percent values accepted */
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0px, 16, 16, 0);
++      }
++      #test3 {
++        /* must have a complete set of <top>, <right>, <bottom>, <left> */
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 16, 16);
++      }
++      #test4 {
++        /* must be comma separated */
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png)  0, 16, 16, 0);
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-draw-nothing-malformed-images.html b/layout/reftests/image-rect/background-draw-nothing-malformed-images.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-draw-nothing-malformed-images.html
+@@ -0,0 +1,43 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Tests if some unusual source images do not cause a crash.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++      #test1 {
++        background-image: -moz-image-rect(url(missing.png), 0, 16, 16, 0);
++      }
++      #test2 {
++        background-image: -moz-image-rect(url(#), 0, 16, 16, 0);
++      }
++      #test3 {
++        background-image: -moz-image-rect(url(../backgrounds/malformed.png), 0, 16, 16, 0);
++      }
++      #test4 {
++        background-image: -moz-image-rect(url(../backgrounds/transparent-32x32.png), 0, 16, 16, 0);
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-draw-nothing-ref.html b/layout/reftests/image-rect/background-draw-nothing-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-draw-nothing-ref.html
+@@ -0,0 +1,24 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-monster-rect-ref.html b/layout/reftests/image-rect/background-monster-rect-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-monster-rect-ref.html
+@@ -0,0 +1,29 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: url(green-16x16-in-blue-32x32.png) no-repeat;
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-monster-rect.html b/layout/reftests/image-rect/background-monster-rect.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-monster-rect.html
+@@ -0,0 +1,47 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Checks if huge values that overflow when converted to PRInt32 and small
++    non-zero values do not cause a crash or an unexpected behavior.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++      }
++      /* Huge values that exceed PR_INT32_MAX are clamped to PR_INT32_MAX, so
++         all the tests below should display the entire 32x32 image. */
++      #test1 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 10000000000, 32, 0);
++      }
++      #test2 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0%, 10000000000%, 100%, 0%);
++      }
++      /* Small values (smaller than machine epsilon) are rounded to zero, so
++         all the tests below should display the entire 32x32 image. */
++      #test3 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0.00000000001, 32, 32, 0);
++      }
++      #test4 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0.00000000001%, 100%, 100%, 0%);
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-over-size-rect-ref.html b/layout/reftests/image-rect/background-over-size-rect-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-over-size-rect-ref.html
+@@ -0,0 +1,27 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 16px;
++        height: 16px;
++        background: -16px -16px url('green-16x16-in-blue-32x32.png') no-repeat;
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-over-size-rect.html b/layout/reftests/image-rect/background-over-size-rect.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-over-size-rect.html
+@@ -0,0 +1,38 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Tests image rects that run off the source image bounds.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++      /* The final crop rect is computed by intersecting an image rect and the
++         source image bounds, so the following tests should display the bottom
++         right 16x16 corner of the image. */
++      #test1 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 16, 50, 50, 16);
++      }
++      #test2 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 50.000001%, 1000000%, 1000000%, 50.000001%);
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-test-parser-ref.html b/layout/reftests/image-rect/background-test-parser-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-test-parser-ref.html
+@@ -0,0 +1,40 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++      }
++      #test1, #test2, #test3 {
++        width: 16px;
++        height: 16px;
++        background: url('green-16x16-in-blue-32x32.png') no-repeat;
++      }
++      #test4 {
++        width: 32px;
++        height: 32px;
++        background-color: yellow;
++      }
++      #test5, #test6 {
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++    <div class="wrapper"><div id="test5"></div></div>
++    <div class="wrapper"><div id="test6"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-test-parser.html b/layout/reftests/image-rect/background-test-parser.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-test-parser.html
+@@ -0,0 +1,64 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Checks if the CSS parser can parse variations of -moz-image-rect() syntax
++    correctly or fail gracefully.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++      #test1 {
++        /* tests shorthand notation */
++        background: transparent scroll no-repeat 0px 0px -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 16, 16, 0);
++      }
++      #test2 {
++        /* URL can be a quoted string */
++        background-image: -moz-image-rect('green-16x16-in-blue-32x32.png',0,16,16,0);
++      }
++      #test3 {
++        /* URL can be a quoted string */
++        background-image: -moz-image-rect( "green-16x16-in-blue-32x32.png" , 0 , 16 , 16 , 0 );
++      }
++      #test4 {
++        /* Non-quoted URL is not allowed. When the parser encounters a syntax
++           error, it skips until the closing parenthesis, so background-color
++           should be painted with yellow since -moz-image-rect(...) is ignored. */
++        background-image: -moz-image-rect(green-16x16-in-blue-32x32.png, 0, 16, 16, 0);
++        background-color: yellow;
++      }
++      #test5 {
++        /* Non-quoted URL is not allowed. When the parser encounters a syntax
++           error, it skips until the closing parenthesis, so background-color
++           should be ignored since there is no matching closing parenthesis. */
++        background-image: -moz-image-rect(green-16x16-in-blue-32x32.png, 0, 16, 16, 0;
++        background-color: yellow;
++      }
++      #test6 {
++        /* this is ignored due to the missing closing parenthesis in #test5 */
++        background-color: yellow;
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++    <div class="wrapper"><div id="test5"></div></div>
++    <div class="wrapper"><div id="test6"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-with-other-properties-ref.html b/layout/reftests/image-rect/background-with-other-properties-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-with-other-properties-ref.html
+@@ -0,0 +1,50 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      #test1 {
++        width: 32px;
++        height: 32px;
++        background-color: #00ff00;
++      }
++      #test2 {
++        width: 16px;
++        height: 16px;
++        background-color: #00ff00;
++      }
++      #test3 {
++        width: 32px;
++        height: 16px;
++        background-image: url('green-16x16-in-blue-32x32.png');
++      }
++      #test4 {
++        width: 16px;
++        height: 16px;
++        background-color: #00ff00;
++      }
++      #test5 {
++        width: 32px;
++        height: 32px;
++        background-color: #00ff00;
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++    <div class="wrapper"><div id="test5"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-with-other-properties.html b/layout/reftests/image-rect/background-with-other-properties.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-with-other-properties.html
+@@ -0,0 +1,56 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Tests if -moz-image-rect() works collaboratively with other background
++    properties as expected.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++      }
++      /* tests with background-repeat */
++      #test1 {
++        background: repeat -moz-image-rect(url(green-16x16-in-blue-32x32.png), 8, 24, 24, 8);
++      }
++      /* tests with background-position */
++      #test2 {
++        background: no-repeat -8px -8px -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 24, 24, 0);
++      }
++      /* tests with background layers */
++      #test3 {
++        background: no-repeat 0px 0px -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 16, 16, 0),
++                    no-repeat 16px 0px -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 32, 16, 16);
++      }
++      /* for comparison with test5 */
++      #test4 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 8, 24, 24, 8);
++        background-repeat: no-repeat;
++      }
++      /* tests with background-size */
++      #test5 {
++        -moz-background-size: 100% 100%;
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 8, 24, 24, 8);
++        background-repeat: no-repeat;
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++    <div class="wrapper"><div id="test5"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-zoom-ref.html b/layout/reftests/image-rect/background-zoom-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-zoom-ref.html
+@@ -0,0 +1,55 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    This file is identical to background-common-usage-ref.html except the
++    zoom factor.
++-->
++<html reftest-zoom="1.3">
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        background-repeat: no-repeat;
++      }
++      #test1 {
++        width: 32px;
++        height: 32px;
++        background-position: 0px 0px;
++        background-image: url('green-16x16-in-blue-32x32.png');
++      }
++      #test2 {
++        width: 32px;
++        height: 16px;
++        background-position: 0px 0px;
++        background-image: url('transparent-16x16-in-blue-32x32.png');
++      }
++      #test3 {
++        width: 16px;
++        height: 16px;
++        background-position: 0px 0px;
++        background-image: url('green-16x16-in-blue-32x32.png');
++      }
++      #test4 {
++        width: 32px;
++        height: 32px;
++        background-color: yellow;
++        background-position: -16px -16px;
++        background-image: url('transparent-16x16-in-blue-32x32.png');
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/background-zoom.html b/layout/reftests/image-rect/background-zoom.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/background-zoom.html
+@@ -0,0 +1,49 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Checks if the full zoom (x1.3) on -moz-image-rect() produces the same
++    result as the same full zoom on the CSS sprites produced by hacking
++    background-position.
++
++    This file is identical to background-common-usage-pixel.html except the
++    zoom factor.
++-->
++<html reftest-zoom="1.3">
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++      #test1 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 32, 32, 0);
++      }
++      #test2 {
++        background-image: -moz-image-rect(url(transparent-16x16-in-blue-32x32.png), 0, 32, 16, 0);
++      }
++      #test3 {
++        background-image: -moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 16, 16, 0);
++      }
++      #test4 {
++        background-color: yellow;
++        background-image: -moz-image-rect(url(transparent-16x16-in-blue-32x32.png), 16, 32, 32, 16);
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <div class="wrapper"><div id="test2"></div></div>
++    <div class="wrapper"><div id="test3"></div></div>
++    <div class="wrapper"><div id="test4"></div></div>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/dom-api-computed-style.html b/layout/reftests/image-rect/dom-api-computed-style.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/dom-api-computed-style.html
+@@ -0,0 +1,66 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Tests if getComputedStyle() works on -moz-image-rect() and formats the
++    output correctly.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++    </style>
++    <script>
++      var curdir   = location.href.replace(/[^/]+$/, "");
++      // Tests a common usage
++      var test1    = "-moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 16, 16, 0)";
++      var testRef1 = "-moz-image-rect(url(\"" + curdir + "green-16x16-in-blue-32x32.png\"), 0, 16, 16, 0)";
++      // Tests an irregular but valid usage
++      var test2    = "-moz-image-rect( 'green-16x16-in-blue-32x32.png' , 0.0% , 50.5% , 49.5% , 0.0% )";
++      var testRef2 = "-moz-image-rect(url(\"" + curdir + "green-16x16-in-blue-32x32.png\"), 0%, 50.5%, 49.5%, 0%)";
++      // Tests a wrong syntax (negative value)
++      var test3    = "-moz-image-rect(url(green-16x16-in-blue-32x32.png), 0%, -50%, 50%, 0%)";
++      var testRef3 = "none";
++      // Checks if I didn't break the default url() notation.
++      var test4    = "url(  green-16x16-in-blue-32x32.png  )";
++      var testRef4 = "url(\"" + curdir + "green-16x16-in-blue-32x32.png\")";
++
++      function equalComputedDOMIO(domInput, domOutputRef, targetId) {
++        var targetObj = document.getElementById(targetId);
++        targetObj.style.backgroundImage = domInput;
++        var domOutput = getComputedStyle(targetObj, null).getPropertyValue("background-image");
++        document.write(domOutput == domOutputRef ? "SUCCESS" : ("FAIL: " + domOutput));
++      }
++    </script>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <script>
++      equalComputedDOMIO(test1, testRef1, "test1");
++    </script>
++    <div class="wrapper"><div id="test2"></div></div>
++    <script>
++      equalComputedDOMIO(test2, testRef2, "test2");
++    </script>
++    <div class="wrapper"><div id="test3"></div></div>
++    <script>
++      equalComputedDOMIO(test3, testRef3, "test3");
++    </script>
++    <div class="wrapper"><div id="test4"></div></div>
++    <script>
++      equalComputedDOMIO(test4, testRef4, "test4");
++    </script>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/dom-api-ref.html b/layout/reftests/image-rect/dom-api-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/dom-api-ref.html
+@@ -0,0 +1,45 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      #test1 {
++        width: 16px;
++        height: 16px;
++        background-image: url('green-16x16-in-blue-32x32.png');
++      }
++      #test2 {
++        width: 16px;
++        height: 16px;
++        background-image: url('green-16x16-in-blue-32x32.png');
++      }
++      #test3 {
++      }
++      #test4 {
++        width: 32px;
++        height: 32px;
++        background-image: url('green-16x16-in-blue-32x32.png');
++      }
++    </style>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    SUCCESS
++    <div class="wrapper"><div id="test2"></div></div>
++    SUCCESS
++    <div class="wrapper"><div id="test3"></div></div>
++    SUCCESS
++    <div class="wrapper"><div id="test4"></div></div>
++    SUCCESS
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/dom-api.html b/layout/reftests/image-rect/dom-api.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/dom-api.html
+@@ -0,0 +1,65 @@
++<!DOCTYPE html>
++<!--
++    Any copyright is dedicated to the Public Domain.
++    http://creativecommons.org/licenses/publicdomain/
++
++    Tests if the DOM interface of -moz-image-rect() works and formats the
++    output correctly.
++-->
++<html>
++  <head>
++    <title>Testcases: -moz-image-rect() [bug 113577]</title>
++    <style>
++      div.wrapper {
++        width: 32px;
++        height: 32px;
++        margin: 10px;
++        background-color: red;
++      }
++      div.wrapper div {
++        width: 32px;
++        height: 32px;
++        background: no-repeat;
++      }
++    </style>
++    <script>
++      // Tests a common usage
++      var test1    = "-moz-image-rect(url(green-16x16-in-blue-32x32.png), 0, 16, 16, 0)";
++      var testRef1 = "-moz-image-rect(url(\"green-16x16-in-blue-32x32.png\"), 0, 16, 16, 0)";
++      // Tests an irregular but valid usage
++      var test2    = "-moz-image-rect( 'green-16x16-in-blue-32x32.png' , 0.0% , 50.5% , 49.5% , 0.0% )";
++      var testRef2 = "-moz-image-rect(url(\"green-16x16-in-blue-32x32.png\"), 0%, 50.5%, 49.5%, 0%)";
++      // Tests a wrong syntax (negative value)
++      var test3    = "-moz-image-rect(url(green-16x16-in-blue-32x32.png), 0%, -50%, 50%, 0%)";
++      var testRef3 = "";
++      // Checks if I didn't break the default url() notation.
++      var test4    = "url(  green-16x16-in-blue-32x32.png  )";
++      var testRef4 = "url(\"green-16x16-in-blue-32x32.png\")";
++
++      function equalDOMIO(domInput, domOutputRef, targetId) {
++        var targetObj = document.getElementById(targetId);
++        targetObj.style.backgroundImage = domInput;
++        var domOutput = targetObj.style.backgroundImage;
++        document.write(domOutput == domOutputRef ? "SUCCESS" : ("FAIL: " + domOutput));
++      }
++    </script>
++  </head>
++  <body>
++    <div class="wrapper"><div id="test1"></div></div>
++    <script>
++      equalDOMIO(test1, testRef1, "test1");
++    </script>
++    <div class="wrapper"><div id="test2"></div></div>
++    <script>
++      equalDOMIO(test2, testRef2, "test2");
++    </script>
++    <div class="wrapper"><div id="test3"></div></div>
++    <script>
++      equalDOMIO(test3, testRef3, "test3");
++    </script>
++    <div class="wrapper"><div id="test4"></div></div>
++    <script>
++      equalDOMIO(test4, testRef4, "test4");
++    </script>
++  </body>
++</html>
+diff --git a/layout/reftests/image-rect/green-16x16-in-blue-32x32.png b/layout/reftests/image-rect/green-16x16-in-blue-32x32.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..f58bcb48a78e8db075d678c7c8243dc738504975
+GIT binary patch
+literal 2838
+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
+
+diff --git a/layout/reftests/image-rect/reftest.list b/layout/reftests/image-rect/reftest.list
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/image-rect/reftest.list
+@@ -0,0 +1,13 @@
++== background-common-usage-floating-point.html background-common-usage-ref.html
++== background-common-usage-percent.html background-common-usage-ref.html
++== background-common-usage-pixel.html background-common-usage-ref.html
++== background-draw-nothing-empty-rect.html background-draw-nothing-ref.html
++== background-draw-nothing-invalid-syntax.html background-draw-nothing-ref.html
++== background-draw-nothing-malformed-images.html background-draw-nothing-ref.html
++== background-monster-rect.html background-monster-rect-ref.html
++== background-over-size-rect.html background-over-size-rect-ref.html
++== background-test-parser.html background-test-parser-ref.html
++== background-with-other-properties.html background-with-other-properties-ref.html
++== background-zoom.html background-zoom-ref.html
++== dom-api-computed-style.html dom-api-ref.html
++== dom-api.html dom-api-ref.html
+diff --git a/layout/reftests/image-rect/transparent-16x16-in-blue-32x32.png b/layout/reftests/image-rect/transparent-16x16-in-blue-32x32.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..740e0dc6f6bc8632fff1391eff220f38d00e44dc
+GIT binary patch
+literal 2840
+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
+
+diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
+--- a/layout/reftests/reftest.list
++++ b/layout/reftests/reftest.list
+@@ -102,16 +102,19 @@ include line-breaking/reftest.list
+ include mathml/reftest.list
+ 
+ # margin-collapsing
+ include margin-collapsing/reftest.list
+ 
+ # marquee/
+ include marquee/reftest.list
+ 
++# moz-image-rect/
++include moz-image-rect/reftest.list
++
+ # native-theme/
+ include native-theme/reftest.list
+ 
+ # object/
+ include object/reftest.list
+ 
+ # ogg-video/
+ include ogg-video/reftest.list
+diff --git a/layout/style/nsCSSDataBlock.cpp b/layout/style/nsCSSDataBlock.cpp
+--- a/layout/style/nsCSSDataBlock.cpp
++++ b/layout/style/nsCSSDataBlock.cpp
+@@ -165,26 +165,48 @@ inline nsCSSValuePairList* ValuePairList
+ static PRBool
+ ShouldIgnoreColors(nsRuleData *aRuleData)
+ {
+     return aRuleData->mLevel != nsStyleSet::eAgentSheet &&
+            aRuleData->mLevel != nsStyleSet::eUserSheet &&
+            !aRuleData->mPresContext->UseDocumentColors();
+ }
+ 
++/**
++ * Tries to call |nsCSSValue::StartImageLoad()| on an image source.
++ * Image sources are specified by |url()| or |-moz-image-rect()| function.
++ */
++static void
++TryToStartImageLoad(const nsCSSValue& aValue, nsIDocument* aDocument)
++{
++  if (aValue.GetUnit() == eCSSUnit_URL) {
++    aValue.StartImageLoad(aDocument);
++  }
++  else if (aValue.EqualsFunction(eCSSKeyword__moz_image_rect)) {
++    nsCSSValue::Array* arguments = aValue.GetArrayValue();
++    NS_ABORT_IF_FALSE(arguments->Count() == 6, "unexpected num of arguments");
++
++    const nsCSSValue& image = arguments->Item(1);
++    if (image.GetUnit() == eCSSUnit_URL)
++      image.StartImageLoad(aDocument);
++  }
++}
++
+ nsresult
+ nsCSSCompressedDataBlock::MapRuleInfoInto(nsRuleData *aRuleData) const
+ {
+     // If we have no data for these structs, then return immediately.
+     // This optimization should make us return most of the time, so we
+     // have to worry much less (although still some) about the speed of
+     // the rest of the function.
+     if (!(aRuleData->mSIDs & mStyleBits))
+         return NS_OK;
+ 
++    nsIDocument* doc = aRuleData->mPresContext->Document();
++
+     const char* cursor = Block();
+     const char* cursor_end = BlockEnd();
+     while (cursor < cursor_end) {
+         nsCSSProperty iProp = PropertyAtCursor(cursor);
+         NS_ASSERTION(0 <= iProp && iProp < eCSSProperty_COUNT_no_shorthands,
+                      "out of range");
+         if (nsCachedStyleData::GetBitForSID(nsCSSProps::kSIDTable[iProp]) &
+             aRuleData->mSIDs) {
+@@ -192,27 +214,22 @@ nsCSSCompressedDataBlock::MapRuleInfoInt
+                 nsCSSExpandedDataBlock::RuleDataPropertyAt(aRuleData, iProp);
+             switch (nsCSSProps::kTypeTable[iProp]) {
+                 case eCSSType_Value: {
+                     nsCSSValue* target = static_cast<nsCSSValue*>(prop);
+                     if (target->GetUnit() == eCSSUnit_Null) {
+                         const nsCSSValue *val = ValueAtCursor(cursor);
+                         NS_ASSERTION(val->GetUnit() != eCSSUnit_Null, "oops");
+                         if (iProp == eCSSProperty_list_style_image) {
+-                            if (val->GetUnit() == eCSSUnit_URL) {
+-                                val->StartImageLoad(
+-                                    aRuleData->mPresContext->Document());
+-                            }
++                            TryToStartImageLoad(*val, doc);
+                         } else if (iProp == eCSSProperty_border_image) {
+                             if (val->GetUnit() == eCSSUnit_Array) {
+-                                nsCSSValue::Array *array = val->GetArrayValue();
+-                                if (array->Item(0).GetUnit() == eCSSUnit_URL) {
+-                                    array->Item(0).StartImageLoad(
+-                                        aRuleData->mPresContext->Document());
+-                                }
++                                const nsCSSValue& image
++                                    = val->GetArrayValue()->Item(0);
++                                TryToStartImageLoad(image, doc);
+                             }
+                         }
+                         *target = *val;
+                         if (iProp == eCSSProperty_font_family) {
+                             // XXX Are there other things like this?
+                             aRuleData->mFontData->mFamilyFromHTML = PR_FALSE;
+                         }
+                         if (nsCSSProps::PropHasFlags(iProp,
+@@ -272,30 +289,24 @@ nsCSSCompressedDataBlock::MapRuleInfoInt
+                     cursor += CDBValuePairStorage_advance;
+                 } break;
+ 
+                 case eCSSType_ValueList:
+                     if (iProp == eCSSProperty_background_image ||
+                         iProp == eCSSProperty_content) {
+                         for (nsCSSValueList* l = ValueListAtCursor(cursor);
+                              l; l = l->mNext)
+-                            if (l->mValue.GetUnit() == eCSSUnit_URL)
+-                                l->mValue.StartImageLoad(
+-                                    aRuleData->mPresContext->Document());
++                            TryToStartImageLoad(l->mValue, doc);
+                     } else if (iProp == eCSSProperty_cursor) {
+                         for (nsCSSValueList* l = ValueListAtCursor(cursor);
+                              l; l = l->mNext)
+                             if (l->mValue.GetUnit() == eCSSUnit_Array) {
+-                                // Don't try to restart loads we've already
+-                                // started
+-                                nsCSSValue& val =
++                                const nsCSSValue& image =
+                                     l->mValue.GetArrayValue()->Item(0);
+-                                if (val.GetUnit() == eCSSUnit_URL)
+-                                    val.StartImageLoad(
+-                                      aRuleData->mPresContext->Document());
++                                TryToStartImageLoad(image, doc);
+                             }
+                     }
+                 // fall through
+                 case eCSSType_ValuePairList: {
+                     void** target = static_cast<void**>(prop);
+                     if (!*target) {
+                         void* val = PointerAtCursor(cursor);
+                         NS_ASSERTION(val, "oops");
+diff --git a/layout/style/nsCSSDeclaration.cpp b/layout/style/nsCSSDeclaration.cpp
+--- a/layout/style/nsCSSDeclaration.cpp
++++ b/layout/style/nsCSSDeclaration.cpp
+@@ -288,17 +288,25 @@ nsCSSDeclaration::AppendCSSValueToString
+   /* Although Function is backed by an Array, we'll handle it separately
+    * because it's a bit quirky.
+    */
+   else if (eCSSUnit_Function == unit) {
+     const nsCSSValue::Array* array = aValue.GetArrayValue();
+     NS_ASSERTION(array->Count() >= 1, "Functions must have at least one element for the name.");
+ 
+     /* Append the function name. */
+-    AppendCSSValueToString(aProperty, array->Item(0), aResult);
++    const nsCSSValue& functionName = array->Item(0);
++    if (functionName.GetUnit() == eCSSUnit_Enumerated) {
++      // We assume that the first argument is always of nsCSSKeyword type.
++      const nsCSSKeyword functionId =
++        static_cast<nsCSSKeyword>(functionName.GetIntValue());
++      AppendASCIItoUTF16(nsCSSKeywords::GetStringValue(functionId), aResult);
++    } else {
++      AppendCSSValueToString(aProperty, functionName, aResult);
++    }
+     aResult.AppendLiteral("(");
+ 
+     /* Now, step through the function contents, writing each of them as we go. */
+     for (PRUint16 index = 1; index < array->Count(); ++index) {
+       AppendCSSValueToString(aProperty, array->Item(index), aResult);
+ 
+       /* If we're not at the final element, append a comma. */
+       if (index + 1 != array->Count())
+diff --git a/layout/style/nsCSSKeywordList.h b/layout/style/nsCSSKeywordList.h
+--- a/layout/style/nsCSSKeywordList.h
++++ b/layout/style/nsCSSKeywordList.h
+@@ -116,16 +116,17 @@ CSS_KEY(-moz-groupbox, _moz_groupbox)
+ CSS_KEY(-moz-gujarati, _moz_gujarati)
+ CSS_KEY(-moz-gurmukhi, _moz_gurmukhi)
+ CSS_KEY(-moz-hangul-consonant, _moz_hangul_consonant)
+ CSS_KEY(-moz-hidden-unscrollable, _moz_hidden_unscrollable)
+ CSS_KEY(-moz-hangul, _moz_hangul)
+ CSS_KEY(-moz-hyperlinktext, _moz_hyperlinktext)
+ CSS_KEY(-moz-html-cellhighlight, _moz_html_cellhighlight)
+ CSS_KEY(-moz-html-cellhighlighttext, _moz_html_cellhighlighttext)
++CSS_KEY(-moz-image-rect, _moz_image_rect)
+ CSS_KEY(-moz-info, _moz_info)
+ CSS_KEY(-moz-initial, _moz_initial)
+ CSS_KEY(-moz-inline-box, _moz_inline_box)
+ CSS_KEY(-moz-inline-grid, _moz_inline_grid)
+ CSS_KEY(-moz-inline-stack, _moz_inline_stack)
+ CSS_KEY(-moz-japanese-formal, _moz_japanese_formal)
+ CSS_KEY(-moz-japanese-informal, _moz_japanese_informal)
+ CSS_KEY(-moz-kannada, _moz_kannada)
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -102,16 +102,17 @@
+ #define VARIANT_ATTR            0x001000  //
+ #define VARIANT_IDENTIFIER      0x002000  // D
+ #define VARIANT_AUTO            0x010000  // A
+ #define VARIANT_INHERIT         0x020000  // H eCSSUnit_Initial, eCSSUnit_Inherit
+ #define VARIANT_NONE            0x040000  // O
+ #define VARIANT_NORMAL          0x080000  // M
+ #define VARIANT_SYSFONT         0x100000  // eCSSUnit_System_Font
+ #define VARIANT_GRADIENT        0x200000  // eCSSUnit_Gradient
++#define VARIANT_IMAGE_RECT      0x400000  // eCSSUnit_Function
+ 
+ // Common combinations of variants
+ #define VARIANT_AL   (VARIANT_AUTO | VARIANT_LENGTH)
+ #define VARIANT_LP   (VARIANT_LENGTH | VARIANT_PERCENT)
+ #define VARIANT_AH   (VARIANT_AUTO | VARIANT_INHERIT)
+ #define VARIANT_AHLP (VARIANT_AH | VARIANT_LP)
+ #define VARIANT_AHI  (VARIANT_AH | VARIANT_INTEGER)
+ #define VARIANT_AHK  (VARIANT_AH | VARIANT_KEYWORD)
+@@ -511,19 +512,21 @@ protected:
+   PRBool ParseNonNegativeVariant(nsCSSValue& aValue,
+                                  PRInt32 aVariantMask,
+                                  const PRInt32 aKeywordTable[]);
+   PRBool ParsePositiveNonZeroVariant(nsCSSValue& aValue,
+                                      PRInt32 aVariantMask,
+                                      const PRInt32 aKeywordTable[]);
+   PRBool ParseCounter(nsCSSValue& aValue);
+   PRBool ParseAttr(nsCSSValue& aValue);
++  PRBool SetValueToURL(nsCSSValue& aValue, const nsString& aURL);
+   PRBool ParseURL(nsCSSValue& aValue);
+   PRBool TranslateDimension(nsCSSValue& aValue, PRInt32 aVariantMask,
+                             float aNumber, const nsString& aUnit);
++  PRBool ParseImageRect(nsCSSValue& aImage);
+   PRBool ParseGradientStop(nsCSSValueGradient* aGradient);
+   PRBool ParseGradient(nsCSSValue& aValue, PRBool aIsRadial);
+ 
+   void SetParsingCompoundProperty(PRBool aBool) {
+     NS_ASSERTION(aBool == PR_TRUE || aBool == PR_FALSE, "bad PRBool value");
+     mParsingCompoundProperty = aBool;
+   }
+   PRBool IsParsingCompoundProperty(void) const {
+@@ -1309,17 +1312,18 @@ CSSParserImpl::GetURLInParens(nsString& 
+   aURL = mToken.mIdent;
+ 
+   if ((eCSSToken_String != mToken.mType && eCSSToken_URL != mToken.mType) ||
+       !ExpectSymbol(')', PR_TRUE)) {
+     // in the failure case, we have to match parentheses, as if this
+     // weren't treated as a URL token by the tokenization
+ 
+     // XXX We really need to push aURL back into the buffer before this
+-    // SkipUntil!
++    // SkipUntil, but we won't do it as it will make no difference anyway,
++    // and it will make parsing slower.
+     SkipUntil(')');
+     return PR_FALSE;
+   }
+ 
+   return PR_TRUE;
+ }
+ 
+ void
+@@ -4524,16 +4528,21 @@ CSSParserImpl::ParseVariant(nsCSSValue& 
+       eCSSToken_Function == tk->mType) {
+     // a generated gradient
+     if (tk->mIdent.LowerCaseEqualsLiteral("-moz-linear-gradient"))
+       return ParseGradient(aValue, PR_FALSE);
+ 
+     if (tk->mIdent.LowerCaseEqualsLiteral("-moz-radial-gradient"))
+       return ParseGradient(aValue, PR_TRUE);
+   }
++  if ((aVariantMask & VARIANT_IMAGE_RECT) != 0 &&
++      eCSSToken_Function == tk->mType &&
++      tk->mIdent.LowerCaseEqualsLiteral("-moz-image-rect")) {
++    return ParseImageRect(aValue);
++  }
+   if ((aVariantMask & VARIANT_COLOR) != 0) {
+     if ((mNavQuirkMode && !IsParsingCompoundProperty()) || // NONSTANDARD: Nav interprets 'xxyyzz' values even without '#' prefix
+         (eCSSToken_ID == tk->mType) ||
+         (eCSSToken_Ref == tk->mType) ||
+         (eCSSToken_Ident == tk->mType) ||
+         ((eCSSToken_Function == tk->mType) &&
+          (tk->mIdent.LowerCaseEqualsLiteral("rgb") ||
+           tk->mIdent.LowerCaseEqualsLiteral("hsl") ||
+@@ -4730,34 +4739,30 @@ CSSParserImpl::ParseAttr(nsCSSValue& aVa
+         return PR_TRUE;
+       }
+     }
+   }
+   return PR_FALSE;
+ }
+ 
+ PRBool
+-CSSParserImpl::ParseURL(nsCSSValue& aValue)
++CSSParserImpl::SetValueToURL(nsCSSValue& aValue, const nsString& aURL)
+ {
+   if (!mSheetPrincipal) {
+     NS_NOTREACHED("Codepaths that expect to parse URLs MUST pass in an "
+                   "origin principal");
+     return PR_FALSE;
+   }
+ 
+-  nsString url;
+-  if (!GetURLInParens(url))
+-    return PR_FALSE;
+-
+   // Translate url into an absolute url if the url is relative to the
+   // style sheet.
+   nsCOMPtr<nsIURI> uri;
+-  NS_NewURI(getter_AddRefs(uri), url, nsnull, mBaseURL);
+-
+-  nsStringBuffer* buffer = nsCSSValue::BufferFromString(url);
++  NS_NewURI(getter_AddRefs(uri), aURL, nsnull, mBaseURL);
++
++  nsStringBuffer* buffer = nsCSSValue::BufferFromString(aURL);
+   if (NS_UNLIKELY(!buffer)) {
+     mScanner.SetLowLevelError(NS_ERROR_OUT_OF_MEMORY);
+     return PR_FALSE;
+   }
+   nsCSSValue::URL *urlVal =
+     new nsCSSValue::URL(uri, buffer, mSheetURL, mSheetPrincipal);
+ 
+   buffer->Release();
+@@ -4765,16 +4770,90 @@ CSSParserImpl::ParseURL(nsCSSValue& aVal
+     mScanner.SetLowLevelError(NS_ERROR_OUT_OF_MEMORY);
+     return PR_FALSE;
+   }
+   aValue.SetURLValue(urlVal);
+   return PR_TRUE;
+ }
+ 
+ PRBool
++CSSParserImpl::ParseURL(nsCSSValue& aValue)
++{
++  nsAutoString url;
++  if (!GetURLInParens(url))
++    return PR_FALSE;
++
++  return SetValueToURL(aValue, url);
++}
++
++/**
++ * Parse the arguments of -moz-image-rect() function.
++ * -moz-image-rect(<uri>, <top>, <right>, <bottom>, <left>)
++ */
++PRBool
++CSSParserImpl::ParseImageRect(nsCSSValue& aImage)
++{
++  if (!ExpectSymbol('(', PR_TRUE))
++    return PR_FALSE;
++
++  // A non-iterative for loop to break out when an error occurs.
++  for (;;) {
++    nsCSSValue newFunction;
++    static const PRUint32 kNumArgs = 5;
++    nsCSSValue::Array* func =
++      newFunction.InitFunction(eCSSKeyword__moz_image_rect, kNumArgs);
++    if (!func) {
++      mScanner.SetLowLevelError(NS_ERROR_OUT_OF_MEMORY);
++      break;
++    }
++
++    // func->Item(0) is reserved for the function name.
++    nsCSSValue& url    = func->Item(1);
++    nsCSSValue& top    = func->Item(2);
++    nsCSSValue& right  = func->Item(3);
++    nsCSSValue& bottom = func->Item(4);
++    nsCSSValue& left   = func->Item(5);
++
++    if (!GetToken(PR_TRUE))
++      break;
++    if (mToken.mType == eCSSToken_String) {
++      if (!SetValueToURL(url, mToken.mIdent))
++        break;
++    } else if (mToken.mType == eCSSToken_Function &&
++               mToken.mIdent.LowerCaseEqualsLiteral("url")) {
++      if (!ParseURL(url))
++        break;
++    } else {
++      break;
++    }
++    if (!ExpectSymbol(',', PR_TRUE))
++      break;
++
++    static const PRInt32 VARIANT_SIDE = VARIANT_NUMBER | VARIANT_PERCENT;
++    if (!ParseNonNegativeVariant(top, VARIANT_SIDE, nsnull) ||
++        !ExpectSymbol(',', PR_TRUE) ||
++        !ParseNonNegativeVariant(right, VARIANT_SIDE, nsnull) ||
++        !ExpectSymbol(',', PR_TRUE) ||
++        !ParseNonNegativeVariant(bottom, VARIANT_SIDE, nsnull) ||
++        !ExpectSymbol(',', PR_TRUE) ||
++        !ParseNonNegativeVariant(left, VARIANT_SIDE, nsnull) ||
++        !ExpectSymbol(')', PR_TRUE))
++      break;
++
++    aImage = newFunction;
++    return PR_TRUE;
++  }
++
++  // If we detect a syntax error, we must match the opening parenthesis of the
++  // function with the closing parenthesis and skip all the tokens in between.
++  SkipUntil(')');
++  return PR_FALSE;
++}
++
++PRBool
+ CSSParserImpl::ParseGradientStop(nsCSSValueGradient* aGradient)
+ {
+   if (!GetToken(PR_TRUE))
+     return PR_FALSE;
+ 
+   if (eCSSToken_Function != mToken.mType) {
+     UngetToken();
+     return PR_FALSE;
+@@ -5598,17 +5677,19 @@ CSSParserImpl::ParseSingleValueProperty(
+   case eCSSProperty__moz_background_clip:
+     // Used only internally.
+     return ParseVariant(aValue, VARIANT_HK,
+                         nsCSSProps::kBackgroundClipKTable);
+   case eCSSProperty_background_color:
+     return ParseVariant(aValue, VARIANT_HC, nsnull);
+   case eCSSProperty_background_image:
+     // Used only internally.
+-    return ParseVariant(aValue, VARIANT_HUO | VARIANT_GRADIENT, nsnull);
++    return ParseVariant(aValue,
++                        VARIANT_HUO | VARIANT_GRADIENT | VARIANT_IMAGE_RECT,
++                        nsnull);
+   case eCSSProperty__moz_background_inline_policy:
+     return ParseVariant(aValue, VARIANT_HK,
+                         nsCSSProps::kBackgroundInlinePolicyKTable);
+   case eCSSProperty__moz_background_origin:
+     // Used only internally.
+     return ParseVariant(aValue, VARIANT_HK,
+                         nsCSSProps::kBackgroundOriginKTable);
+   case eCSSProperty_background_repeat:
+@@ -6381,17 +6462,18 @@ CSSParserImpl::ParseBackgroundItem(CSSPa
+                                       eCSSProperty_background_color)) {
+           return PR_FALSE;
+         }
+         aItem.mLastItem = PR_TRUE;
+       }
+     } else if (eCSSToken_Function == tt &&
+                (mToken.mIdent.LowerCaseEqualsLiteral("url") ||
+                 mToken.mIdent.LowerCaseEqualsLiteral("-moz-linear-gradient") ||
+-                mToken.mIdent.LowerCaseEqualsLiteral("-moz-radial-gradient"))) {
++                mToken.mIdent.LowerCaseEqualsLiteral("-moz-radial-gradient") ||
++                mToken.mIdent.LowerCaseEqualsLiteral("-moz-image-rect"))) {
+       if (haveImage)
+         return PR_FALSE;
+       haveImage = PR_TRUE;
+       if (!ParseSingleValueProperty(aItem.mImage,
+                                     eCSSProperty_background_image)) {
+         return PR_FALSE;
+       }
+     } else if (mToken.IsDimension() || tt == eCSSToken_Percentage) {
+diff --git a/layout/style/nsCSSValue.cpp b/layout/style/nsCSSValue.cpp
+--- a/layout/style/nsCSSValue.cpp
++++ b/layout/style/nsCSSValue.cpp
+@@ -427,16 +427,47 @@ PRBool nsCSSValue::IsNonTransparentColor
+   nsDependentString buf;
+   return
+     (mUnit == eCSSUnit_Color && NS_GET_A(GetColorValue()) > 0) ||
+     (mUnit == eCSSUnit_Ident &&
+      !nsGkAtoms::transparent->Equals(GetStringValue(buf))) ||
+     (mUnit == eCSSUnit_EnumColor);
+ }
+ 
++nsCSSValue::Array*
++nsCSSValue::InitFunction(nsCSSKeyword aFunctionId, PRUint32 aNumArgs)
++{
++  nsRefPtr<nsCSSValue::Array> func = Array::Create(aNumArgs + 1);
++  if (!func) {
++    return nsnull;
++  }
++
++  func->Item(0).SetIntValue(aFunctionId, eCSSUnit_Enumerated);
++  SetArrayValue(func, eCSSUnit_Function);
++
++  return func;
++}
++
++PRBool
++nsCSSValue::EqualsFunction(nsCSSKeyword aFunctionId) const
++{
++  if (mUnit != eCSSUnit_Function) {
++    return PR_FALSE;
++  }
++
++  nsCSSValue::Array* func = mValue.mArray;
++  NS_ABORT_IF_FALSE(func && func->Count() >= 1 &&
++                    func->Item(0).GetUnit() == eCSSUnit_Enumerated,
++                    "illegally structured function value");
++
++  nsCSSKeyword thisFunctionId =
++    static_cast<nsCSSKeyword>(func->Item(0).GetIntValue());
++  return thisFunctionId == aFunctionId;
++}
++
+ // static
+ nsStringBuffer*
+ nsCSSValue::BufferFromString(const nsString& aValue)
+ {
+   nsStringBuffer* buffer = nsStringBuffer::FromString(aValue);
+   if (buffer) {
+     buffer->AddRef();
+     return buffer;
+diff --git a/layout/style/nsCSSValue.h b/layout/style/nsCSSValue.h
+--- a/layout/style/nsCSSValue.h
++++ b/layout/style/nsCSSValue.h
+@@ -39,16 +39,17 @@
+ 
+ #ifndef nsCSSValue_h___
+ #define nsCSSValue_h___
+ 
+ #include "nsColor.h"
+ #include "nsString.h"
+ #include "nsCoord.h"
+ #include "nsCSSProperty.h"
++#include "nsCSSKeywords.h"
+ #include "nsIURI.h"
+ #include "nsCOMPtr.h"
+ #include "nsAutoPtr.h"
+ #include "nsCRTGlue.h"
+ #include "nsStringBuffer.h"
+ #include "nsTArray.h"
+ 
+ class imgIRequest;
+@@ -326,16 +327,21 @@ public:
+   NS_HIDDEN_(void)  SetNormalValue();
+   NS_HIDDEN_(void)  SetSystemFontValue();
+   NS_HIDDEN_(void)  SetDummyValue();
+   NS_HIDDEN_(void)  SetDummyInheritValue();
+   NS_HIDDEN_(void)  SetRectIsAutoValue();
+   NS_HIDDEN_(void)  StartImageLoad(nsIDocument* aDocument)
+                                    const;  // Not really const, but pretending
+ 
++  // Initializes as a function value with the specified function id.
++  NS_HIDDEN_(Array*) InitFunction(nsCSSKeyword aFunctionId, PRUint32 aNumArgs);
++  // Checks if this is a function value with the specified function id.
++  NS_HIDDEN_(PRBool) EqualsFunction(nsCSSKeyword aFunctionId) const;
++
+   // Returns an already addrefed buffer.  Can return null on allocation
+   // failure.
+   static nsStringBuffer* BufferFromString(const nsString& aValue);
+   
+   struct URL {
+     // Methods are not inline because using an nsIPrincipal means requiring
+     // caps, which leads to REQUIRES hell, since this header is included all
+     // over.    
+diff --git a/layout/style/nsComputedDOMStyle.cpp b/layout/style/nsComputedDOMStyle.cpp
+--- a/layout/style/nsComputedDOMStyle.cpp
++++ b/layout/style/nsComputedDOMStyle.cpp
+@@ -1416,53 +1416,118 @@ nsComputedDOMStyle::GetCSSGradientString
+     aString.AppendLiteral(")");
+   }
+ 
+   delete tmpVal;
+   aString.AppendLiteral(")");
+   return NS_OK;
+ }
+ 
++// -moz-image-rect(<uri>, <top>, <right>, <bottom>, <left>)
++nsresult
++nsComputedDOMStyle::GetImageRectString(nsIURI* aURI,
++                                       const nsStyleSides& aCropRect,
++                                       nsString& aString)
++{
++  nsDOMCSSValueList* valueList = GetROCSSValueList(PR_TRUE);
++  NS_ENSURE_TRUE(valueList, NS_ERROR_OUT_OF_MEMORY);
++
++  // <uri>
++  nsROCSSPrimitiveValue *valURI = GetROCSSPrimitiveValue();
++  if (!valURI || !valueList->AppendCSSValue(valURI)) {
++    delete valURI;
++    delete valueList;
++    return NS_ERROR_OUT_OF_MEMORY;
++  }
++  valURI->SetURI(aURI);
++
++  // <top>, <right>, <bottom>, <left>
++  NS_FOR_CSS_SIDES(side) {
++    nsROCSSPrimitiveValue *valSide = GetROCSSPrimitiveValue();
++    if (!valSide || !valueList->AppendCSSValue(valSide)) {
++      delete valSide;
++      delete valueList;
++      return NS_ERROR_OUT_OF_MEMORY;
++    }
++    SetValueToCoord(valSide, aCropRect.Get(side));
++  }
++
++  nsAutoString argumentString;
++  valueList->GetCssText(argumentString);
++  delete valueList;
++
++  aString = NS_LITERAL_STRING("-moz-image-rect(") +
++            argumentString +
++            NS_LITERAL_STRING(")");
++  return NS_OK;
++}
++
++nsresult
++nsComputedDOMStyle::SetValueToStyleImage(const nsStyleImage& aStyleImage,
++                                         nsROCSSPrimitiveValue* aValue)
++{
++  switch (aStyleImage.GetType()) {
++    case eStyleImageType_Image:
++    {
++      imgIRequest *req = aStyleImage.GetImageData();
++      nsCOMPtr<nsIURI> uri;
++      req->GetURI(getter_AddRefs(uri));
++
++      const nsStyleSides* cropRect = aStyleImage.GetCropRect();
++      if (cropRect) {
++        nsAutoString imageRectString;
++        nsresult rv = GetImageRectString(uri, *cropRect, imageRectString);
++        NS_ENSURE_SUCCESS(rv, rv);
++        aValue->SetString(imageRectString);
++      } else {
++        aValue->SetURI(uri);
++      }
++      break;
++    }
++    case eStyleImageType_Gradient:
++    {
++      nsAutoString gradientString;
++      nsresult rv = GetCSSGradientString(aStyleImage.GetGradientData(),
++                                         gradientString);
++      NS_ENSURE_SUCCESS(rv, rv);
++      aValue->SetString(gradientString);
++      break;
++    }
++    case eStyleImageType_Null:
++      aValue->SetIdent(eCSSKeyword_none);
++      break;
++    default:
++      NS_NOTREACHED("unexpected image type");
++      return NS_ERROR_UNEXPECTED;
++  }
++
++  return NS_OK;
++}
++
+ nsresult
+ nsComputedDOMStyle::GetBackgroundImage(nsIDOMCSSValue** aValue)
+ {
+   const nsStyleBackground* bg = GetStyleBackground();
+ 
+   nsDOMCSSValueList *valueList = GetROCSSValueList(PR_TRUE);
+   NS_ENSURE_TRUE(valueList, NS_ERROR_OUT_OF_MEMORY);
+ 
+   for (PRUint32 i = 0, i_end = bg->mImageCount; i < i_end; ++i) {
+     nsROCSSPrimitiveValue *val = GetROCSSPrimitiveValue();
+     if (!val || !valueList->AppendCSSValue(val)) {
+       delete val;
+       delete valueList;
+       return NS_ERROR_OUT_OF_MEMORY;
+     }
+ 
+-    const nsStyleBackground::Image &image = bg->mLayers[i].mImage;
+-    if (image.GetType() == eBackgroundImage_Image) {
+-      imgIRequest *req = image.GetImageData();
+-      if (!req) {
+-        val->SetIdent(eCSSKeyword_none);
+-      } else {
+-        nsCOMPtr<nsIURI> uri;
+-        req->GetURI(getter_AddRefs(uri));
+-        val->SetURI(uri);
+-      }
+-    } else if (image.GetType() == eBackgroundImage_Gradient) {
+-      nsAutoString gradientString;
+-      nsresult rv = GetCSSGradientString(image.GetGradientData(),
+-                                         gradientString);
+-      if (NS_FAILED(rv)) {
+-        delete valueList;
+-        return rv;
+-      }
+-      val->SetString(gradientString);
+-    } else {
+-      val->SetIdent(eCSSKeyword_none);
++    const nsStyleImage& image = bg->mLayers[i].mImage;
++    nsresult rv = SetValueToStyleImage(image, val);
++    if (NS_FAILED(rv)) {
++      delete valueList;
++      return rv;
+     }
+   }
+ 
+   return CallQueryInterface(valueList, aValue);
+ }
+ 
+ nsresult
+ nsComputedDOMStyle::GetBackgroundInlinePolicy(nsIDOMCSSValue** aValue)
+diff --git a/layout/style/nsComputedDOMStyle.h b/layout/style/nsComputedDOMStyle.h
+--- a/layout/style/nsComputedDOMStyle.h
++++ b/layout/style/nsComputedDOMStyle.h
+@@ -132,16 +132,19 @@ private:
+ 
+   nsresult GetBackgroundList(PRUint8 nsStyleBackground::Layer::* aMember,
+                              PRUint32 nsStyleBackground::* aCount,
+                              const PRInt32 aTable[],
+                              nsIDOMCSSValue** aResult);
+ 
+   nsresult GetCSSGradientString(const nsStyleGradient* aGradient,
+                                 nsAString& aString);
++  nsresult GetImageRectString(nsIURI* aURI,
++                              const nsStyleSides& aCropRect,
++                              nsString& aString);
+ 
+   /* Properties Queryable as CSSValues */
+ 
+   nsresult GetAppearance(nsIDOMCSSValue** aValue);
+ 
+   /* Box properties */
+   nsresult GetBoxAlign(nsIDOMCSSValue** aValue);
+   nsresult GetBoxDirection(nsIDOMCSSValue** aValue);
+@@ -360,16 +363,18 @@ private:
+   nsresult GetClipPath(nsIDOMCSSValue** aValue);
+   nsresult GetFilter(nsIDOMCSSValue** aValue);
+   nsresult GetMask(nsIDOMCSSValue** aValue);
+ #endif // MOZ_SVG
+ 
+   nsROCSSPrimitiveValue* GetROCSSPrimitiveValue();
+   nsDOMCSSValueList* GetROCSSValueList(PRBool aCommaDelimited);
+   nsresult SetToRGBAColor(nsROCSSPrimitiveValue* aValue, nscolor aColor);
++  nsresult SetValueToStyleImage(const nsStyleImage& aStyleImage,
++                                nsROCSSPrimitiveValue* aValue);
+   
+   /**
+    * A method to get a percentage base for a percentage value.  Returns PR_TRUE
+    * if a percentage base value was determined, PR_FALSE otherwise.
+    */
+   typedef PRBool (nsComputedDOMStyle::*PercentageBaseGetter)(nscoord&);
+ 
+   /**
+diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
+--- a/layout/style/nsRuleNode.cpp
++++ b/layout/style/nsRuleNode.cpp
+@@ -390,16 +390,41 @@ static PRBool SetCoord(const nsCSSValue&
+     aCoord.SetPercentValue(0.5f);
+   }
+   else {
+     result = PR_FALSE;  // didn't set anything
+   }
+   return result;
+ }
+ 
++// This inline function offers a shortcut for SetCoord() by refusing to accept
++// SETCOORD_LENGTH and SETCOORD_INHERIT masks.
++static inline PRBool SetAbsCoord(const nsCSSValue& aValue,
++                                 nsStyleCoord& aCoord,
++                                 PRInt32 aMask)
++{
++  NS_ABORT_IF_FALSE((aMask & SETCOORD_LH) == 0,
++                    "does not handle SETCOORD_LENGTH and SETCOORD_INHERIT");
++
++  // The values of the following variables will never be used; so it does not
++  // matter what to set.
++  const nsStyleCoord dummyParentCoord;
++  nsStyleContext* dummyStyleContext = nsnull;
++  nsPresContext* dummyPresContext = nsnull;
++  PRBool dummyCanStoreInRuleTree = PR_TRUE;
++
++  PRBool rv = SetCoord(aValue, aCoord, dummyParentCoord, aMask,
++                       dummyStyleContext, dummyPresContext,
++                       dummyCanStoreInRuleTree);
++  NS_ABORT_IF_FALSE(dummyCanStoreInRuleTree,
++                    "SetCoord() should not modify dummyCanStoreInRuleTree.");
++
++  return rv;
++}
++
+ /* Given an enumerated value that represents a box position, converts it to
+  * a float representing the percentage of the box it corresponds to.  For
+  * example, "center" becomes 0.5f.
+  *
+  * @param aEnumValue The enumerated value.
+  * @return The float percent it corresponds to.
+  */
+ static float GetFloatFromBoxPosition(PRInt32 aEnumValue)
+@@ -550,16 +575,82 @@ static void SetGradient(const nsCSSValue
+                  "inherit is not a valid color for gradient stops");
+     SetColor(valueStop.mColor, NS_RGB(0, 0, 0), aPresContext,
+              aContext, stop.mColor, aCanStoreInRuleTree);
+ 
+     aResult.mStops.AppendElement(stop);
+   }
+ }
+ 
++// -moz-image-rect(<uri>, <top>, <right>, <bottom>, <left>)
++static void SetStyleImageToImageRect(const nsCSSValue& aValue,
++                                     nsStyleImage& aResult)
++{
++  NS_ABORT_IF_FALSE(aValue.GetUnit() == eCSSUnit_Function &&
++                    aValue.EqualsFunction(eCSSKeyword__moz_image_rect),
++                    "the value is not valid -moz-image-rect()");
++
++  nsCSSValue::Array* arr = aValue.GetArrayValue();
++  NS_ABORT_IF_FALSE(arr && arr->Count() == 6, "invalid number of arguments");
++
++  // <uri>
++  if (arr->Item(1).GetUnit() == eCSSUnit_Image) {
++    aResult.SetImageData(arr->Item(1).GetImageValue());
++  } else {
++    NS_WARNING("nsCSSValue::Image::Image() failed?");
++  }
++
++  // <top>, <right>, <bottom>, <left>
++  nsStyleSides cropRect;
++  NS_FOR_CSS_SIDES(side) {
++    nsStyleCoord coord;
++    const nsCSSValue& val = arr->Item(2 + side);
++    PRBool unitOk = SetAbsCoord(val, coord, SETCOORD_FACTOR | SETCOORD_PERCENT);
++    NS_ABORT_IF_FALSE(unitOk, "Incorrect data structure created by CSS parser");
++    cropRect.Set(side, coord);
++  }
++  aResult.SetCropRect(&cropRect);
++}
++
++static void SetStyleImage(nsStyleContext* aStyleContext,
++                          const nsCSSValue& aValue,
++                          nsStyleImage& aResult,
++                          PRBool& aCanStoreInRuleTree)
++{
++  aResult.SetNull();
++
++  switch (aValue.GetUnit()) {
++    case eCSSUnit_Image:
++      aResult.SetImageData(aValue.GetImageValue());
++      break;
++    case eCSSUnit_Function:
++      if (aValue.EqualsFunction(eCSSKeyword__moz_image_rect)) {
++        SetStyleImageToImageRect(aValue, aResult);
++      } else {
++        NS_NOTREACHED("-moz-image-rect() is the only expected function");
++      }
++      break;
++    case eCSSUnit_Gradient:
++    {
++      nsStyleGradient* gradient = new nsStyleGradient();
++      if (gradient) {
++        SetGradient(aValue, aStyleContext->PresContext(), aStyleContext,
++                    *gradient, aCanStoreInRuleTree);
++        aResult.SetGradientData(gradient);
++      }
++      break;
++    }
++    case eCSSUnit_None:
++      break;
++    default:
++      NS_NOTREACHED("unexpected unit; maybe nsCSSValue::Image::Image() failed?");
++      break;
++  }
++}
++
+ // flags for SetDiscrete - align values with SETCOORD_* constants
+ // where possible
+ 
+ #define SETDSC_NORMAL                 0x01   // N
+ #define SETDSC_AUTO                   0x02   // A
+ #define SETDSC_INTEGER                0x40   // I
+ #define SETDSC_ENUMERATED             0x80   // E
+ #define SETDSC_NONE                   0x100  // O
+@@ -3897,41 +3988,25 @@ struct BackgroundItemComputer<nsCSSValue
+                            PRBool& aCanStoreInRuleTree)
+   {
+     SetDiscrete(aSpecifiedValue->mValue, aComputedValue, aCanStoreInRuleTree,
+                 SETDSC_ENUMERATED, PRUint8(0), 0, 0, 0, 0, 0);
+   }
+ };
+ 
+ NS_SPECIALIZE_TEMPLATE
+-struct BackgroundItemComputer<nsCSSValueList, nsStyleBackground::Image>
++struct BackgroundItemComputer<nsCSSValueList, nsStyleImage>
+ {
+   static void ComputeValue(nsStyleContext* aStyleContext,
+                            const nsCSSValueList* aSpecifiedValue,
+-                           nsStyleBackground::Image& aComputedValue,
++                           nsStyleImage& aComputedValue,
+                            PRBool& aCanStoreInRuleTree)
+   {
+-    const nsCSSValue &value = aSpecifiedValue->mValue;
+-    if (eCSSUnit_Image == value.GetUnit()) {
+-      aComputedValue.SetImageData(value.GetImageValue());
+-    }
+-    else if (eCSSUnit_Gradient == value.GetUnit()) {
+-      nsStyleGradient* gradient = new nsStyleGradient();
+-      if (gradient) {
+-        SetGradient(value, aStyleContext->PresContext(), aStyleContext,
+-                    *gradient, aCanStoreInRuleTree);
+-        aComputedValue.SetGradientData(gradient);
+-      } else {
+-        aComputedValue.SetNull();
+-      }
+-    }
+-    else {
+-      NS_ASSERTION(eCSSUnit_None == value.GetUnit(), "unexpected unit");
+-      aComputedValue.SetNull();
+-    }
++    SetStyleImage(aStyleContext, aSpecifiedValue->mValue, aComputedValue,
++                  aCanStoreInRuleTree);
+   }
+ };
+ 
+ struct BackgroundPositionAxis {
+   nsCSSValue nsCSSValuePairList::*specified;
+   nsStyleBackground::Position::PositionCoord
+     nsStyleBackground::Position::*result;
+   PRPackedBool nsStyleBackground::Position::*isPercent;
+@@ -4160,17 +4235,17 @@ nsRuleNode::ComputeBackgroundData(void* 
+     NS_ASSERTION(eCSSUnit_Null == colorData.mBackColor.GetUnit(),
+                  "unexpected color unit");
+   }
+ 
+   PRUint32 maxItemCount = 1;
+   PRBool rebuild = PR_FALSE;
+ 
+   // background-image: url (stored as image), none, inherit [list]
+-  nsStyleBackground::Image initialImage;
++  nsStyleImage initialImage;
+   SetBackgroundList(aContext, colorData.mBackImage, bg->mLayers,
+                     parentBG->mLayers, &nsStyleBackground::Layer::mImage,
+                     initialImage, parentBG->mImageCount, bg->mImageCount,
+                     maxItemCount, rebuild, canStoreInRuleTree);
+ 
+   // background-repeat: enum, inherit, initial [list]
+   SetBackgroundList(aContext, colorData.mBackRepeat, bg->mLayers,
+                     parentBG->mLayers, &nsStyleBackground::Layer::mRepeat,
+@@ -4518,20 +4593,18 @@ nsRuleNode::ComputeBorderData(void* aSta
+     
+     // the image
+     if (eCSSUnit_Image == arr->Item(0).GetUnit()) {
+       border->SetBorderImage(arr->Item(0).GetImageValue());
+     }
+     
+     // the numbers saying where to split the image
+     NS_FOR_CSS_SIDES(side) {
+-      // an uninitialized parentCoord is ok because I'm not passing SETCOORD_INHERIT
+-      if (SetCoord(arr->Item(1 + side), coord, nsStyleCoord(),
+-                   SETCOORD_FACTOR | SETCOORD_PERCENT, aContext,
+-                   mPresContext, canStoreInRuleTree)) {
++      if (SetAbsCoord(arr->Item(1 + side), coord,
++                      SETCOORD_FACTOR | SETCOORD_PERCENT)) {
+         border->mBorderImageSplit.Set(side, coord);
+       }
+     }
+     
+     // possible replacement for border-width
+     // if have one - have all four (see CSSParserImpl::ParseBorderImage())
+     if (eCSSUnit_Null != arr->Item(5).GetUnit()) {
+       NS_FOR_CSS_SIDES(side) {
+diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
+--- a/layout/style/nsStyleStruct.cpp
++++ b/layout/style/nsStyleStruct.cpp
+@@ -58,16 +58,17 @@
+ #include "nsIPresShell.h"
+ #include "nsIFrame.h"
+ #include "nsHTMLReflowState.h"
+ #include "prenv.h"
+ 
+ #include "nsBidiUtils.h"
+ 
+ #include "imgIRequest.h"
++#include "imgIContainer.h"
+ #include "prlog.h"
+ 
+ // Make sure we have enough bits in NS_STYLE_INHERIT_MASK.
+ PR_STATIC_ASSERT((((1 << nsStyleStructID_Length) - 1) &
+                   ~(NS_STYLE_INHERIT_MASK)) == 0);
+ 
+ inline PRBool IsFixedUnit(nsStyleUnit aUnit, PRBool aEnumOK)
+ {
+@@ -1311,16 +1312,252 @@ nsStyleGradient::nsStyleGradient(void)
+ {
+   mStartX.SetCoordValue(0);
+   mStartY.SetCoordValue(0);
+   mEndX.SetCoordValue(0);
+   mEndY.SetCoordValue(0);
+ }
+ 
+ // --------------------
++// nsStyleImage
++//
++
++nsStyleImage::nsStyleImage()
++  : mType(eStyleImageType_Null)
++  , mCropRect(nsnull)
++{
++  MOZ_COUNT_CTOR(nsStyleImage);
++}
++
++nsStyleImage::~nsStyleImage()
++{
++  MOZ_COUNT_DTOR(nsStyleImage);
++  if (mType != eStyleImageType_Null)
++    SetNull();
++}
++
++nsStyleImage::nsStyleImage(const nsStyleImage& aOther)
++  : mType(eStyleImageType_Null)
++  , mCropRect(nsnull)
++{
++  // We need our own copy constructor because we don't want
++  // to copy the reference count
++  MOZ_COUNT_CTOR(nsStyleImage);
++  DoCopy(aOther);
++}
++
++nsStyleImage&
++nsStyleImage::operator=(const nsStyleImage& aOther)
++{
++  if (this != &aOther)
++    DoCopy(aOther);
++
++  return *this;
++}
++
++void
++nsStyleImage::DoCopy(const nsStyleImage& aOther)
++{
++  SetNull();
++
++  if (aOther.mType == eStyleImageType_Image)
++    SetImageData(aOther.mImage);
++  else if (aOther.mType == eStyleImageType_Gradient)
++    SetGradientData(aOther.mGradient);
++
++  SetCropRect(aOther.mCropRect);
++}
++
++void
++nsStyleImage::SetNull()
++{
++  if (mType == eStyleImageType_Gradient)
++    mGradient->Release();
++  else if (mType == eStyleImageType_Image)
++    NS_RELEASE(mImage);
++
++  mType = eStyleImageType_Null;
++  mCropRect = nsnull;
++}
++
++void
++nsStyleImage::SetImageData(imgIRequest* aImage)
++{
++  NS_IF_ADDREF(aImage);
++
++  if (mType != eStyleImageType_Null)
++    SetNull();
++
++  if (aImage) {
++    mImage = aImage;
++    mType = eStyleImageType_Image;
++  }
++}
++
++void
++nsStyleImage::SetGradientData(nsStyleGradient* aGradient)
++{
++  if (aGradient)
++    aGradient->AddRef();
++
++  if (mType != eStyleImageType_Null)
++    SetNull();
++
++  if (aGradient) {
++    mGradient = aGradient;
++    mType = eStyleImageType_Gradient;
++  }
++}
++
++void
++nsStyleImage::SetCropRect(nsStyleSides* aCropRect)
++{
++  if (aCropRect) {
++    mCropRect = new nsStyleSides(*aCropRect);
++    // There is really not much we can do if 'new' fails
++  } else {
++    mCropRect = nsnull;
++  }
++}
++
++static PRInt32
++ConvertToPixelCoord(const nsStyleCoord& aCoord, PRInt32 aPercentScale)
++{
++  double pixelValue;
++  switch (aCoord.GetUnit()) {
++    case eStyleUnit_Percent:
++      pixelValue = aCoord.GetPercentValue() * aPercentScale;
++      break;
++    case eStyleUnit_Factor:
++      pixelValue = aCoord.GetFactorValue();
++      break;
++    default:
++      NS_NOTREACHED("unexpected unit for image crop rect");
++      return 0;
++  }
++  NS_ABORT_IF_FALSE(pixelValue >= 0, "we ensured non-negative while parsing");
++  pixelValue = PR_MIN(pixelValue, PR_INT32_MAX); // avoid overflow
++  return NS_lround(pixelValue);
++}
++
++PRBool
++nsStyleImage::ComputeActualCropRect(nsIntRect& aActualCropRect,
++                                    PRBool* aIsEntireImage) const
++{
++  if (mType != eStyleImageType_Image)
++    return PR_FALSE;
++
++  nsCOMPtr<imgIContainer> imageContainer;
++  mImage->GetImage(getter_AddRefs(imageContainer));
++  if (!imageContainer)
++    return PR_FALSE;
++
++  nsIntSize imageSize;
++  imageContainer->GetWidth(&imageSize.width);
++  imageContainer->GetHeight(&imageSize.height);
++  if (imageSize.width <= 0 || imageSize.height <= 0)
++    return PR_FALSE;
++
++  PRInt32 left   = ConvertToPixelCoord(mCropRect->GetLeft(),   imageSize.width);
++  PRInt32 top    = ConvertToPixelCoord(mCropRect->GetTop(),    imageSize.height);
++  PRInt32 right  = ConvertToPixelCoord(mCropRect->GetRight(),  imageSize.width);
++  PRInt32 bottom = ConvertToPixelCoord(mCropRect->GetBottom(), imageSize.height);
++
++  // IntersectRect() returns an empty rect if we get negative width or height
++  nsIntRect cropRect(left, top, right - left, bottom - top);
++  nsIntRect imageRect(nsIntPoint(0, 0), imageSize);
++  aActualCropRect.IntersectRect(imageRect, cropRect);
++
++  if (aIsEntireImage)
++    *aIsEntireImage = (aActualCropRect == imageRect);
++  return PR_TRUE;
++}
++
++PRBool
++nsStyleImage::IsOpaque() const
++{
++  if (!IsComplete())
++    return PR_FALSE;
++
++  if (mType == eStyleImageType_Gradient) {
++    // We could check if every stop color of the gradient is non-transparent.
++    return PR_FALSE;
++  }
++
++  NS_ABORT_IF_FALSE(mType == eStyleImageType_Image, "unexpected image type");
++
++  nsCOMPtr<imgIContainer> imageContainer;
++  mImage->GetImage(getter_AddRefs(imageContainer));
++  NS_ABORT_IF_FALSE(imageContainer, "IsComplete() said image container is ready");
++
++  // Check if the crop region of the current image frame is opaque
++  PRBool isOpaque;
++  if (NS_SUCCEEDED(imageContainer->GetCurrentFrameIsOpaque(&isOpaque)) &&
++      isOpaque) {
++    if (!mCropRect)
++      return PR_TRUE;
++
++    // Must make sure if mCropRect contains at least a pixel.
++    // XXX Is this optimization worth it? Maybe I should just return PR_FALSE.
++    nsIntRect actualCropRect;
++    PRBool rv = ComputeActualCropRect(actualCropRect);
++    NS_ASSERTION(rv, "ComputeActualCropRect() can not fail here");
++    return rv && !actualCropRect.IsEmpty();
++  }
++
++  return PR_FALSE;
++}
++
++PRBool
++nsStyleImage::IsComplete() const
++{
++  switch (mType) {
++    case eStyleImageType_Null:
++      return PR_FALSE;
++    case eStyleImageType_Gradient:
++      return PR_TRUE;
++    case eStyleImageType_Image:
++    {
++      PRUint32 status = imgIRequest::STATUS_ERROR;
++      return NS_SUCCEEDED(mImage->GetImageStatus(&status)) &&
++             (status & imgIRequest::STATUS_SIZE_AVAILABLE) &&
++             (status & imgIRequest::STATUS_FRAME_COMPLETE);
++    }
++    default:
++      NS_NOTREACHED("unexpected image type");
++      return PR_FALSE;
++  }
++}
++
++static inline PRBool
++EqualRects(const nsStyleSides* aRect1, const nsStyleSides* aRect2)
++{
++  return aRect1 == aRect2 || /* handles null== null, and optimize */
++         (aRect1 && aRect2 && *aRect1 == *aRect2);
++}
++
++PRBool
++nsStyleImage::operator==(const nsStyleImage& aOther) const
++{
++  if (mType != aOther.mType)
++    return PR_FALSE;
++
++  if (!EqualRects(mCropRect, aOther.mCropRect))
++    return PR_FALSE;
++
++  if (mType == eStyleImageType_Image)
++    return EqualImages(mImage, aOther.mImage);
++
++  if (mType == eStyleImageType_Gradient)
++    return *mGradient == *aOther.mGradient;
++
++  return PR_TRUE;
++}
++
++// --------------------
+ // nsStyleBackground
+ //
+ 
+ nsStyleBackground::nsStyleBackground()
+   : mAttachmentCount(1)
+   , mClipCount(1)
+   , mOriginCount(1)
+   , mRepeatCount(1)
+@@ -1392,26 +1629,26 @@ nsChangeHint nsStyleBackground::MaxDiffe
+ }
+ #endif
+ 
+ PRBool nsStyleBackground::HasFixedBackground() const
+ {
+   NS_FOR_VISIBLE_BACKGROUND_LAYERS_BACK_TO_FRONT(i, this) {
+     const Layer &layer = mLayers[i];
+     if (layer.mAttachment == NS_STYLE_BG_ATTACHMENT_FIXED &&
+-        layer.mImage.GetType() != eBackgroundImage_Null) {
++        !layer.mImage.IsEmpty()) {
+       return PR_TRUE;
+     }
+   }
+   return PR_FALSE;
+ }
+ 
+ PRBool nsStyleBackground::IsTransparent() const
+ {
+-  return BottomLayer().mImage.GetType() == eBackgroundImage_Null &&
++  return BottomLayer().mImage.IsEmpty() &&
+          mImageCount == 1 &&
+          NS_GET_A(mBackgroundColor) == 0;
+ }
+ 
+ void
+ nsStyleBackground::Position::SetInitialValues()
+ {
+   mXPosition.mFloat = 0.0f;
+@@ -1486,108 +1723,16 @@ PRBool nsStyleBackground::Layer::operato
+          mClip == aOther.mClip &&
+          mOrigin == aOther.mOrigin &&
+          mRepeat == aOther.mRepeat &&
+          mPosition == aOther.mPosition &&
+          mSize == aOther.mSize &&
+          mImage == aOther.mImage;
+ }
+ 
+-nsStyleBackground::Image::Image()
+-{
+-  MOZ_COUNT_CTOR(nsStyleBackground::Image);
+-  mType = eBackgroundImage_Null;
+-}
+-
+-nsStyleBackground::Image::~Image()
+-{
+-  MOZ_COUNT_DTOR(nsStyleBackground::Image);
+-  if (mType != eBackgroundImage_Null)
+-    SetNull();
+-}
+-
+-nsStyleBackground::Image::Image(const nsStyleBackground::Image& aOther)
+-{
+-  // We need our own copy constructor because we don't want
+-  // to copy the reference count
+-  MOZ_COUNT_CTOR(nsStyleBackground::Image);
+-  mType = eBackgroundImage_Null;
+-  DoCopy(aOther);
+-}
+-
+-nsStyleBackground::Image&
+-nsStyleBackground::Image::operator=(const nsStyleBackground::Image& aOther)
+-{
+-  if (this != &aOther)
+-    DoCopy(aOther);
+-
+-  return *this;
+-}
+-
+-void nsStyleBackground::Image::DoCopy(const nsStyleBackground::Image& aOther)
+-{
+-  SetNull();
+-
+-  if (aOther.mType == eBackgroundImage_Image)
+-    SetImageData(aOther.mImage);
+-  else if (aOther.mType == eBackgroundImage_Gradient)
+-    SetGradientData(aOther.mGradient);
+-}
+-
+-void nsStyleBackground::Image::SetImageData(imgIRequest* aImage)
+-{
+-  NS_IF_ADDREF(aImage);
+-
+-  if (mType != eBackgroundImage_Null)
+-    SetNull();
+-
+-  if (aImage) {
+-    mImage = aImage;
+-    mType = eBackgroundImage_Image;
+-  }
+-}
+-
+-void nsStyleBackground::Image::SetGradientData(nsStyleGradient* aGradient)
+-{
+-  if (aGradient)
+-    aGradient->AddRef();
+-
+-  if (mType != eBackgroundImage_Null)
+-    SetNull();
+-
+-  if (aGradient) {
+-    mGradient = aGradient;
+-    mType = eBackgroundImage_Gradient;
+-  }
+-}
+-
+-void nsStyleBackground::Image::SetNull()
+-{
+-  if (mType == eBackgroundImage_Gradient)
+-    mGradient->Release();
+-  else if (mType == eBackgroundImage_Image)
+-    NS_RELEASE(mImage);
+-
+-  mType = eBackgroundImage_Null;
+-}
+-
+-PRBool nsStyleBackground::Image::operator==(const Image& aOther) const
+-{
+-  if (mType != aOther.mType)
+-    return PR_FALSE;
+-
+-  if (mType == eBackgroundImage_Image)
+-    return EqualImages(mImage, aOther.mImage);
+-
+-  if (mType == eBackgroundImage_Gradient)
+-    return *mGradient == *aOther.mGradient;
+-
+-  return PR_TRUE;
+-}
+-
+ // --------------------
+ // nsStyleDisplay
+ //
+ 
+ nsStyleDisplay::nsStyleDisplay()
+ {
+   MOZ_COUNT_CTOR(nsStyleDisplay);
+   mAppearance = NS_THEME_NONE;
+diff --git a/layout/style/nsStyleStruct.h b/layout/style/nsStyleStruct.h
+--- a/layout/style/nsStyleStruct.h
++++ b/layout/style/nsStyleStruct.h
+@@ -185,16 +185,116 @@ private:
+ 
+   ~nsStyleGradient() {}
+ 
+   // Not to be implemented
+   nsStyleGradient(const nsStyleGradient& aOther);
+   nsStyleGradient& operator=(const nsStyleGradient& aOther);
+ };
+ 
++enum nsStyleImageType {
++  eStyleImageType_Null,
++  eStyleImageType_Image,
++  eStyleImageType_Gradient
++};
++
++/**
++ * Represents a paintable image of one of the following types.
++ * (1) A real image loaded from an external source.
++ * (2) A CSS linear or radial gradient.
++ * (*) Optionally a crop rect can be set to paint a partial (rectangular)
++ * region of an image. (Currently, this feature is only supported with an
++ * image of type (1)).
++ *
++ * This struct is currently used only for 'background-image', but it may be
++ * used by other CSS properties such as 'border-image', 'list-style-image', and
++ * 'content' in the future (bug 507052).
++ */
++struct nsStyleImage {
++  nsStyleImage();
++  ~nsStyleImage();
++  nsStyleImage(const nsStyleImage& aOther);
++  nsStyleImage& operator=(const nsStyleImage& aOther);
++
++  void SetNull();
++  void SetImageData(imgIRequest* aImage);
++  void SetGradientData(nsStyleGradient* aGradient);
++  void SetCropRect(nsStyleSides* aCropRect);
++
++  nsStyleImageType GetType() const {
++    return mType;
++  }
++  imgIRequest* GetImageData() const {
++    NS_ASSERTION(mType == eStyleImageType_Image, "Data is not an image!");
++    return mImage;
++  }
++  nsStyleGradient* GetGradientData() const {
++    NS_ASSERTION(mType == eStyleImageType_Gradient, "Data is not a gradient!");
++    return mGradient;
++  }
++  nsStyleSides* GetCropRect() const {
++    NS_ASSERTION(mType == eStyleImageType_Image,
++                 "Only image data can have a crop rect");
++    return mCropRect;
++  }
++
++  /**
++   * Compute the actual crop rect in pixels, using the source image bounds.
++   * The computation involves converting percentage unit to pixel unit and
++   * clamping each side value to fit in the source image bounds.
++   * @param aActualCropRect the computed actual crop rect.
++   * @param aIsEntireImage PR_TRUE iff |aActualCropRect| is identical to the
++   * source image bounds.
++   * @return PR_TRUE iff |aActualCropRect| holds a meaningful value.
++   */
++  PRBool ComputeActualCropRect(nsIntRect& aActualCropRect,
++                               PRBool* aIsEntireImage = nsnull) const;
++
++  /**
++   * @return PR_TRUE if the item is definitely opaque --- i.e., paints every
++   * pixel within its bounds opaquely, and the bounds contains at least a pixel.
++   */
++  PRBool IsOpaque() const;
++  /**
++   * @return PR_TRUE if this image is fully loaded, and its size is calculated;
++   * always returns PR_TRUE if |mType| is |eStyleImageType_Gradient|.
++   */
++  PRBool IsComplete() const;
++  /**
++   * @return PR_TRUE if it is 100% confident that this image contains no pixel
++   * to draw.
++   */
++  PRBool IsEmpty() const {
++    // There are some other cases when the image will be empty, for example
++    // when the crop rect is empty. However, checking the emptiness of crop
++    // rect is non-trivial since each side value can be specified with
++    // percentage unit, which can not be evaluated until the source image size
++    // is available. Therefore, we currently postpone the evaluation of crop
++    // rect until the actual rendering time --- alternatively until IsOpaque()
++    // is called.
++    return mType == eStyleImageType_Null;
++  }
++
++  PRBool operator==(const nsStyleImage& aOther) const;
++  PRBool operator!=(const nsStyleImage& aOther) const {
++    return !(*this == aOther);
++  }
++
++private:
++  void DoCopy(const nsStyleImage& aOther);
++
++  nsStyleImageType mType;
++  union {
++    imgIRequest* mImage;
++    nsStyleGradient* mGradient;
++  };
++  // This is _currently_ used only in conjunction with eStyleImageType_Image.
++  nsAutoPtr<nsStyleSides> mCropRect;
++};
++
+ struct nsStyleColor {
+   nsStyleColor(nsPresContext* aPresContext);
+   nsStyleColor(const nsStyleColor& aOther);
+   ~nsStyleColor(void) {
+     MOZ_COUNT_DTOR(nsStyleColor);
+   }
+ 
+   nsChangeHint CalcDifference(const nsStyleColor& aOther) const;
+@@ -210,22 +310,16 @@ struct nsStyleColor {
+     aContext->FreeToShell(sizeof(nsStyleColor), this);
+   }
+ 
+   // Don't add ANY members to this struct!  We can achieve caching in the rule
+   // tree (rather than the style tree) by letting color stay by itself! -dwh
+   nscolor mColor;                 // [inherited]
+ };
+ 
+-enum nsStyleBackgroundImageType {
+-  eBackgroundImage_Null,
+-  eBackgroundImage_Image,
+-  eBackgroundImage_Gradient
+-};
+-
+ struct nsStyleBackground {
+   nsStyleBackground();
+   nsStyleBackground(const nsStyleBackground& aOther);
+   ~nsStyleBackground();
+ 
+   void* operator new(size_t sz, nsPresContext* aContext) CPP_THROW_NEW {
+     return aContext->AllocateFromShell(sz);
+   }
+@@ -297,65 +391,25 @@ struct nsStyleBackground {
+     void SetInitialValues();
+ 
+     PRBool operator==(const Size& aOther) const;
+     PRBool operator!=(const Size& aOther) const {
+       return !(*this == aOther);
+     }
+   };
+ 
+-  struct Image;
+-  friend struct Image;
+-  struct Image {
+-  public:
+-    Image();
+-    ~Image();
+-    Image(const Image& aOther);
+-    Image& operator=(const Image& aOther);
+-
+-    void SetImageData(imgIRequest* aImage);
+-    void SetGradientData(nsStyleGradient* aGradient);
+-    void SetNull();
+-
+-    nsStyleBackgroundImageType GetType() const {
+-      return mType;
+-    };
+-    imgIRequest* GetImageData() const {
+-      NS_ASSERTION(mType == eBackgroundImage_Image, "Data is not an image!");
+-      return mImage;
+-    };
+-    nsStyleGradient* GetGradientData() const {
+-      NS_ASSERTION(mType == eBackgroundImage_Gradient, "Data is not a gradient!");
+-      return mGradient;
+-    };
+-
+-    PRBool operator==(const Image& aOther) const;
+-    PRBool operator!=(const Image& aOther) const {
+-      return !(*this == aOther);
+-    }
+-
+-  private:
+-    void DoCopy(const Image& aOther);
+-
+-    nsStyleBackgroundImageType mType;
+-    union {
+-      imgIRequest* mImage;
+-      nsStyleGradient* mGradient;
+-    };
+-  };
+-
+   struct Layer;
+   friend struct Layer;
+   struct Layer {
+     PRUint8 mAttachment;                // [reset] See nsStyleConsts.h
+     PRUint8 mClip;                      // [reset] See nsStyleConsts.h
+     PRUint8 mOrigin;                    // [reset] See nsStyleConsts.h
+     PRUint8 mRepeat;                    // [reset] See nsStyleConsts.h
+     Position mPosition;                 // [reset]
+-    Image mImage;                       // [reset]
++    nsStyleImage mImage;                // [reset]
+     Size mSize;                         // [reset]
+ 
+     // Initializes only mImage
+     Layer();
+     ~Layer();
+ 
+     void SetInitialValues();
+ 
+diff --git a/layout/tables/nsTablePainter.cpp b/layout/tables/nsTablePainter.cpp
+--- a/layout/tables/nsTablePainter.cpp
++++ b/layout/tables/nsTablePainter.cpp
+@@ -197,17 +197,17 @@ inline PRBool
+ TableBackgroundPainter::TableBackgroundData::ShouldSetBCBorder()
+ {
+   /* we only need accurate border data when positioning background images*/
+   if (!mBackground) {
+     return PR_FALSE;
+   }
+ 
+   NS_FOR_VISIBLE_BACKGROUND_LAYERS_BACK_TO_FRONT(i, mBackground) {
+-    if (mBackground->mLayers[i].mImage.GetType() != eBackgroundImage_Null)
++    if (!mBackground->mLayers[i].mImage.IsEmpty())
+       return PR_TRUE;
+   }
+   return PR_FALSE;
+ }
+ 
+ nsresult
+ TableBackgroundPainter::TableBackgroundData::SetBCBorder(nsMargin& aBorder,
+                                                          TableBackgroundPainter* aPainter)
+diff --git a/layout/xul/base/src/tree/src/nsTreeBodyFrame.cpp b/layout/xul/base/src/tree/src/nsTreeBodyFrame.cpp
+--- a/layout/xul/base/src/tree/src/nsTreeBodyFrame.cpp
++++ b/layout/xul/base/src/tree/src/nsTreeBodyFrame.cpp
+@@ -4114,17 +4114,17 @@ nsTreeBodyFrame::ScrollInternal(const Sc
+       return NS_OK;
+   }
+ 
+   mTopRowIndex += delta;
+ 
+   // See if we have a transparent background or a background image.  
+   // If we do, then we cannot blit.
+   const nsStyleBackground* background = GetStyleBackground();
+-  if (background->BottomLayer().mImage.GetType() != eBackgroundImage_Null ||
++  if (!background->BottomLayer().mImage.IsEmpty() ||
+       background->mImageCount > 1 ||
+       NS_GET_A(background->mBackgroundColor) < 255 ||
+       PR_ABS(delta)*mRowHeight >= mRect.height) {
+     Invalidate();
+   } else {
+     nsIWidget* widget = nsLeafBoxFrame::GetView()->GetWidget();
+     if (widget) {
+       nscoord rowHeightAsPixels =
+@@ -4173,17 +4173,17 @@ nsTreeBodyFrame::ScrollHorzInternal(cons
+     aPosition = mHorzWidth - bounds.width;
+ 
+   PRInt32 delta = aPosition - mHorzPosition;
+   mHorzPosition = aPosition;
+ 
+   // See if we have a transparent background or a background image.  
+   // If we do, then we cannot blit.
+   const nsStyleBackground* background = GetStyleBackground();
+-  if (background->BottomLayer().mImage.GetType() != eBackgroundImage_Null ||
++  if (!background->BottomLayer().mImage.IsEmpty() ||
+       background->mImageCount > 1 ||
+       NS_GET_A(background->mBackgroundColor) < 255 ||
+       PR_ABS(delta) >= mRect.width) {
+     Invalidate();
+   } else {
+     nsIWidget* widget = nsLeafBoxFrame::GetView()->GetWidget();
+     if (widget) {
+       nsIntPoint deltaPt(PresContext()->AppUnitsToDevPixels(-delta), 0);

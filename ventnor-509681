@@ -1,6 +1,6 @@
 From: Michael Ventnor <ventnor.bugzilla@gmail.com>
 
-Use the correct area for 'background-position: fixed' gradients.  (Bug 509681)  r=roc
+Use the correct area for computing the gradient image for 'background-position: fixed' gradients.  (Bug 509681)  r=roc
 
 diff --git a/layout/base/nsCSSRendering.cpp b/layout/base/nsCSSRendering.cpp
 --- a/layout/base/nsCSSRendering.cpp

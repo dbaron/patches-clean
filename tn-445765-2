@@ -1,0 +1,56 @@
+From: Timothy Nikkel <tnikkel@gmail.com>
+
+Bug 445765. In getting the device context from a docshell don't go through nsIBaseWindow::GetMainWidget because that always returns the device context for the primary screen when called on toplevel docshell.  r=dbaron
+
+diff --git a/layout/base/nsLayoutUtils.cpp b/layout/base/nsLayoutUtils.cpp
+--- a/layout/base/nsLayoutUtils.cpp
++++ b/layout/base/nsLayoutUtils.cpp
+@@ -83,16 +83,17 @@
+ #include "nsICanvasRenderingContextInternal.h"
+ #include "gfxPlatform.h"
+ #ifdef MOZ_MEDIA
+ #include "nsHTMLVideoElement.h"
+ #endif
+ #include "imgIRequest.h"
+ #include "imgIContainer.h"
+ #include "nsIImageLoadingContent.h"
++#include "nsCOMPtr.h"
+ 
+ #ifdef MOZ_SVG
+ #include "nsSVGUtils.h"
+ #include "nsSVGIntegrationUtils.h"
+ #include "nsSVGForeignObjectFrame.h"
+ #include "nsSVGOuterSVGFrame.h"
+ #endif
+ 
+@@ -3131,23 +3132,23 @@ nsLayoutUtils::GetDeviceContextForScreen
+     nsCOMPtr<nsPIDOMWindow> win = do_GetInterface(docShell);
+     if (!win) {
+       // No reason to go on
+       return nsnull;
+     }
+ 
+     win->EnsureSizeUpToDate();
+ 
+-    nsCOMPtr<nsIBaseWindow> baseWindow = do_QueryInterface(docShell);
+-    NS_ENSURE_TRUE(baseWindow, nsnull);
+-
+-    nsCOMPtr<nsIWidget> mainWidget;
+-    baseWindow->GetMainWidget(getter_AddRefs(mainWidget));
+-    if (mainWidget) {
+-      return mainWidget->GetDeviceContext();
++    nsRefPtr<nsPresContext> presContext;
++    docShell->GetPresContext(getter_AddRefs(presContext));
++    if (presContext) {
++      nsIDeviceContext* context = presContext->DeviceContext();
++      if (context) {
++        return context;
++      }
+     }
+ 
+     nsCOMPtr<nsIDocShellTreeItem> curItem = do_QueryInterface(docShell);
+     nsCOMPtr<nsIDocShellTreeItem> parentItem;
+     curItem->GetParent(getter_AddRefs(parentItem));
+     docShell = do_QueryInterface(parentItem);
+   }
+ 

@@ -133,7 +133,7 @@ diff --git a/layout/reftests/first-letter/nested-1a.html b/layout/reftests/first
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
-+  <meta name="flags" content="dom" />
++  <meta name="flags" content="" />
    <style>
    div { color: black; }
    div::first-letter { color: green; }
@@ -313,7 +313,7 @@ diff --git a/layout/reftests/first-letter/quote-1b.html b/layout/reftests/first-
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
-+  <meta name="flags" content="dom" />
++  <meta name="flags" content="" />
    <style>
    div { color: black; }
    div::first-letter { color: green; }

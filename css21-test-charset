@@ -1,0 +1,244 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Add test suite metadata to charset tests.
+
+diff --git a/layout/reftests/css-charset/test-attribute.html b/layout/reftests/css-charset/test-attribute.html
+--- a/layout/reftests/css-charset/test-attribute.html
++++ b/layout/reftests/css-charset/test-attribute.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="UTF-16BE"
+-          href="test-attribute.css">
++          href="test-attribute.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-leading-space.html b/layout/reftests/css-charset/test-charset-leading-space.html
+--- a/layout/reftests/css-charset/test-charset-leading-space.html
++++ b/layout/reftests/css-charset/test-charset-leading-space.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+-          href="test-charset-leading-space.css">
++          href="test-charset-leading-space.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-quotes.html b/layout/reftests/css-charset/test-charset-quotes.html
+--- a/layout/reftests/css-charset/test-charset-quotes.html
++++ b/layout/reftests/css-charset/test-charset-quotes.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+-          href="test-charset-quotes.css">
++          href="test-charset-quotes.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-trailing-space.html b/layout/reftests/css-charset/test-charset-trailing-space.html
+--- a/layout/reftests/css-charset/test-charset-trailing-space.html
++++ b/layout/reftests/css-charset/test-charset-trailing-space.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+-          href="test-charset-trailing-space.css">
++          href="test-charset-trailing-space.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-be-bom.html b/layout/reftests/css-charset/test-charset-utf-16-be-bom.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-be-bom.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-be-bom.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+-          href="test-charset-utf-16-be-bom.css">
++          href="test-charset-utf-16-be-bom.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-be-no-bom.html b/layout/reftests/css-charset/test-charset-utf-16-be-no-bom.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-be-no-bom.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-be-no-bom.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+-          href="test-charset-utf-16-be-no-bom.css">
++          href="test-charset-utf-16-be-no-bom.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-bom-be.html b/layout/reftests/css-charset/test-charset-utf-16-bom-be.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-bom-be.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-bom-be.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+-          href="test-charset-utf-16-bom-be.css">
++          href="test-charset-utf-16-bom-be.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-bom-le.html b/layout/reftests/css-charset/test-charset-utf-16-bom-le.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-bom-le.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-bom-le.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+-          href="test-charset-utf-16-bom-le.css">
++          href="test-charset-utf-16-bom-le.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-le-bom.html b/layout/reftests/css-charset/test-charset-utf-16-le-bom.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-le-bom.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-le-bom.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+-          href="test-charset-utf-16-le-bom.css">
++          href="test-charset-utf-16-le-bom.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-le-no-bom.html b/layout/reftests/css-charset/test-charset-utf-16-le-no-bom.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-le-no-bom.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-le-no-bom.html
+@@ -1,14 +1,19 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: @charset</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
++    <meta name="flags" content="" />
+     <style type="text/css">
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+-          href="test-charset-utf-16-le-no-bom.css">
++          href="test-charset-utf-16-le-no-bom.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+ <html>
+   

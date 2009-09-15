@@ -1,0 +1,922 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Add test suite metadata for ib-split tests.
+
+diff --git a/layout/reftests/ib-split/float-inside-inline-between-blocks-1.html b/layout/reftests/ib-split/float-inside-inline-between-blocks-1.html
+--- a/layout/reftests/ib-split/float-inside-inline-between-blocks-1.html
++++ b/layout/reftests/ib-split/float-inside-inline-between-blocks-1.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <body>
+     <span style="position: relative; left: 100px">
+       <span style="display: block">
+         aaa
+       </span>
+       <span style="float: left">bbb</span>
+       <span style="display: block">
+         aaa
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-10.html b/layout/reftests/ib-split/insert-into-split-inline-10.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-10.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-10.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Nine"));
+      document.getElementById("target").appendChild(newNode);
+    }
+   </script>
+   <style>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-11.html b/layout/reftests/ib-split/insert-into-split-inline-11.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-11.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-11.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Nine"));
+      document.getElementById("target").appendChild(newNode);
+    }
+   </script>
+   <style>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-12.html b/layout/reftests/ib-split/insert-into-split-inline-12.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-12.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-12.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+     <style>
+       #i { display: inline; border: 2px solid; }
+       #i::after { display: block; content: "Three"; }
+     </style>
+   </head>
+   <body>
+     <div id="i"><script>document.body.offsetWidth</script>One<div>Two</div></div>
+   </body>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-13.html b/layout/reftests/ib-split/insert-into-split-inline-13.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-13.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-13.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+     <style>
+       #i { border: 2px solid; }
+       #i::before { display: block; content: "One"; }
+       #i::after { content: "Three"; }
+     </style>
+     <script>
+       function doTest() {
+         var i = document.getElementById("i");
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-14.html b/layout/reftests/ib-split/insert-into-split-inline-14.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-14.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-14.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+     <style>
+       #i { border: 2px solid; }
+       #i::before { display: block; content: "One"; }
+     </style>
+     <script>
+       function doTest() {
+         var i = document.getElementById("i");
+         dump('a');
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-15.html b/layout/reftests/ib-split/insert-into-split-inline-15.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-15.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-15.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+     <style>
+       #i { display: inline; border: 2px solid; }
+       #i::after { display: block; content: "Three"; }
+     </style>
+   </head>
+   <body onload="doTest()">
+     <div id="i"><script>document.body.offsetWidth</script><div>One</div>Two</div>
+   </body>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-16a.html b/layout/reftests/ib-split/insert-into-split-inline-16a.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-16a.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-16a.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+     <style>
+       #i { border: 2px solid; }
+       #i::after { display: block; content: "Two"; }
+     </style>
+     <script>
+       function doTest() {
+         var i = document.getElementById("i");
+         i.insertBefore(document.createTextNode("One"), i.firstChild);
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-16b.html b/layout/reftests/ib-split/insert-into-split-inline-16b.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-16b.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-16b.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+     <style>
+       #i { border: 2px solid; }
+       #i::after { display: block; content: "Two"; }
+     </style>
+     <script>
+       function doTest() {
+         var i = document.getElementById("i");
+         i.appendChild(document.createTextNode("One"));
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1a.html b/layout/reftests/ib-split/insert-into-split-inline-1a.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1a.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1a.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("One"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1b.html b/layout/reftests/ib-split/insert-into-split-inline-1b.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1b.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1b.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Two"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1c.html b/layout/reftests/ib-split/insert-into-split-inline-1c.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1c.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1c.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Three"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1d.html b/layout/reftests/ib-split/insert-into-split-inline-1d.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1d.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1d.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Four"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1e.html b/layout/reftests/ib-split/insert-into-split-inline-1e.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1e.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1e.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Five"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1f.html b/layout/reftests/ib-split/insert-into-split-inline-1f.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1f.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1f.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Six"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1g.html b/layout/reftests/ib-split/insert-into-split-inline-1g.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1g.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1g.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Seven"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1h.html b/layout/reftests/ib-split/insert-into-split-inline-1h.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1h.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1h.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Eight"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1i.html b/layout/reftests/ib-split/insert-into-split-inline-1i.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1i.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1i.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Nine"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1j.html b/layout/reftests/ib-split/insert-into-split-inline-1j.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1j.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1j.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Ten"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1k.html b/layout/reftests/ib-split/insert-into-split-inline-1k.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1k.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1k.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Eleven"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1l.html b/layout/reftests/ib-split/insert-into-split-inline-1l.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-1l.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-1l.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Eleven"));
+      document.getElementById("target").appendChild(newNode);
+    }
+   </script>
+   <style>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2a.html b/layout/reftests/ib-split/insert-into-split-inline-2a.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-2a.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-2a.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("One"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2b.html b/layout/reftests/ib-split/insert-into-split-inline-2b.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-2b.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-2b.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Two"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2c.html b/layout/reftests/ib-split/insert-into-split-inline-2c.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-2c.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-2c.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Three"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2d.html b/layout/reftests/ib-split/insert-into-split-inline-2d.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-2d.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-2d.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Four"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2e.html b/layout/reftests/ib-split/insert-into-split-inline-2e.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-2e.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-2e.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Five"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2f.html b/layout/reftests/ib-split/insert-into-split-inline-2f.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-2f.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-2f.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Six"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2g.html b/layout/reftests/ib-split/insert-into-split-inline-2g.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-2g.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-2g.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Seven"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2h.html b/layout/reftests/ib-split/insert-into-split-inline-2h.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-2h.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-2h.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Eight"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2i.html b/layout/reftests/ib-split/insert-into-split-inline-2i.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-2i.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-2i.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Eight"));
+      document.getElementById("target").appendChild(newNode);
+    }
+   </script>
+   <style>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-3.html b/layout/reftests/ib-split/insert-into-split-inline-3.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-3.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-3.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Nine"));
+      document.getElementById("target").appendChild(newNode);
+    }
+   </script>
+   <style>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-4.html b/layout/reftests/ib-split/insert-into-split-inline-4.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-4.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-4.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Nine"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-6.html b/layout/reftests/ib-split/insert-into-split-inline-6.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-6.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-6.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("One"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-7.html b/layout/reftests/ib-split/insert-into-split-inline-7.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-7.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-7.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("One"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-8a.html b/layout/reftests/ib-split/insert-into-split-inline-8a.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-8a.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-8a.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Two"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-8b.html b/layout/reftests/ib-split/insert-into-split-inline-8b.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-8b.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-8b.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("div");
+      newNode.appendChild(document.createTextNode("Four"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-8c.html b/layout/reftests/ib-split/insert-into-split-inline-8c.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-8c.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-8c.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("One"));
+      document.getElementById("target")
+              .insertBefore(newNode, document.getElementById("insertion"));
+    }
+   </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-9.html b/layout/reftests/ib-split/insert-into-split-inline-9.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-9.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-9.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Nine"));
+      document.getElementById("target").appendChild(newNode);
+    }
+   </script>
+   <style>
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-1.html b/layout/reftests/ib-split/remove-from-split-inline-1.html
+--- a/layout/reftests/ib-split/remove-from-split-inline-1.html
++++ b/layout/reftests/ib-split/remove-from-split-inline-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var target = document.getElementById("target");
+      target.parentNode.removeChild(target);
+    }
+   </script>
+   <style>
+    body > span { border: 3px solid blue }
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-2.html b/layout/reftests/ib-split/remove-from-split-inline-2.html
+--- a/layout/reftests/ib-split/remove-from-split-inline-2.html
++++ b/layout/reftests/ib-split/remove-from-split-inline-2.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var target = document.getElementById("target");
+      target.parentNode.removeChild(target);
+    }
+   </script>
+   <style>
+    body > span { border: 3px solid blue }
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-3.html b/layout/reftests/ib-split/remove-from-split-inline-3.html
+--- a/layout/reftests/ib-split/remove-from-split-inline-3.html
++++ b/layout/reftests/ib-split/remove-from-split-inline-3.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var target = document.getElementById("target");
+      target.parentNode.removeChild(target);
+    }
+   </script>
+   <style>
+    body > span { border: 3px solid blue }
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-4.html b/layout/reftests/ib-split/remove-from-split-inline-4.html
+--- a/layout/reftests/ib-split/remove-from-split-inline-4.html
++++ b/layout/reftests/ib-split/remove-from-split-inline-4.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var target = document.getElementById("target");
+      target.parentNode.removeChild(target);
+    }
+   </script>
+   <style>
+    body > span { border: 3px solid blue }
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-5.html b/layout/reftests/ib-split/remove-from-split-inline-5.html
+--- a/layout/reftests/ib-split/remove-from-split-inline-5.html
++++ b/layout/reftests/ib-split/remove-from-split-inline-5.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var target = document.getElementById("target");
+      target.parentNode.removeChild(target);
+    }
+   </script>
+   <style>
+    body > span { border: 3px solid blue }
+diff --git a/layout/reftests/ib-split/remove-split-inline-1.html b/layout/reftests/ib-split/remove-split-inline-1.html
+--- a/layout/reftests/ib-split/remove-split-inline-1.html
++++ b/layout/reftests/ib-split/remove-split-inline-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var target = document.getElementById("target");
+      target.parentNode.removeChild(target);
+    }
+   </script>
+  </head>
+  <body onload='doit()'>
+diff --git a/layout/reftests/ib-split/split-inner-inline-1.html b/layout/reftests/ib-split/split-inner-inline-1.html
+--- a/layout/reftests/ib-split/split-inner-inline-1.html
++++ b/layout/reftests/ib-split/split-inner-inline-1.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <body>
+     <span>
+       First
+       <span>
+         line
+         <span style="display: block">
+           Second line
+         </span>
+diff --git a/layout/reftests/ib-split/table-pseudo-in-part3-1.html b/layout/reftests/ib-split/table-pseudo-in-part3-1.html
+--- a/layout/reftests/ib-split/table-pseudo-in-part3-1.html
++++ b/layout/reftests/ib-split/table-pseudo-in-part3-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   </head>
+   <body>
+     <span style="display: table-row">
+       <span>
+         aaa
+         <span style="display: block"></span>
+         <span style="display: table-cell">bbb</span>
+       </span>

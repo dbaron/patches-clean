@@ -1,0 +1,187 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Add test suite metadata for generated content tests.  (TODO: Need permission from roc and hixie.)
+
+diff --git a/layout/reftests/generated-content/display-types-01.html b/layout/reftests/generated-content/display-types-01.html
+--- a/layout/reftests/generated-content/display-types-01.html
++++ b/layout/reftests/generated-content/display-types-01.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
++    <title>CSS 2.1 Test Suite: generated content</title>
++    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
++    <meta name="flags" content="" />
+ <style>
+ div { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"}
+ 
+ div::before {
+   content:counter(ctr) url(square-outline-32x32.png) open-quote "Before " attr(class);
+   counter-increment:ctr;
+ }
+ div::after {
+diff --git a/layout/reftests/generated-content/dynamic-attr-01.html b/layout/reftests/generated-content/dynamic-attr-01.html
+--- a/layout/reftests/generated-content/dynamic-attr-01.html
++++ b/layout/reftests/generated-content/dynamic-attr-01.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+ <head>
++    <title>CSS 2.1 Test Suite: generated content</title>
++    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
++    <meta name="flags" content="dom" />
+ <style>
+ body::before {
+   content:attr(my-attr);
+ }
+ body::after {
+   content:attr(my-attr-2);
+ }
+ </style>
+diff --git a/layout/reftests/generated-content/dynamic-restyle-01.html b/layout/reftests/generated-content/dynamic-restyle-01.html
+--- a/layout/reftests/generated-content/dynamic-restyle-01.html
++++ b/layout/reftests/generated-content/dynamic-restyle-01.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+ <head>
++    <title>CSS 2.1 Test Suite: generated content</title>
++    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
++    <meta name="flags" content="dom" />
+ <style>
+ body::before {
+   content:"Before";
+   border:inherit;
+ }
+ .cl::after {
+   display:block;
+   content:"After";
+diff --git a/layout/reftests/generated-content/floated-01.html b/layout/reftests/generated-content/floated-01.html
+--- a/layout/reftests/generated-content/floated-01.html
++++ b/layout/reftests/generated-content/floated-01.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
++    <title>CSS 2.1 Test Suite: generated content</title>
++    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
++    <meta name="flags" content="" />
+ <style>
+ div { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"; }
+ 
+ div::before {
+   content:counter(ctr) url(square-outline-32x32.png) open-quote "Before " attr(class);
+   counter-increment:ctr;
+ }
+ div::after {
+diff --git a/layout/reftests/generated-content/images-01.html b/layout/reftests/generated-content/images-01.html
+--- a/layout/reftests/generated-content/images-01.html
++++ b/layout/reftests/generated-content/images-01.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
++    <title>CSS 2.1 Test Suite: generated content</title>
++    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
++    <meta name="flags" content="" />
+ <style>
+ div::before {
+   content:url(missing-image.png);
+ }
+ div { border:1px solid green; margin:5px; }
+ </style>
+ </head>
+ <div>Inner</div>
+diff --git a/layout/reftests/generated-content/positioned-01.html b/layout/reftests/generated-content/positioned-01.html
+--- a/layout/reftests/generated-content/positioned-01.html
++++ b/layout/reftests/generated-content/positioned-01.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
++    <title>CSS 2.1 Test Suite: generated content</title>
++    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
++    <meta name="flags" content="" />
+ <style>
+ div { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"; }
+ 
+ .gen::before {
+   content:counter(ctr) url(square-outline-32x32.png) open-quote "Before " attr(class);
+   counter-increment:ctr;
+ }
+ .gen::after {
+diff --git a/layout/reftests/generated-content/quotes-001.xml b/layout/reftests/generated-content/quotes-001.xml
+--- a/layout/reftests/generated-content/quotes-001.xml
++++ b/layout/reftests/generated-content/quotes-001.xml
+@@ -4,16 +4,19 @@ Test originally from
+ http://www.hixie.ch/tests/adhoc/css/quotes/001.xml
+ and relicensed to MPL/LGPL/GPL tri-license per Hixie's permission on IRC,
+ March 5, 2009.
+ 
+ -->
+ <html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+   <title>CSS and Quotes: Counting Right (Slightly Simpler Version)</title>
++  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
++  <meta name="flags" content="" />
+   <style type="text/css">
+   <![CDATA[
+      .party1 * { display: inline; }
+      .party1 .a { quotes: "Isn"        "'"
+                           "t"          "FAIL!"
+                           "FAIL!"      " i"; }
+      .party1 .b { quotes: ""           "FAIL!!" 
+                           " wonderful" "!!!"
+diff --git a/layout/reftests/generated-content/table-ignoring-whitespace-01.html b/layout/reftests/generated-content/table-ignoring-whitespace-01.html
+--- a/layout/reftests/generated-content/table-ignoring-whitespace-01.html
++++ b/layout/reftests/generated-content/table-ignoring-whitespace-01.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
++    <title>CSS 2.1 Test Suite: generated content</title>
++    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
++    <meta name="flags" content="" />
+ <style>
+ .gen0::before {
+   padding:1px;
+ }
+ .gen1::before {
+   content: " ";
+ }
+ .gen2::before {
+diff --git a/layout/reftests/generated-content/table-parts-01.html b/layout/reftests/generated-content/table-parts-01.html
+--- a/layout/reftests/generated-content/table-parts-01.html
++++ b/layout/reftests/generated-content/table-parts-01.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
++    <title>CSS 2.1 Test Suite: generated content</title>
++    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
++    <meta name="flags" content="" />
+ <style>
+ table, div.gen { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"; }
+ 
+ .gen::before {
+   content:counter(ctr) url(square-outline-32x32.png) open-quote "Before " attr(class);
+   counter-increment:ctr;
+ }
+ .gen::after {

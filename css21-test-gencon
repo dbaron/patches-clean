@@ -135,7 +135,7 @@ diff --git a/layout/reftests/generated-content/quotes-001.xml b/layout/reftests/
   <head>
    <title>CSS and Quotes: Counting Right (Slightly Simpler Version)</title>
 +  <link rel="author" title="Ian Hickson" href="mailto:ian@hixie.ch" />
-+  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
++  <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#quotes"/>
 +  <meta name="flags" content="" />
    <style type="text/css">
    <![CDATA[

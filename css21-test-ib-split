@@ -920,3 +920,171 @@ diff --git a/layout/reftests/ib-split/table-pseudo-in-part3-1.html b/layout/reft
          <span style="display: block"></span>
          <span style="display: table-cell">bbb</span>
        </span>
+diff --git a/layout/reftests/inline-borderpadding/ltr-basic.html b/layout/reftests/inline-borderpadding/ltr-basic.html
+--- a/layout/reftests/inline-borderpadding/ltr-basic.html
++++ b/layout/reftests/inline-borderpadding/ltr-basic.html
+@@ -1,11 +1,17 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting"/>
++    <meta name="flags" content="" />
+     <style>
+       .r { direction: rtl; }
+       .l { direction: ltr; }
+       span { border: 2px solid; padding: 0 10px 0 5px; margin: 0 60px 0 30px; }
+     </style>
+   </head>
+   <body>
+     <div><span>One<br>Two</span></div>
+diff --git a/layout/reftests/inline-borderpadding/ltr-ib.html b/layout/reftests/inline-borderpadding/ltr-ib.html
+--- a/layout/reftests/inline-borderpadding/ltr-ib.html
++++ b/layout/reftests/inline-borderpadding/ltr-ib.html
+@@ -1,11 +1,17 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting"/>
++    <meta name="flags" content="" />
+     <style>
+       .r { direction: rtl; }
+       .l { direction: ltr; }
+       span { border: 2px solid; padding: 0 10px 0 5px; margin: 0 60px 0 30px; }
+     </style>
+   </head>
+   <body>
+     <div><span>One<div></div>Two</span></div>
+diff --git a/layout/reftests/inline-borderpadding/ltr-span-only-ib.html b/layout/reftests/inline-borderpadding/ltr-span-only-ib.html
+--- a/layout/reftests/inline-borderpadding/ltr-span-only-ib.html
++++ b/layout/reftests/inline-borderpadding/ltr-span-only-ib.html
+@@ -1,11 +1,17 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting"/>
++    <meta name="flags" content="" />
+     <style>
+       .r { direction: rtl; }
+       .l { direction: ltr; }
+       span { border: 2px solid; padding: 0 10px 0 5px; margin: 0 60px 0 30px; }
+     </style>
+   </head>
+   <body>
+     <div class="r"><span class="l">One<div></div>Two</span></div>
+diff --git a/layout/reftests/inline-borderpadding/ltr-span-only.html b/layout/reftests/inline-borderpadding/ltr-span-only.html
+--- a/layout/reftests/inline-borderpadding/ltr-span-only.html
++++ b/layout/reftests/inline-borderpadding/ltr-span-only.html
+@@ -1,11 +1,17 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting"/>
++    <meta name="flags" content="" />
+     <style>
+       .r { direction: rtl; }
+       .l { direction: ltr; }
+       span { border: 2px solid; padding: 0 10px 0 5px; margin: 0 60px 0 30px; }
+     </style>
+   </head>
+   <body>
+     <div class="r"><span class="l">One<br>Two</span></div>
+diff --git a/layout/reftests/inline-borderpadding/rtl-basic.html b/layout/reftests/inline-borderpadding/rtl-basic.html
+--- a/layout/reftests/inline-borderpadding/rtl-basic.html
++++ b/layout/reftests/inline-borderpadding/rtl-basic.html
+@@ -1,11 +1,17 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting"/>
++    <meta name="flags" content="" />
+     <style>
+       .r { direction: rtl; }
+       .l { direction: ltr; }
+       span { border: 2px solid; padding: 0 10px 0 5px; margin: 0 60px 0 30px; }
+     </style>
+   </head>
+   <body>
+     <div class="r"><span>One<br>Two</span></div>
+diff --git a/layout/reftests/inline-borderpadding/rtl-ib.html b/layout/reftests/inline-borderpadding/rtl-ib.html
+--- a/layout/reftests/inline-borderpadding/rtl-ib.html
++++ b/layout/reftests/inline-borderpadding/rtl-ib.html
+@@ -1,11 +1,17 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting"/>
++    <meta name="flags" content="" />
+     <style>
+       .r { direction: rtl; }
+       .l { direction: ltr; }
+       span { border: 2px solid; padding: 0 10px 0 5px; margin: 0 60px 0 30px; }
+     </style>
+   </head>
+   <body>
+     <div class="r"><span>One<div></div>Two</span></div>
+diff --git a/layout/reftests/inline-borderpadding/rtl-span-only-ib.html b/layout/reftests/inline-borderpadding/rtl-span-only-ib.html
+--- a/layout/reftests/inline-borderpadding/rtl-span-only-ib.html
++++ b/layout/reftests/inline-borderpadding/rtl-span-only-ib.html
+@@ -1,11 +1,17 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting"/>
++    <meta name="flags" content="" />
+     <style>
+       .r { direction: rtl; }
+       .l { direction: ltr; }
+       span { border: 2px solid; padding: 0 10px 0 5px; margin: 0 60px 0 30px; }
+     </style>
+   </head>
+   <body>
+     <div><span class="r">One<div></div>Two</span></div>
+diff --git a/layout/reftests/inline-borderpadding/rtl-span-only.html b/layout/reftests/inline-borderpadding/rtl-span-only.html
+--- a/layout/reftests/inline-borderpadding/rtl-span-only.html
++++ b/layout/reftests/inline-borderpadding/rtl-span-only.html
+@@ -1,11 +1,17 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#inline-formatting"/>
++    <meta name="flags" content="" />
+     <style>
+       .r { direction: rtl; }
+       .l { direction: ltr; }
+       span { border: 2px solid; padding: 0 10px 0 5px; margin: 0 60px 0 30px; }
+     </style>
+   </head>
+   <body>
+     <div><span class="r">One<br>Two</span></div>

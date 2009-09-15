@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add test suite metadata for generated content tests.  (TODO: Need permission from roc and hixie.)
+Add test suite metadata for generated content tests.  (TODO: Need permission from hixie.)
 
 diff --git a/layout/reftests/generated-content/display-types-01.html b/layout/reftests/generated-content/display-types-01.html
 --- a/layout/reftests/generated-content/display-types-01.html

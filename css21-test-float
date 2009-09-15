@@ -1,0 +1,185 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Add test suite metadata for float tests.
+
+diff --git a/layout/reftests/floats/float-outside-block-push.html b/layout/reftests/floats/float-outside-block-push.html
+--- a/layout/reftests/floats/float-outside-block-push.html
++++ b/layout/reftests/floats/float-outside-block-push.html
+@@ -1,12 +1,16 @@
+ <!DOCTYPE HTML>
+ <html lang="en">
+ <head>
+-<title>Testcase, bug 472252</title>
++    <title>CSS 2.1 Test Suite: float</title>
++    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
++    <meta name="flags" content="" />
+ 
+ <style type="text/css">
+ #wrap {width:600px; border:1px solid;}
+ .a {background:lime; color:#fff; width:80%;}
+ .b {float:right; width:18%; background: cyan; color: #000; height:10em;}
+ textarea {width: 100%; height:10em;}
+ </style> 
+ 
+diff --git a/layout/reftests/floats/other-float-outside-rule-3-left-2.html b/layout/reftests/floats/other-float-outside-rule-3-left-2.html
+--- a/layout/reftests/floats/other-float-outside-rule-3-left-2.html
++++ b/layout/reftests/floats/other-float-outside-rule-3-left-2.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE HTML>
+-<title>Test for float placement around other float in BFC but outside containing block</title>
++    <title>CSS 2.1 Test Suite: float</title>
++    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
++    <meta name="flags" content="" />
++    <meta name="assert" content="Test for float placement around other float in BFC but outside containing block" />
+ 
+ <!--
+   CSS2.1 9.5.1 rule 3 says:
+ 
+     The right outer edge of a left-floating box may not be to the right
+     of the left outer edge of any right-floating box that is to the
+     right of it. Analogous rules hold for right-floating elements. 
+ 
+diff --git a/layout/reftests/floats/other-float-outside-rule-3-left.html b/layout/reftests/floats/other-float-outside-rule-3-left.html
+--- a/layout/reftests/floats/other-float-outside-rule-3-left.html
++++ b/layout/reftests/floats/other-float-outside-rule-3-left.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE HTML>
+-<title>Test for float placement around other float in BFC but outside containing block</title>
++    <title>CSS 2.1 Test Suite: float</title>
++    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
++    <meta name="flags" content="" />
++    <meta name="assert" content="Test for float placement around other float in BFC but outside containing block" />
+ 
+ <!--
+   CSS2.1 9.5.1 rule 3 says:
+ 
+     The right outer edge of a left-floating box may not be to the right
+     of the left outer edge of any right-floating box that is to the
+     right of it. Analogous rules hold for right-floating elements. 
+ 
+diff --git a/layout/reftests/floats/other-float-outside-rule-3-right-2.html b/layout/reftests/floats/other-float-outside-rule-3-right-2.html
+--- a/layout/reftests/floats/other-float-outside-rule-3-right-2.html
++++ b/layout/reftests/floats/other-float-outside-rule-3-right-2.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE HTML>
+-<title>Test for float placement around other float in BFC but outside containing block</title>
++    <title>CSS 2.1 Test Suite: float</title>
++    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
++    <meta name="flags" content="" />
++    <meta name="assert" content="Test for float placement around other float in BFC but outside containing block" />
+ 
+ <!--
+   CSS2.1 9.5.1 rule 3 says:
+ 
+     The right outer edge of a left-floating box may not be to the right
+     of the left outer edge of any right-floating box that is to the
+     right of it. Analogous rules hold for right-floating elements. 
+ 
+diff --git a/layout/reftests/floats/other-float-outside-rule-3-right.html b/layout/reftests/floats/other-float-outside-rule-3-right.html
+--- a/layout/reftests/floats/other-float-outside-rule-3-right.html
++++ b/layout/reftests/floats/other-float-outside-rule-3-right.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE HTML>
+-<title>Test for float placement around other float in BFC but outside containing block</title>
++    <title>CSS 2.1 Test Suite: float</title>
++    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
++    <meta name="flags" content="" />
++    <meta name="assert" content="Test for float placement around other float in BFC but outside containing block" />
+ 
+ <!--
+   CSS2.1 9.5.1 rule 3 says:
+ 
+     The right outer edge of a left-floating box may not be to the right
+     of the left outer edge of any right-floating box that is to the
+     right of it. Analogous rules hold for right-floating elements. 
+ 
+diff --git a/layout/reftests/floats/other-float-outside-rule-7-left.html b/layout/reftests/floats/other-float-outside-rule-7-left.html
+--- a/layout/reftests/floats/other-float-outside-rule-7-left.html
++++ b/layout/reftests/floats/other-float-outside-rule-7-left.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE HTML>
+-<title>Test for float placement around other float in BFC but outside containing block</title>
++    <title>CSS 2.1 Test Suite: float</title>
++    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
++    <meta name="flags" content="" />
++    <meta name="assert" content="Test for float placement around other float in BFC but outside containing block" />
+ 
+ <!--
+   CSS2.1 9.5.1 rule 7 says:
+ 
+     A left-floating box that has another left-floating box to its left
+     may not have its right outer edge to the right of its containing
+     block's right edge. (Loosely: a left float may not stick out at the
+     right edge, unless it is already as far to the left as possible.) An
+diff --git a/layout/reftests/floats/other-float-outside-rule-7-right.html b/layout/reftests/floats/other-float-outside-rule-7-right.html
+--- a/layout/reftests/floats/other-float-outside-rule-7-right.html
++++ b/layout/reftests/floats/other-float-outside-rule-7-right.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE HTML>
+-<title>Test for float placement around other float in BFC but outside containing block</title>
++    <title>CSS 2.1 Test Suite: float</title>
++    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
++    <meta name="flags" content="" />
++    <meta name="assert" content="Test for float placement around other float in BFC but outside containing block" />
+ 
+ <!--
+   CSS2.1 9.5.1 rule 7 says:
+ 
+     A left-floating box that has another left-floating box to its left
+     may not have its right outer edge to the right of its containing
+     block's right edge. (Loosely: a left float may not stick out at the
+     right edge, unless it is already as far to the left as possible.) An
+diff --git a/layout/reftests/floats/zero-height-float-base.html b/layout/reftests/floats/zero-height-float-base.html
+--- a/layout/reftests/floats/zero-height-float-base.html
++++ b/layout/reftests/floats/zero-height-float-base.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE HTML>
+-<title>Test for wrapping around zero-height floats</title>
++    <title>CSS 2.1 Test Suite: float</title>
++    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
++    <meta name="flags" content="" />
++    <meta name="assert" content="wrapping around zero-height floats" />
+ 
+ <div style="width: 500px; height: 500px; float: left; font-size: 12px;">
+ 
+   <div style="float: left; width: 10px; height: 30px"></div>
+   <div style="float: left; clear: left; width: 100px; height: 1px"></div>
+ 
+   <span style="display:inline-block; vertical-align: bottom; height: 20px; width: 300px; background: blue;"></span>
+   <span style="display:inline-block; vertical-align: bottom; height: 20px; width: 300px; background: purple;"></span>
+diff --git a/layout/reftests/floats/zero-height-float.html b/layout/reftests/floats/zero-height-float.html
+--- a/layout/reftests/floats/zero-height-float.html
++++ b/layout/reftests/floats/zero-height-float.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE HTML>
+-<title>Test for wrapping around zero-height floats</title>
++    <title>CSS 2.1 Test Suite: float</title>
++    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
++    <meta name="flags" content="" />
++    <meta name="assert" content="wrapping around zero-height floats" />
+ 
+ <div style="width: 500px; height: 500px; float: left; font-size: 12px;">
+ 
+   <div style="float: left; width: 10px; height: 30px"></div>
+   <div style="float: left; clear: left; width: 100px; height: 0"></div>
+ 
+   <span style="display:inline-block; vertical-align: bottom; height: 20px; width: 300px; background: blue;"></span>
+   <span style="display:inline-block; vertical-align: bottom; height: 20px; width: 300px; background: purple;"></span>

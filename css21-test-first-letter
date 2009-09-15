@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add test suite metadata to first-letter tests.  (TODO: Ask smontagu if ok.)
+Add test suite metadata to first-letter tests.
 
 diff --git a/layout/reftests/first-letter/basic-1.html b/layout/reftests/first-letter/basic-1.html
 --- a/layout/reftests/first-letter/basic-1.html

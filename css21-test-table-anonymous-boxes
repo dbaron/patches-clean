@@ -1,0 +1,1468 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Add test suite metadata for table-anonymous-boxes.  (TODO: get permission from Jesse)
+
+diff --git a/layout/reftests/table-anonymous-boxes/blocks-divide-tables-1.html b/layout/reftests/table-anonymous-boxes/blocks-divide-tables-1.html
+--- a/layout/reftests/table-anonymous-boxes/blocks-divide-tables-1.html
++++ b/layout/reftests/table-anonymous-boxes/blocks-divide-tables-1.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: block"> 
+       <span style="display: table-cell">Row 1, Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span style="display: table-cell">Row 1, Col 3</span>
+     </span>
+     <span style="display: block"> 
+       <span style="display: table-cell">Row 22, Col 1</span>
+diff --git a/layout/reftests/table-anonymous-boxes/blocks-divide-tables-2.html b/layout/reftests/table-anonymous-boxes/blocks-divide-tables-2.html
+--- a/layout/reftests/table-anonymous-boxes/blocks-divide-tables-2.html
++++ b/layout/reftests/table-anonymous-boxes/blocks-divide-tables-2.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-row"> 
+       <span style="display: table-cell">Row 1, Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span style="display: table-cell">Row 1, Col 3</span>
+     </span>
+     <span style="display: block"> 
+       <span style="display: table-cell">Row 22, Col 1</span>
+diff --git a/layout/reftests/table-anonymous-boxes/cols-test-1.html b/layout/reftests/table-anonymous-boxes/cols-test-1.html
+--- a/layout/reftests/table-anonymous-boxes/cols-test-1.html
++++ b/layout/reftests/table-anonymous-boxes/cols-test-1.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display:table">
+       <span style="display: table-column; background: yellow"></span>
+       <span style="display: table-cell">Row 1, Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span style="display: table-cell">Row 1, Col 3</span>
+       <span style="display: table-column; background: cyan"></span>
+       <span style="display: table-row-group"> 
+diff --git a/layout/reftests/table-anonymous-boxes/cols-test-2.html b/layout/reftests/table-anonymous-boxes/cols-test-2.html
+--- a/layout/reftests/table-anonymous-boxes/cols-test-2.html
++++ b/layout/reftests/table-anonymous-boxes/cols-test-2.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display:table">
+       <span style="display: table-column; background: yellow"></span>
+       <span style="display: table-column; background: cyan"></span>
+       <span style="display: table-column; background: lime"></span>
+       <span style="display: table-cell">Row 1, Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span style="display: table-cell">Row 1, Col 3</span>
+diff --git a/layout/reftests/table-anonymous-boxes/cols-test-3.html b/layout/reftests/table-anonymous-boxes/cols-test-3.html
+--- a/layout/reftests/table-anonymous-boxes/cols-test-3.html
++++ b/layout/reftests/table-anonymous-boxes/cols-test-3.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display:table">
+       <span style="display: table-cell">Row 1, Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span style="display: table-cell">Row 1, Col 3</span>
+       <span style="display: table-row-group"> 
+         <span style="display: table-row">
+           <span style="display: table-cell">Row 22, Col 1</span>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-abs-pos-tbody.html b/layout/reftests/table-anonymous-boxes/dynamic-abs-pos-tbody.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-abs-pos-tbody.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-abs-pos-tbody.html
+@@ -1,12 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Reftest for bug 398681</title>
++    <title>CSS 2.1 Test Suite: anonymous table boxes (Mozilla bug 398681)</title>
++    <link rel="author" title="Jesse Ruderman" href="mailto:jruderman@gmail.com" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+ </head>
+ <body onload="document.getElementById('n').style.position = 'absolute';">
+ <table border=1>
+   <tbody id="n"><tr><td>1__</td></tr></tbody>
+   <tbody><tr><td>__2</td></tr></tbody>
+ </table>
+ </body>
+ </html>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-insert-cell-1.html b/layout/reftests/table-anonymous-boxes/dynamic-insert-cell-1.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-insert-cell-1.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-insert-cell-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var c = document.createElement("span");
+         c.style.display = "table-cell";
+         c.textContent = "Row 22, Col 1";
+         var t = document.getElementById("t");
+         t.parentNode.insertBefore(c, t);
+         document.documentElement.className = "";
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-1.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-1.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-1.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-10.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-10.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-10.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-10.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-11.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-11.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-11.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-11.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-12.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-12.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-12.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-12.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-13.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-13.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-13.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-13.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-14.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-14.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-14.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-14.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         try {
+           document.normalize();
+         } catch(e) {}
+         var n = document.getElementById("t").nextSibling;
+         n.parentNode.removeChild(n);
+         document.documentElement.className = "";
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-15.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-15.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-15.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-15.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var n = document.getElementById("t");
+         n.parentNode.removeChild(n);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-16.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-16.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-16.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-16.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-17.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-17.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-17.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-17.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var n = document.getElementById("t");
+         n.parentNode.removeChild(n);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-2.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-2.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-2.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-2.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-3.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-3.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-3.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-3.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-4.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-4.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-4.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-4.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-5.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-5.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-5.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-5.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-6.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-6.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-6.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-6.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-7.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-7.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-7.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-7.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-8.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-8.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-8.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-8.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-9.html b/layout/reftests/table-anonymous-boxes/dynamic-removal-9.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-removal-9.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-removal-9.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-1.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-1.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-1.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-2.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-2.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-2.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-2.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-3.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-3.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-3.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-3.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-4.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-4.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-4.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-4.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-5.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-5.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-5.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-5.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-1.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-1.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-1.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-2.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-2.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-2.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-2.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-3.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-3.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-3.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-3.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-4.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-4.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-4.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-4.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-5.html b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-5.html
+--- a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-5.html
++++ b/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell-5.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         document.getElementById("t").style.display = "table-cell";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+   <body style="font-family: monospace" onload="doTest()">
+diff --git a/layout/reftests/table-anonymous-boxes/infer-cells-1.html b/layout/reftests/table-anonymous-boxes/infer-cells-1.html
+--- a/layout/reftests/table-anonymous-boxes/infer-cells-1.html
++++ b/layout/reftests/table-anonymous-boxes/infer-cells-1.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <!-- The test in the first row might not be correct, depending on spec
+          clarifications -->
+     <span style="display: table-row"> 
+       <span>Row 1,</span>
+       <span>Col 1Row 1,</span>
+       <span>Col 2Row 1,</span>
+       <span>Col 3</span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-cells-2.html b/layout/reftests/table-anonymous-boxes/infer-cells-2.html
+--- a/layout/reftests/table-anonymous-boxes/infer-cells-2.html
++++ b/layout/reftests/table-anonymous-boxes/infer-cells-2.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-row"> 
+       <!-- Trailing spaces in the spans needed only if the first test in
+            infer-cells-1.html is valid -->
+       <span>Row 1, </span>
+       <span>Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span>Row 1, Col 3</span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-cells-3.html b/layout/reftests/table-anonymous-boxes/infer-cells-3.html
+--- a/layout/reftests/table-anonymous-boxes/infer-cells-3.html
++++ b/layout/reftests/table-anonymous-boxes/infer-cells-3.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-row"> 
+       <!-- Trailing spaces in the spans needed only if the first test in
+            infer-cells-1.html is valid -->
+       <span>Row 1, </span>
+       <span>Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span style="display: table-row">Row 1, Col 3</span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-cells-4.html b/layout/reftests/table-anonymous-boxes/infer-cells-4.html
+--- a/layout/reftests/table-anonymous-boxes/infer-cells-4.html
++++ b/layout/reftests/table-anonymous-boxes/infer-cells-4.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-row"> 
+       <!-- Trailing spaces in the spans needed only if the first test in
+            infer-cells-1.html is valid -->
+       <span>Row 1, </span>
+       <span>Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span style="display: table">Row 1, Col 3</span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-first-row-and-table.html b/layout/reftests/table-anonymous-boxes/infer-first-row-and-table.html
+--- a/layout/reftests/table-anonymous-boxes/infer-first-row-and-table.html
++++ b/layout/reftests/table-anonymous-boxes/infer-first-row-and-table.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-cell">Row 1, Col 1</span>
+     <span style="display: table-cell">Row 1, Col 2</span>
+     <span style="display: table-cell">Row 1, Col 3</span>
+     <span style="display: table-row-group"> 
+       <span style="display: table-row">
+         <span style="display: table-cell">Row 22, Col 1</span>
+         <span style="display: table-cell">Row 22, Col 2</span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-first-row.html b/layout/reftests/table-anonymous-boxes/infer-first-row.html
+--- a/layout/reftests/table-anonymous-boxes/infer-first-row.html
++++ b/layout/reftests/table-anonymous-boxes/infer-first-row.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display:table">
+       <span style="display: table-cell">Row 1, Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span style="display: table-cell">Row 1, Col 3</span>
+       <span style="display: table-row-group"> 
+         <span style="display: table-row">
+           <span style="display: table-cell">Row 22, Col 1</span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-rows-inside-rowgroups.html b/layout/reftests/table-anonymous-boxes/infer-rows-inside-rowgroups.html
+--- a/layout/reftests/table-anonymous-boxes/infer-rows-inside-rowgroups.html
++++ b/layout/reftests/table-anonymous-boxes/infer-rows-inside-rowgroups.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-footer-group"> 
+       <span style="display: table-cell">Row 333, Col 1</span>
+       <span style="display: table-cell">Row 333, Col 2</span>
+       <span style="display: table-cell">Row 333, Col 3</span>
+     </span>
+     <span style="display: table-row-group"> 
+       <span style="display: table-cell">Row 22, Col 1</span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-second-row-and-table.html b/layout/reftests/table-anonymous-boxes/infer-second-row-and-table.html
+--- a/layout/reftests/table-anonymous-boxes/infer-second-row-and-table.html
++++ b/layout/reftests/table-anonymous-boxes/infer-second-row-and-table.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-row-group">
+       <span style="display: table-row">
+         <span style="display: table-cell">Row 1, Col 1</span>
+         <span style="display: table-cell">Row 1, Col 2</span>
+         <span style="display: table-cell">Row 1, Col 3</span>
+       </span>
+     </span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-second-row.html b/layout/reftests/table-anonymous-boxes/infer-second-row.html
+--- a/layout/reftests/table-anonymous-boxes/infer-second-row.html
++++ b/layout/reftests/table-anonymous-boxes/infer-second-row.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display:table">
+       <span style="display: table-row-group">
+         <span style="display: table-row">
+           <span style="display: table-cell">Row 1, Col 1</span>
+           <span style="display: table-cell">Row 1, Col 2</span>
+           <span style="display: table-cell">Row 1, Col 3</span>
+         </span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-1.html b/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-1.html
+--- a/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-1.html
++++ b/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-1.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-header-group"> 
+       <span style="display: table-row">
+         <span style="display: table-cell">Row 1, Col 1</span>
+         <span style="display: table-cell">Row 1, Col 2</span>
+         <span style="display: table-cell">Row 1, Col 3</span>
+       </span>
+     </span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-2.html b/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-2.html
+--- a/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-2.html
++++ b/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-2.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-row-group"> 
+       <span style="display: table-row">
+         <span style="display: table-cell">Row 22, Col 1</span>
+         <span style="display: table-cell">Row 22, Col 2</span>
+         <span style="display: table-cell">Row 22, Col 3</span>
+       </span>
+     </span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-3.html b/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-3.html
+--- a/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-3.html
++++ b/layout/reftests/table-anonymous-boxes/infer-table-around-headers-footers-3.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-footer-group"> 
+       <span style="display: table-row">
+         <span style="display: table-cell">Row 333, Col 1</span>
+         <span style="display: table-cell">Row 333, Col 2</span>
+         <span style="display: table-cell">Row 333, Col 3</span>
+       </span>
+     </span>
+diff --git a/layout/reftests/table-anonymous-boxes/infer-table-row-cell.html b/layout/reftests/table-anonymous-boxes/infer-table-row-cell.html
+--- a/layout/reftests/table-anonymous-boxes/infer-table-row-cell.html
++++ b/layout/reftests/table-anonymous-boxes/infer-table-row-cell.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-row-group">
+       <span style="display: table-cell">Row 1, Col 1</span>
+       <span style="display: block">Row 1, Col 2</span>
+       <span style="display: table-cell">Row 1, Col 3</span>
+     </span>
+     <span style="display: table-row-group">
+       <span style="display: table-row">
+diff --git a/layout/reftests/table-anonymous-boxes/infer-table.html b/layout/reftests/table-anonymous-boxes/infer-table.html
+--- a/layout/reftests/table-anonymous-boxes/infer-table.html
++++ b/layout/reftests/table-anonymous-boxes/infer-table.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body style="font-family: monospace">
+     <span style="display: table-row"> 
+       <span style="display: table-cell">Row 1, Col 1</span>
+       <span style="display: table-cell">Row 1, Col 2</span>
+       <span style="display: table-cell">Row 1, Col 3</span>
+     </span>
+     <span style="display: table-row"> 
+       <span style="display: table-cell">Row 22, Col 1</span>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-1.html b/layout/reftests/table-anonymous-boxes/white-space-1.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-1.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var n = document.getElementById("t").nextSibling;
+         n.data = "Row 22, Col 1Row 22, Col 2Row 22, Col 3";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-10.html b/layout/reftests/table-anonymous-boxes/white-space-10.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-10.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-10.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t1");
+         t.parentNode.removeChild(t);
+         t = document.getElementById("t2");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-11.html b/layout/reftests/table-anonymous-boxes/white-space-11.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-11.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-11.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t1");
+         t.parentNode.removeChild(t);
+         t = document.getElementById("t2");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-12.html b/layout/reftests/table-anonymous-boxes/white-space-12.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-12.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-12.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body>
+     <span>
+       a
+       <span style="display: table-cell">b</span><span style="display: table-cell">c</span>
+       d
+     </span>
+   </body>
+ </html>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-13.html b/layout/reftests/table-anonymous-boxes/white-space-13.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-13.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-13.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body>
+     <span>
+       a
+       <span style="display: table-cell">b</span>
+       <span style="display: table-cell">c</span>
+       d
+     </span>
+   </body>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-14.html b/layout/reftests/table-anonymous-boxes/white-space-14.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-14.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-14.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+     <style>
+       #t:after { content: "d" }
+     </style>
+   </head>  
+   <body>
+     <span id="t">
+       a
+       <span style="display: table-cell">b</span><span style="display: table-cell">c</span>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-15.html b/layout/reftests/table-anonymous-boxes/white-space-15.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-15.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-15.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+     <style>
+       #t:after { content: "d" }
+     </style>
+   </head>  
+   <body>
+     <span id="t">
+       a
+       <span style="display: table-cell">b</span>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-16.html b/layout/reftests/table-anonymous-boxes/white-space-16.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-16.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-16.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+     <style>
+       #t:after { content: "d" }
+     </style>
+   </head>  
+   <body>
+     <span id="t">
+       a
+       <span style="display: table-cell">b</span><script>document.body.offsetWidth</script><span style="display: table-cell">c</span>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-17.html b/layout/reftests/table-anonymous-boxes/white-space-17.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-17.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-17.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+     <style>
+       #t:after { content: "d" }
+     </style>
+   </head>  
+   <body>
+     <span id="t">
+       a
+       <span style="display: table-cell">b</span>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-18.html b/layout/reftests/table-anonymous-boxes/white-space-18.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-18.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-18.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+     <style>
+       #t:before { content: "a" }
+     </style>
+   </head>  
+   <body>
+     <span id="t">
+       <span style="display: table-cell">b</span><span style="display: table-cell">c</span>
+       d
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-19.html b/layout/reftests/table-anonymous-boxes/white-space-19.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-19.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-19.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+     <style>
+       #t:before { content: "a" }
+     </style>
+   </head>  
+   <body>
+     <span id="t">
+       <span style="display: table-cell">b</span>
+       <span style="display: table-cell">c</span>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-2.html b/layout/reftests/table-anonymous-boxes/white-space-2.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-2.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-2.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         try {
+           document.normalize();
+         } catch (e) {}
+         var n = document.getElementById("t").nextSibling;
+         n.data = " ";
+         document.documentElement.className = "";
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-20.html b/layout/reftests/table-anonymous-boxes/white-space-20.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-20.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-20.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+     <style>
+       #t:before { content: "a" }
+     </style>
+   </head>  
+   <body>
+     <span id="t">
+       <span style="display: table-cell">b</span><script>document.body.offsetWidth</script><span style="display: table-cell">c</span>
+       d
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-21.html b/layout/reftests/table-anonymous-boxes/white-space-21.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-21.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-21.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <style>
+       #t:before { content: "a" }
+     </style>
+   </head>  
+   <body>
+     <span id="t">
+       <span style="display: table-cell">b</span>
+       <script>document.body.offsetWidth</script>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-22.html b/layout/reftests/table-anonymous-boxes/white-space-22.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-22.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-22.html
+@@ -1,6 +1,11 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body>
+     <span style="display:table-row; white-space: pre"><span style="display: table-cell">a</span> bc <span style="display: table-cell">d</span></span>
+   </body>
+ </html>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-23.html b/layout/reftests/table-anonymous-boxes/white-space-23.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-23.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-23.html
+@@ -1,6 +1,11 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body>
+     <span style="display:table-row; white-space: pre"><span style="display: table-cell">a</span> <span>bc</span> <span style="display: table-cell">d</span></span>
+   </body>
+ </html>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-24.html b/layout/reftests/table-anonymous-boxes/white-space-24.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-24.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-24.html
+@@ -1,6 +1,11 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body>
+     <span style="display:table-row; white-space: pre"><span style="display: table-cell">a</span> <script>document.body.offsetWidth</script>bc<script>document.body.offsetWidth</script> <span style="display: table-cell">d</span></span>
+   </body>
+ </html>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-25.html b/layout/reftests/table-anonymous-boxes/white-space-25.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-25.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-25.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         var parent = t.parentNode;
+         parent.insertBefore(document.createTextNode(" "), t);
+         parent.insertBefore(document.createTextNode("bc"), t);
+         parent.insertBefore(document.createTextNode(" "), t);
+         document.documentElement.className = "";
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-26.html b/layout/reftests/table-anonymous-boxes/white-space-26.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-26.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-26.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+     <style>
+       #t:after { display: table-cell; content: "d"; }
+     </style>
+   </head>
+   <body>
+     <span id="t">
+       a<script>document.body.offsetWidth;</script> <span style="display: table-cell; white-space: pre">bc </span></span>
+   </body>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-3.html b/layout/reftests/table-anonymous-boxes/white-space-3.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-3.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-3.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         try {
+           document.normalize();
+         } catch (e) {}
+         var n = document.getElementById("t").nextSibling;
+         n.data = " ";
+         document.documentElement.className = "";
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-4.html b/layout/reftests/table-anonymous-boxes/white-space-4.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-4.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-4.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var n = document.getElementById("t").nextSibling;
+         n.data = "Row 22, Col 1";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-5.html b/layout/reftests/table-anonymous-boxes/white-space-5.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-5.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-5.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var n = document.getElementById("t").nextSibling;
+         n.data = "Row 22, Col 2";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-6.html b/layout/reftests/table-anonymous-boxes/white-space-6.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-6.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-6.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var n = document.getElementById("t").nextSibling;
+         n.data = "Row 22, Col 3";
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-7.html b/layout/reftests/table-anonymous-boxes/white-space-7.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-7.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-7.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE HTML>
+ <html>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="" />
+   <body>
+     <span>
+       <span>a</span>
+       <span style="display: table-cell">b</span>
+       <span style="display: table-cell">c</span>
+       <span>d</span>
+     </span>
+   </body>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-8.html b/layout/reftests/table-anonymous-boxes/white-space-8.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-8.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-8.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-9.html b/layout/reftests/table-anonymous-boxes/white-space-9.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-9.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-9.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE HTML>
+ <html class="reftest-wait">
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <script>
+       function doTest() {
+         var t = document.getElementById("t");
+         t.parentNode.removeChild(t);
+         document.documentElement.className = "";
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/table-anonymous-boxes/white-space-pre-1.html b/layout/reftests/table-anonymous-boxes/white-space-pre-1.html
+--- a/layout/reftests/table-anonymous-boxes/white-space-pre-1.html
++++ b/layout/reftests/table-anonymous-boxes/white-space-pre-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <meta name="flags" content="dom" />
+     <style>
+       #x:after { content: " cd"; display: table-cell; }
+     </style>
+     <script>
+       function doTest() {
+         var f = document.getElementById("f");
+         f.parentNode.removeChild(f);
+       }

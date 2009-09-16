@@ -83,7 +83,7 @@ diff --git a/layout/reftests/first-line/reftest.list b/layout/reftests/first-lin
  # basic functionality
  == basic-1.html basic-ref.html
  
- # handling of out-of-flows when ::first-line happens
+ # handling of out-of-flows when :first-line happens
  == out-of-flow-1a.html out-of-flow-1-ref.html
  == out-of-flow-1b.html out-of-flow-1-ref.html
  == out-of-flow-1c.html out-of-flow-1-ref.html

@@ -273,7 +273,7 @@ diff --git a/layout/reftests/ib-split/reftest.list b/layout/reftests/ib-split/re
 diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
 --- a/layout/reftests/reftest.list
 +++ b/layout/reftests/reftest.list
-@@ -1,200 +1,10 @@
+@@ -1,200 +1,11 @@
 -# If you mark a test as failing or random, you MUST file a bug report in
 -# bugzilla and note the bug number as a comment on the line with the
 -# failing test.
@@ -430,7 +430,7 @@ diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
  include table-background/reftest.list
 -
 -# table-bordercollapse/
--include table-bordercollapse/reftest.list
+ include table-bordercollapse/reftest.list
 -
 -# table-dom/
 -include table-dom/reftest.list

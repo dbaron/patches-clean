@@ -325,16 +325,19 @@ diff --git a/layout/reftests/zip-list b/layout/reftests/zip-list
 new file mode 100644
 --- /dev/null
 +++ b/layout/reftests/zip-list
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,16 @@
 +css-charset/
 +first-letter/[a-z]*
-+first-line/{basic,out-of-flow,parent-style,reftest}*
++first-line/basic*
++first-line/out-of-flow*
++first-line/parent-style*
++first-line/reftest*
 +floats/[a-z]*
 +generated-content/
 +ib-split/
-+table-backgrounds/border*
-+table-backgrounds/repeatable-diagonal-gradient-with-ticks.png
-+table-backgrounds/reftest.list
++table-background/border*
++table-background/repeatable-diagonal-gradient-with-ticks.png
++table-background/reftest.list
 +text-indent/
 +text-transform/
 +z-index/reftest.list

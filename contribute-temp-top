@@ -331,7 +331,7 @@ new file mode 100644
 +first-line/{basic,out-of-flow,parent-style,reftest}*
 +floats/[a-z]*
 +generated-content/
-+ib-split/     except for insert-into-split-inline-5.html and *.xml
++ib-split/
 +table-backgrounds/border*
 +table-backgrounds/repeatable-diagonal-gradient-with-ticks.png
 +table-backgrounds/reftest.list

@@ -1,0 +1,327 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Add test suite metadata for text-indent.
+
+diff --git a/layout/reftests/text-indent/text-indent-intrinsic-min.html b/layout/reftests/text-indent/text-indent-intrinsic-min.html
+--- a/layout/reftests/text-indent/text-indent-intrinsic-min.html
++++ b/layout/reftests/text-indent/text-indent-intrinsic-min.html
+@@ -1,12 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
+-<title>Test for intrinsic widths and text-indent</title>
++<title>CSS 2.1 Test Suite: Test for intrinsic widths and text-indent</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ 
+ body { font-size: 12px; width: 1px; }
+ 
+ body > div, body > pre {
+ 	float: left; clear: left; margin: 1px; height: 2em;
+ 	border: medium solid;
+ }
+diff --git a/layout/reftests/text-indent/text-indent-intrinsic-pref.html b/layout/reftests/text-indent/text-indent-intrinsic-pref.html
+--- a/layout/reftests/text-indent/text-indent-intrinsic-pref.html
++++ b/layout/reftests/text-indent/text-indent-intrinsic-pref.html
+@@ -1,12 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
+-<title>Test for intrinsic widths and text-indent</title>
++<title>CSS 2.1 Test Suite: Test for intrinsic widths and text-indent</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ 
+ body { font-size: 12px; }
+ 
+ body > div, body > pre {
+ 	float: left; clear: left; margin: 1px; height: 2em;
+ 	border: medium solid;
+ }
+diff --git a/layout/reftests/text-indent/text-indent-multiple-line-notref-block-margin.html b/layout/reftests/text-indent/text-indent-multiple-line-notref-block-margin.html
+--- a/layout/reftests/text-indent/text-indent-multiple-line-notref-block-margin.html
++++ b/layout/reftests/text-indent/text-indent-multiple-line-notref-block-margin.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ p { margin-left: 100px }
+ span { background: yellow }
+ </style>
+ </head>
+ <body>
+ <p><span>This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.</span></p>
+ </body>
+diff --git a/layout/reftests/text-indent/text-indent-multiple-line-ref-float.html b/layout/reftests/text-indent/text-indent-multiple-line-ref-float.html
+--- a/layout/reftests/text-indent/text-indent-multiple-line-ref-float.html
++++ b/layout/reftests/text-indent/text-indent-multiple-line-ref-float.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ i { float: left; height: 0.3em; width: 100px; }
+ span { background: yellow }
+ </style>
+ </head>
+ <body>
+ <p><i></i><span>This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.</span></p>
+ </body>
+diff --git a/layout/reftests/text-indent/text-indent-multiple-line-ref-inline-margin.html b/layout/reftests/text-indent/text-indent-multiple-line-ref-inline-margin.html
+--- a/layout/reftests/text-indent/text-indent-multiple-line-ref-inline-margin.html
++++ b/layout/reftests/text-indent/text-indent-multiple-line-ref-inline-margin.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ span { background: yellow; margin-left: 100px }
+ </style>
+ </head>
+ <body>
+ <p><span>This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.</span></p>
+ </body>
+ </html>
+diff --git a/layout/reftests/text-indent/text-indent-multiple-line.html b/layout/reftests/text-indent/text-indent-multiple-line.html
+--- a/layout/reftests/text-indent/text-indent-multiple-line.html
++++ b/layout/reftests/text-indent/text-indent-multiple-line.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ p { text-indent: 100px }
+ span { background: yellow }
+ </style>
+ </head>
+ <body>
+ <p><span>This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.  This is a long piece of text that will wrap to multiple lines.</span></p>
+ </body>
+diff --git a/layout/reftests/text-indent/text-indent-negative-intrinsic-min.html b/layout/reftests/text-indent/text-indent-negative-intrinsic-min.html
+--- a/layout/reftests/text-indent/text-indent-negative-intrinsic-min.html
++++ b/layout/reftests/text-indent/text-indent-negative-intrinsic-min.html
+@@ -1,12 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
+-<title>Test for intrinsic widths and negative text-indent</title>
++<title>CSS 2.1 Test Suite: Test for intrinsic widths and negative text-indent</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ 
+ body { font-size: 12px; }
+ 
+ body > div, body > pre {
+ 	float: left; clear: left; margin: 1px; height: 2em;
+ 	border: medium solid;
+ }
+diff --git a/layout/reftests/text-indent/text-indent-negative-intrinsic-pref.html b/layout/reftests/text-indent/text-indent-negative-intrinsic-pref.html
+--- a/layout/reftests/text-indent/text-indent-negative-intrinsic-pref.html
++++ b/layout/reftests/text-indent/text-indent-negative-intrinsic-pref.html
+@@ -1,12 +1,16 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
+-<title>Test for intrinsic widths and negative text-indent</title>
++<title>CSS 2.1 Test Suite: Test for intrinsic widths and negative text-indent</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ 
+ body { font-size: 12px; }
+ 
+ body > div, body > pre {
+ 	float: left; clear: left; margin: 1px; height: 2em;
+ 	border: medium solid;
+ }
+diff --git a/layout/reftests/text-indent/text-indent-single-line-0.html b/layout/reftests/text-indent/text-indent-single-line-0.html
+--- a/layout/reftests/text-indent/text-indent-single-line-0.html
++++ b/layout/reftests/text-indent/text-indent-single-line-0.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ p { text-indent: 0px }
+ </style>
+ </head>
+ <body>
+ <p>text</p>
+ </body>
+ </html>
+diff --git a/layout/reftests/text-indent/text-indent-single-line-100.html b/layout/reftests/text-indent/text-indent-single-line-100.html
+--- a/layout/reftests/text-indent/text-indent-single-line-100.html
++++ b/layout/reftests/text-indent/text-indent-single-line-100.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ p { text-indent: 100px }
+ </style>
+ </head>
+ <body>
+ <p>text</p>
+ </body>
+ </html>
+diff --git a/layout/reftests/text-indent/text-indent-single-line-indent-inline-ref-block-margin.html b/layout/reftests/text-indent/text-indent-single-line-indent-inline-ref-block-margin.html
+--- a/layout/reftests/text-indent/text-indent-single-line-indent-inline-ref-block-margin.html
++++ b/layout/reftests/text-indent/text-indent-single-line-indent-inline-ref-block-margin.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ p { margin-left: 100px }
+ span { background: yellow }
+ </style>
+ </head>
+ <body>
+ <p><span>text</span></p>
+ </body>
+diff --git a/layout/reftests/text-indent/text-indent-single-line-indent-inline-ref-inline-margin.html b/layout/reftests/text-indent/text-indent-single-line-indent-inline-ref-inline-margin.html
+--- a/layout/reftests/text-indent/text-indent-single-line-indent-inline-ref-inline-margin.html
++++ b/layout/reftests/text-indent/text-indent-single-line-indent-inline-ref-inline-margin.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ span { background: yellow; margin-left: 100px }
+ </style>
+ </head>
+ <body>
+ <p><span>text</span></p>
+ </body>
+ </html>
+diff --git a/layout/reftests/text-indent/text-indent-single-line-indent-inline.html b/layout/reftests/text-indent/text-indent-single-line-indent-inline.html
+--- a/layout/reftests/text-indent/text-indent-single-line-indent-inline.html
++++ b/layout/reftests/text-indent/text-indent-single-line-indent-inline.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ p { text-indent: 100px }
+ span { background: yellow }
+ </style>
+ </head>
+ <body>
+ <p><span>text</span></p>
+ </body>
+diff --git a/layout/reftests/text-indent/text-indent-single-line-percent.html b/layout/reftests/text-indent/text-indent-single-line-percent.html
+--- a/layout/reftests/text-indent/text-indent-single-line-percent.html
++++ b/layout/reftests/text-indent/text-indent-single-line-percent.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ div { width: 500px; }
+ p { width: 300px; text-indent: 10%; }
+ </style>
+ </head>
+ <body>
+ <div>
+ <p>text</p>
+diff --git a/layout/reftests/text-indent/text-indent-single-line-ref-margin.html b/layout/reftests/text-indent/text-indent-single-line-ref-margin.html
+--- a/layout/reftests/text-indent/text-indent-single-line-ref-margin.html
++++ b/layout/reftests/text-indent/text-indent-single-line-ref-margin.html
+@@ -1,11 +1,15 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ p { margin-left: 100px }
+ </style>
+ </head>
+ <body>
+ <p>text</p>
+ </body>
+ </html>
+diff --git a/layout/reftests/text-indent/text-indent-single-line-ref-unstyled.html b/layout/reftests/text-indent/text-indent-single-line-ref-unstyled.html
+--- a/layout/reftests/text-indent/text-indent-single-line-ref-unstyled.html
++++ b/layout/reftests/text-indent/text-indent-single-line-ref-unstyled.html
+@@ -1,10 +1,14 @@
+ <!DOCTYPE html>
+ <head>
+-<title>text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
++<meta name="flags" content="" />
+ <style type="text/css">
+ </style>
+ </head>
+ <body>
+ <p>text</p>
+ </body>
+ </html>

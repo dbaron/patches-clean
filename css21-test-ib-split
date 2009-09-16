@@ -861,6 +861,26 @@ diff --git a/layout/reftests/ib-split/remove-from-split-inline-5.html b/layout/r
    </script>
    <style>
     body > span { border: 3px solid blue }
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-6.html b/layout/reftests/ib-split/remove-from-split-inline-6.html
+--- a/layout/reftests/ib-split/remove-from-split-inline-6.html
++++ b/layout/reftests/ib-split/remove-from-split-inline-6.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <script>
+    function doit() {
+      var target = document.getElementById("target");
+      target.parentNode.removeChild(target);
+    }
+   </script>
+   <style>
+    body > span { border: 3px solid blue }
 diff --git a/layout/reftests/ib-split/remove-split-inline-1.html b/layout/reftests/ib-split/remove-split-inline-1.html
 --- a/layout/reftests/ib-split/remove-split-inline-1.html
 +++ b/layout/reftests/ib-split/remove-split-inline-1.html

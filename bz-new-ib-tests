@@ -1,0 +1,721 @@
+From: Boris Zbarsky <bzbarsky@mit.edu>
+
+New tests from bug 501847, patch 4.
+
+diff --git a/layout/reftests/ib-split/float-inside-inline-between-blocks-1-ref.html b/layout/reftests/ib-split/float-inside-inline-between-blocks-1-ref.html
+--- a/layout/reftests/ib-split/float-inside-inline-between-blocks-1-ref.html
++++ b/layout/reftests/ib-split/float-inside-inline-between-blocks-1-ref.html
+@@ -1,14 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+   <body>
+     <div style="position: relative; left: 100px">
+-      <div>
+-        aaa
+-      </div>
++      aaa
++    </div>
++    <span  style="position: relative; left: 100px">
+       <span style="float: left">bbb</span>
+-      <div>
+-        aaa
+-      </div>
++    </span>
++    <div style="position: relative; left: 100px">
++      aaa
+     </div>
+   </body>
+ </html> 
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-1-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-1-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-1-noib-ref.html
+@@ -0,0 +1,27 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++   <span class="notend">
++     <span>One</span><span>Two</span><span>Three</span>
++   </span>
++   <div>Four</div>
++   <span class="notstart notend"></span>
++   <div>Five</div>
++   <span class="notstart notend">
++     <span>Six</span>
++   </span>
++   <div>Seven</div>
++   <span class="notstart notend"></span>
++   <div>Eight</div>
++   <span class="notstart">
++     <span>Nine</span><span>Ten</span><span>Eleven</span>
++   </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-10-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-10-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-10-noib-ref.html
+@@ -0,0 +1,34 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   body > span > span { border: 3px solid cyan }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++  <span class="notend">
++    <span class="notend">
++      <span>One</span><span>Two</span><span>Three</span>
++    </span>
++  </span>
++  <div>Four</div>
++  <span class="notstart notend"><span class="notstart notend"></span></span>
++  <div>Five</div>
++  <span class="notstart notend">
++    <span class="notstart notend">
++      <span>Six</span>
++    </span>
++  </span>
++  <div>Seven</div>
++  <span class="notstart notend"><span class="notstart notend"></span></span>
++  <div>Eight</div>
++  <span class="notstart">
++    <span class="notstart">
++      <span>Nine</span><span>Ten</span>
++    </span>
++  </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-11-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-11-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-11-noib-ref.html
+@@ -0,0 +1,36 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   body > span > span { border: 3px solid cyan }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++  <span class="notend">
++    <span class="notend">
++      <span>One</span><span>Two</span><span>Three</span>
++    </span>
++  </span>
++  <div>Four</div>
++  <span class="notstart notend"><span class="notstart notend"></span></span>
++  <div>Five</div>
++  <span class="notstart notend">
++    <span class="notstart notend">
++      <span>Six</span>
++    </span>
++  </span>
++  <div>Seven</div>
++  <span class="notstart notend"><span class="notstart notend"></span></span>
++  <div>Eight</div>
++  <span class="notstart notend">
++    <span class="notstart">
++      <span>Nine</span>
++    </span>
++  </span>
++  <div>Ten</div>
++  <span class="notstart"></span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-12-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-12-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-12-noib-ref.html
+@@ -0,0 +1,10 @@
++<!DOCTYPE html>
++<html>
++  <body>
++    <div style="display: inline; border: 2px solid; border-right: none">One</div>
++    <div>Two</div>
++    <div style="display: inline; border: 2px; border-style: solid none"></div>
++    <div>Three</div>
++    <div style="display: inline; border: 2px solid; border-left: none"></div>
++  </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-13-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-13-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-13-noib-ref.html
+@@ -0,0 +1,8 @@
++<!DOCTYPE html>
++<html>
++  <body>
++    <div style="display: inline; border: 2px solid; border-right: none"></div>
++    <div>One</div>
++    <div style="display: inline; border: 2px solid; border-left: none">TwoThree</div>
++  </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-14-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-14-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-14-noib-ref.html
+@@ -0,0 +1,8 @@
++<!DOCTYPE html>
++<html>
++  <body>
++    <div style="display: inline; border: 2px solid; border-right: none"></div>
++    <div>One</div>
++    <div style="display: inline; border: 2px solid; border-left: none">Two</div>
++  </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-15-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-15-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-15-noib-ref.html
+@@ -0,0 +1,10 @@
++<!DOCTYPE html>
++<html>
++  <body>
++    <div style="display: inline; border: 2px solid; border-right:none"></div>
++    <div>One</div>
++    <div style="display: inline; border: 2px solid; border-right:none; border-left: none">Two</div>
++    <div>Three</div>
++    <div style="display: inline; border: 2px solid; border-left: none"></div>
++  </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-16-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-16-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-16-noib-ref.html
+@@ -0,0 +1,8 @@
++<!DOCTYPE html>
++<html>
++  <body>
++    <div style="display: inline; border: 2px solid; border-right: none">One</div>
++    <div>Two</div>
++    <div style="display: inline; border: 2px solid; border-left: none"></div>
++  </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-2-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-2-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-2-noib-ref.html
+@@ -0,0 +1,25 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++  <span class="notend">
++    <span>One</span><span>Two</span><span>Three</span>
++  </span>
++  <div>Four</div>
++  <span class="notstart notend"></span>
++  <div>Five</div>
++  <span class="notstart notend">
++    <span>Six</span>
++  </span>
++  <div>Seven</div>
++  <span class="notstart notend"></span>
++  <div>Eight</div>
++  <span class="notstart"></span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-3-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-3-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-3-noib-ref.html
+@@ -0,0 +1,27 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++  <span class="notend">
++    <span>One</span><span>Two</span><span>Three</span>
++  </span>
++  <div>Four</div>
++  <span class="notstart notend"></span>
++  <div>Five</div>
++  <span class="notstart notend">
++    <span>Six</span>
++  </span>
++  <div>Seven</div>
++  <span class="notstart notend"></span>
++  <div>Eight</div>
++  <span class="notstart">
++    <span>Nine</span>
++  </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-4-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-4-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-4-noib-ref.html
+@@ -0,0 +1,27 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++  <span class="notend">
++    <span>One</span><span>Two</span><span>Three</span>
++  </span>
++  <div>Four</div>
++  <span class="notstart notend"></span>
++  <div>Five</div>
++  <span class="notstart notend">
++    <span>Six</span>
++  </span>
++  <div>Seven</div>
++  <span class="notstart notend"></span>
++  <div>Eight</div>
++  <span class="notstart">
++    <span>Nine</span><span>Ten</span>
++  </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-5-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-5-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-5-noib-ref.html
+@@ -0,0 +1,27 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++  <span class="notend">
++    <span>One</span><span>Two</span><span>Three</span>
++  </span>
++  <div>Four</div>
++  <span class="notstart notend"></span>
++  <div>Five</div>
++  <span class="notstart notend">
++    <span>Six</span>
++  </span>
++  <div>Seven</div>
++  <span class="notstart notend"></span>
++  <div>Eight</div>
++  <span class="notstart">
++    <span>Nine</span>
++  </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-6-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-6-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-6-noib-ref.html
+@@ -0,0 +1,17 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++   <span class="notend"></span>
++   <div>One</div>
++   <span class="notstart notend"></span>
++   <div>Two</div>
++   <span class="notstart"></span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-7-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-7-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-7-noib-ref.html
+@@ -0,0 +1,17 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++   <span class="notend"></span>
++   <div>One</div>
++   <span class="notstart">
++     <span>Two</span>
++   </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-7-ref.html b/layout/reftests/ib-split/insert-into-split-inline-7-ref.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-7-ref.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-7-ref.html
+@@ -3,12 +3,12 @@
+  <head>
+   <style>
+    body > span { border: 3px solid blue }
+   </style>
+  </head>
+  <body>
+    <span
+    ><div>One</div
+-   ><span>Two</div
++   ><span>Two</span
+   ></span>
+  </body>
+ </html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-7.html b/layout/reftests/ib-split/insert-into-split-inline-7.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-7.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-7.html
+@@ -10,12 +10,12 @@
+    }
+   </script>
+   <style>
+    body > span { border: 3px solid blue }
+   </style>
+  </head>
+  <body onload='doit()'>
+   <span id="target"
+-  ><span id="insertion">Two</div
++  ><span id="insertion">Two</span
+  ></span>
+  </body>
+ </html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-8-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-8-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-8-noib-ref.html
+@@ -0,0 +1,23 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++  <span class="notend">
++    <span>One</span>
++  </span>
++  <div>Two</div>
++  <span class="notstart notend">
++    <span>Three</span>
++  </span>
++  <div>Four</div>
++  <span class="notstart">
++    <span>Five</span>
++  </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-9-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-9-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/insert-into-split-inline-9-noib-ref.html
+@@ -0,0 +1,34 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   body > span > span { border: 3px solid cyan }
++   .notstart { border-left: none; }
++   .notend { border-right: none; }
++  </style>
++ </head>
++ <body>
++  <span class="notend">
++    <span class="notend">
++      <span>One</span><span>Two</span><span>Three</span>
++    </span>
++  </span>
++  <div>Four</div>
++  <span class="notstart notend"><span class="notstart notend"></span></span>
++  <div>Five</div>
++  <span class="notstart notend">
++    <span class="notstart notend">
++      <span>Six</span>
++    </span>
++  </span>
++  <div>Seven</div>
++  <span class="notstart notend"><span class="notstart notend"></span></span>
++  <div>Eight</div>
++  <span class="notstart">
++    <span class="notstart">
++      <span>Nine</span>
++    </span>
++  </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/reftest.list b/layout/reftests/ib-split/reftest.list
+--- a/layout/reftests/ib-split/reftest.list
++++ b/layout/reftests/ib-split/reftest.list
+@@ -1,47 +1,69 @@
+ == remove-split-inline-1.html remove-split-inline-1-ref.html
+ == remove-from-split-inline-1.html remove-from-split-inline-1-ref.html
++== remove-from-split-inline-1-ref.html remove-from-split-inline-1-noib-ref.html
+ == remove-from-split-inline-2.html remove-from-split-inline-2-ref.html
+ == remove-from-split-inline-3.html remove-from-split-inline-3-ref.html
++== remove-from-split-inline-3-ref.html remove-from-split-inline-3-noib-ref.html
+ == remove-from-split-inline-4.html remove-from-split-inline-4-ref.html
++== remove-from-split-inline-4-ref.html remove-from-split-inline-4-noib-ref.html
+ == remove-from-split-inline-5.html remove-from-split-inline-5-ref.html
++== remove-from-split-inline-5-ref.html remove-from-split-inline-5-noib-ref.html
++== remove-from-split-inline-6.html remove-from-split-inline-6-ref.html
++== remove-from-split-inline-6-ref.html remove-from-split-inline-6-noib-ref.html
+ == insert-into-split-inline-1a.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1b.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1c.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1d.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1e.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1f.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1g.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1h.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1i.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1j.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1k.html insert-into-split-inline-1-ref.html
+ == insert-into-split-inline-1l.html insert-into-split-inline-1-ref.html
++== insert-into-split-inline-1-ref.html insert-into-split-inline-1-noib-ref.html
+ == insert-into-split-inline-2a.html insert-into-split-inline-2-ref.html
+ == insert-into-split-inline-2b.html insert-into-split-inline-2-ref.html
+ == insert-into-split-inline-2c.html insert-into-split-inline-2-ref.html
+ == insert-into-split-inline-2d.html insert-into-split-inline-2-ref.html
+ == insert-into-split-inline-2e.html insert-into-split-inline-2-ref.html
+ == insert-into-split-inline-2f.html insert-into-split-inline-2-ref.html
+ == insert-into-split-inline-2g.html insert-into-split-inline-2-ref.html
+ == insert-into-split-inline-2h.html insert-into-split-inline-2-ref.html
+ == insert-into-split-inline-2i.html insert-into-split-inline-2-ref.html
++== insert-into-split-inline-2-ref.html insert-into-split-inline-2-noib-ref.html
+ == insert-into-split-inline-3.html insert-into-split-inline-3-ref.html
++== insert-into-split-inline-3-ref.html insert-into-split-inline-3-noib-ref.html
+ == insert-into-split-inline-4.html insert-into-split-inline-4-ref.html
++== insert-into-split-inline-4-ref.html insert-into-split-inline-4-noib-ref.html
+ == insert-into-split-inline-5.html insert-into-split-inline-5-ref.html
++== insert-into-split-inline-5-ref.html insert-into-split-inline-5-noib-ref.html
+ == insert-into-split-inline-6.html insert-into-split-inline-6-ref.html
++== insert-into-split-inline-6-ref.html insert-into-split-inline-6-noib-ref.html
+ == insert-into-split-inline-7.html insert-into-split-inline-7-ref.html
++== insert-into-split-inline-7-ref.html insert-into-split-inline-7-noib-ref.html
+ == insert-into-split-inline-8a.html insert-into-split-inline-8-ref.html
+ == insert-into-split-inline-8b.html insert-into-split-inline-8-ref.html
+ == insert-into-split-inline-8c.html insert-into-split-inline-8-ref.html
++== insert-into-split-inline-8-ref.html insert-into-split-inline-8-noib-ref.html
+ == insert-into-split-inline-9.html insert-into-split-inline-9-ref.html
++== insert-into-split-inline-9-ref.html insert-into-split-inline-9-noib-ref.html
+ == insert-into-split-inline-10.html insert-into-split-inline-10-ref.html
++== insert-into-split-inline-10-ref.html insert-into-split-inline-10-noib-ref.html
+ == insert-into-split-inline-11.html insert-into-split-inline-11-ref.html
++== insert-into-split-inline-11-ref.html insert-into-split-inline-11-noib-ref.html
+ == insert-into-split-inline-12.html insert-into-split-inline-12-ref.html
++== insert-into-split-inline-12-ref.html insert-into-split-inline-12-noib-ref.html
+ == insert-into-split-inline-13.html insert-into-split-inline-13-ref.html
++== insert-into-split-inline-13-ref.html insert-into-split-inline-13-noib-ref.html
+ == insert-into-split-inline-14.html insert-into-split-inline-14-ref.html
++== insert-into-split-inline-14-ref.html insert-into-split-inline-14-noib-ref.html
+ == insert-into-split-inline-15.html insert-into-split-inline-15-ref.html
++== insert-into-split-inline-15-ref.html insert-into-split-inline-15-noib-ref.html
+ == insert-into-split-inline-16a.html insert-into-split-inline-16-ref.html
+ == insert-into-split-inline-16b.html insert-into-split-inline-16-ref.html
++== insert-into-split-inline-16-ref.html insert-into-split-inline-16-noib-ref.html
+ == float-inside-inline-between-blocks-1.html float-inside-inline-between-blocks-1-ref.html
+ == table-pseudo-in-part3-1.html table-pseudo-in-part3-1-ref.html
+ == split-inner-inline-1.html split-inner-inline-1-ref.html
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-1-noib-ref.html b/layout/reftests/ib-split/remove-from-split-inline-1-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/remove-from-split-inline-1-noib-ref.html
+@@ -0,0 +1,17 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   #start { border-right: none; }
++   #two { border-left: none; }
++  </style>
++ </head>
++ <body>
++   <span id="start"></span>
++   <div>One</div>
++   <span id="two">
++    Two
++   </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-3-noib-ref.html b/layout/reftests/ib-split/remove-from-split-inline-3-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/remove-from-split-inline-3-noib-ref.html
+@@ -0,0 +1,17 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   #one { border-right: none; }
++   #tail { border-left: none; }
++  </style>
++ </head>
++ <body>
++   <span id="one">
++    One
++   </span>
++   <div>Two</div>
++   <span id="tail"></span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-4-noib-ref.html b/layout/reftests/ib-split/remove-from-split-inline-4-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/remove-from-split-inline-4-noib-ref.html
+@@ -0,0 +1,20 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   #one { border-right: none; }
++   #four { border-left: none; }
++  </style>
++ </head>
++ <body>
++   <span id="one">
++     One
++     Two
++   </span>
++   <div>Three</div>
++   <span id="four">
++     Four
++   </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-5-noib-ref.html b/layout/reftests/ib-split/remove-from-split-inline-5-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/remove-from-split-inline-5-noib-ref.html
+@@ -0,0 +1,20 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   #one { border-right: none; }
++   #three { border-left: none; }
++  </style>
++ </head>
++ <body>
++   <span id="one">
++     One
++   </span>
++   <div>Two</div>
++   <span id="three">
++     Three
++     Four
++   </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-6-noib-ref.html b/layout/reftests/ib-split/remove-from-split-inline-6-noib-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/remove-from-split-inline-6-noib-ref.html
+@@ -0,0 +1,20 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++   #one { border-right: none; }
++   #four { border-left: none; }
++  </style>
++ </head>
++ <body>
++   <span id="one">
++     One
++   </span>
++   <div>Two</div>
++   <div>Three</div>
++   <span id="four">
++     Four
++   </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-6-ref.html b/layout/reftests/ib-split/remove-from-split-inline-6-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/remove-from-split-inline-6-ref.html
+@@ -0,0 +1,16 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <style>
++   body > span { border: 3px solid blue }
++  </style>
++ </head>
++ <body>
++   <span>
++     One
++     <div>Two</div>
++     <div>Three</div>
++     Four
++   </span>
++ </body>
++</html>
+diff --git a/layout/reftests/ib-split/remove-from-split-inline-6.html b/layout/reftests/ib-split/remove-from-split-inline-6.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/ib-split/remove-from-split-inline-6.html
+@@ -0,0 +1,23 @@
++<!DOCTYPE html>
++<html>
++ <head>
++  <script>
++   function doit() {
++     var target = document.getElementById("target");
++     target.parentNode.removeChild(target);
++   }
++  </script>
++  <style>
++   body > span { border: 3px solid blue }
++  </style>
++ </head>
++ <body onload='doit()'>
++   <span>
++     One
++     <div>Two</div>
++     <span id="target">Five</span>
++     <div>Three</div>
++     Four
++   </span>
++ </body>
++</html>

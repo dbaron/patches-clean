@@ -141,6 +141,38 @@ diff --git a/layout/reftests/floats/reftest.list b/layout/reftests/floats/reftes
 -== 345369-5.html 345369-5-ref.html
 -== 429974-1.html 429974-1-ref.html
 +== zero-height-float.html zero-height-float-ref.html
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-5-noib-ref.html b/layout/reftests/ib-split/insert-into-split-inline-5-noib-ref.html
+deleted file mode 100644
+--- a/layout/reftests/ib-split/insert-into-split-inline-5-noib-ref.html
++++ /dev/null
+@@ -1,27 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+- <head>
+-  <style>
+-   body > span { border: 3px solid blue }
+-   .notstart { border-left: none; }
+-   .notend { border-right: none; }
+-  </style>
+- </head>
+- <body>
+-  <span class="notend">
+-    <span>One</span><span>Two</span><span>Three</span>
+-  </span>
+-  <div>Four</div>
+-  <span class="notstart notend"></span>
+-  <div>Five</div>
+-  <span class="notstart notend">
+-    <span>Six</span>
+-  </span>
+-  <div>Seven</div>
+-  <span class="notstart notend"></span>
+-  <div>Eight</div>
+-  <span class="notstart">
+-    <span>Nine</span>
+-  </span>
+- </body>
+-</html>
 diff --git a/layout/reftests/ib-split/insert-into-split-inline-5-ref.html b/layout/reftests/ib-split/insert-into-split-inline-5-ref.html
 deleted file mode 100644
 --- a/layout/reftests/ib-split/insert-into-split-inline-5-ref.html
@@ -219,24 +251,25 @@ deleted file mode 100644
 diff --git a/layout/reftests/ib-split/reftest.list b/layout/reftests/ib-split/reftest.list
 --- a/layout/reftests/ib-split/reftest.list
 +++ b/layout/reftests/ib-split/reftest.list
-@@ -22,17 +22,16 @@
- == insert-into-split-inline-2d.html insert-into-split-inline-2-ref.html
- == insert-into-split-inline-2e.html insert-into-split-inline-2-ref.html
- == insert-into-split-inline-2f.html insert-into-split-inline-2-ref.html
+@@ -32,18 +32,16 @@
  == insert-into-split-inline-2g.html insert-into-split-inline-2-ref.html
  == insert-into-split-inline-2h.html insert-into-split-inline-2-ref.html
  == insert-into-split-inline-2i.html insert-into-split-inline-2-ref.html
+ == insert-into-split-inline-2-ref.html insert-into-split-inline-2-noib-ref.html
  == insert-into-split-inline-3.html insert-into-split-inline-3-ref.html
+ == insert-into-split-inline-3-ref.html insert-into-split-inline-3-noib-ref.html
  == insert-into-split-inline-4.html insert-into-split-inline-4-ref.html
+ == insert-into-split-inline-4-ref.html insert-into-split-inline-4-noib-ref.html
 -== insert-into-split-inline-5.html insert-into-split-inline-5-ref.html
+-== insert-into-split-inline-5-ref.html insert-into-split-inline-5-noib-ref.html
  == insert-into-split-inline-6.html insert-into-split-inline-6-ref.html
+ == insert-into-split-inline-6-ref.html insert-into-split-inline-6-noib-ref.html
  == insert-into-split-inline-7.html insert-into-split-inline-7-ref.html
+ == insert-into-split-inline-7-ref.html insert-into-split-inline-7-noib-ref.html
  == insert-into-split-inline-8a.html insert-into-split-inline-8-ref.html
  == insert-into-split-inline-8b.html insert-into-split-inline-8-ref.html
  == insert-into-split-inline-8c.html insert-into-split-inline-8-ref.html
- == insert-into-split-inline-9.html insert-into-split-inline-9-ref.html
- == insert-into-split-inline-10.html insert-into-split-inline-10-ref.html
- == insert-into-split-inline-11.html insert-into-split-inline-11-ref.html
+ == insert-into-split-inline-8-ref.html insert-into-split-inline-8-noib-ref.html
 diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
 --- a/layout/reftests/reftest.list
 +++ b/layout/reftests/reftest.list

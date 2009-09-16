@@ -1,0 +1,1031 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+TEMPORARY patch to use CSS2 pseudo-element syntax.
+
+diff --git a/layout/reftests/first-letter/basic-2.html b/layout/reftests/first-letter/basic-2.html
+--- a/layout/reftests/first-letter/basic-2.html
++++ b/layout/reftests/first-letter/basic-2.html
+@@ -3,15 +3,15 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div>This is text</div>
+ </body>
+ </html>
+diff --git a/layout/reftests/first-letter/dynamic-3a.html b/layout/reftests/first-letter/dynamic-3a.html
+--- a/layout/reftests/first-letter/dynamic-3a.html
++++ b/layout/reftests/first-letter/dynamic-3a.html
+@@ -2,17 +2,17 @@
+ <html>
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="dom" />
+   <style>
+-    div#x::first-letter { color: blue; float: left; }
++    div#x:first-letter { color: blue; float: left; }
+   </style>
+ </head>
+ <body>
+ <div id="x">Need at least two letters here</div>
+ <script>
+   document.body.offsetWidth;
+   var div = document.getElementById("x");
+   div.id = "y";
+diff --git a/layout/reftests/first-letter/dynamic-3b.html b/layout/reftests/first-letter/dynamic-3b.html
+--- a/layout/reftests/first-letter/dynamic-3b.html
++++ b/layout/reftests/first-letter/dynamic-3b.html
+@@ -2,17 +2,17 @@
+ <html>
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="dom" />
+   <style>
+-    div#x::first-letter { color: blue; float: none }
++    div#x:first-letter { color: blue; float: none }
+   </style>
+ </head>
+ <body>
+ <div id="x">x</div>
+ <script>
+   document.body.offsetWidth;
+   var div = document.getElementById("x");
+   div.id = "y";
+diff --git a/layout/reftests/first-letter/nested-1a.html b/layout/reftests/first-letter/nested-1a.html
+--- a/layout/reftests/first-letter/nested-1a.html
++++ b/layout/reftests/first-letter/nested-1a.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div>
+     <span>
+       This is text
+     </span>
+   </div>
+diff --git a/layout/reftests/first-letter/nested-1b.html b/layout/reftests/first-letter/nested-1b.html
+--- a/layout/reftests/first-letter/nested-1b.html
++++ b/layout/reftests/first-letter/nested-1b.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="dom" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div>This is more text
+     <span>
+       This is text
+     </span>
+   </div>
+diff --git a/layout/reftests/first-letter/nested-1c.html b/layout/reftests/first-letter/nested-1c.html
+--- a/layout/reftests/first-letter/nested-1c.html
++++ b/layout/reftests/first-letter/nested-1c.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="dom" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div>
+     <span>
+       
+     </span>
+   </div>
+diff --git a/layout/reftests/first-letter/nested-1d.html b/layout/reftests/first-letter/nested-1d.html
+--- a/layout/reftests/first-letter/nested-1d.html
++++ b/layout/reftests/first-letter/nested-1d.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="dom" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div>
+     <span>
+       
+     </span>
+   </div>
+diff --git a/layout/reftests/first-letter/nested-1e.html b/layout/reftests/first-letter/nested-1e.html
+--- a/layout/reftests/first-letter/nested-1e.html
++++ b/layout/reftests/first-letter/nested-1e.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="dom" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div>
+     <span></span>
+   </div>
+   <script>
+     document.body.offsetWidth;
+diff --git a/layout/reftests/first-letter/nested-1f.html b/layout/reftests/first-letter/nested-1f.html
+--- a/layout/reftests/first-letter/nested-1f.html
++++ b/layout/reftests/first-letter/nested-1f.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: @charset</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
+   <meta name="flags" content="" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div>
+     <span>  </span>
+     <span>
+       This is text
+     </span>
+diff --git a/layout/reftests/first-letter/nested-1g.html b/layout/reftests/first-letter/nested-1g.html
+--- a/layout/reftests/first-letter/nested-1g.html
++++ b/layout/reftests/first-letter/nested-1g.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div>
+     <span>T</span>his is text
+   </div>
+ </body>
+ </html>
+diff --git a/layout/reftests/first-letter/parent-style-1-ref.html b/layout/reftests/first-letter/parent-style-1-ref.html
+--- a/layout/reftests/first-letter/parent-style-1-ref.html
++++ b/layout/reftests/first-letter/parent-style-1-ref.html
+@@ -1,11 +1,11 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+ <style>
+ div { float: left; overflow: scroll; font-size: 50px; width: 3em; line-height: 10px }
+-div::first-letter { float: left; }
++div:first-letter { float: left; }
+ </style>
+ <body>
+ <div>T<span style="font-size: 10px">his is text in a div.  Text in a div.  Text in a div.  Text in a div.  Text in a div.  Text in a div.  Text in a div.  Text in a div.</div>
+ </body>
+ </html>
+diff --git a/layout/reftests/first-letter/parent-style-1.html b/layout/reftests/first-letter/parent-style-1.html
+--- a/layout/reftests/first-letter/parent-style-1.html
++++ b/layout/reftests/first-letter/parent-style-1.html
+@@ -3,14 +3,14 @@
+ <head>
+ <title>CSS 2.1 Test Suite: :first-letter</title>
+ <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+ <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+ <meta name="flags" content="" />
+ <style>
+ div { float: left; overflow: scroll; font-size: 50px; width: 3em; line-height: 10px }
+-div::first-letter { float: inherit; }
++div:first-letter { float: inherit; }
+ </style>
+ <body>
+ <div>T<span style="font-size: 10px">his is text in a div.  Text in a div.  Text in a div.  Text in a div.  Text in a div.  Text in a div.  Text in a div.  Text in a div.</div>
+ </body>
+ </html>
+diff --git a/layout/reftests/first-letter/quote-1a.html b/layout/reftests/first-letter/quote-1a.html
+--- a/layout/reftests/first-letter/quote-1a.html
++++ b/layout/reftests/first-letter/quote-1a.html
+@@ -3,15 +3,15 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div>"This is text"</div>
+ </body>
+ </html>
+diff --git a/layout/reftests/first-letter/quote-1b.html b/layout/reftests/first-letter/quote-1b.html
+--- a/layout/reftests/first-letter/quote-1b.html
++++ b/layout/reftests/first-letter/quote-1b.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   span:before { content: open-quote; }
+   span:after { content: close-quote; }
+   span { quotes: '"' '"'; }
+   </style>
+ </head>
+ <body>
+   <div><span>This is text</span></div>
+ </body>
+diff --git a/layout/reftests/first-letter/quote-1c.html b/layout/reftests/first-letter/quote-1c.html
+--- a/layout/reftests/first-letter/quote-1c.html
++++ b/layout/reftests/first-letter/quote-1c.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   span:before { content: open-quote "This "; }
+   span:after { content: close-quote; }
+   span { quotes: '"' '"'; }
+   </style>
+ </head>
+ <body>
+   <div><span>is text</span></div>
+ </body>
+diff --git a/layout/reftests/first-letter/quote-1d.html b/layout/reftests/first-letter/quote-1d.html
+--- a/layout/reftests/first-letter/quote-1d.html
++++ b/layout/reftests/first-letter/quote-1d.html
+@@ -3,17 +3,17 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="dom" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div><span></span></div>
+   <script>
+     document.body.offsetWidth;
+     document.getElementsByTagName("span")[0].
+       appendChild(document.createTextNode('"'));
+diff --git a/layout/reftests/first-letter/quote-1e.html b/layout/reftests/first-letter/quote-1e.html
+--- a/layout/reftests/first-letter/quote-1e.html
++++ b/layout/reftests/first-letter/quote-1e.html
+@@ -3,15 +3,15 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   </style>
+ </head>
+ <body>
+   <div><a>"<span>This is text</span>"</a></div>
+ </body>
+ </html>
+diff --git a/layout/reftests/first-letter/quote-1f.html b/layout/reftests/first-letter/quote-1f.html
+--- a/layout/reftests/first-letter/quote-1f.html
++++ b/layout/reftests/first-letter/quote-1f.html
+@@ -3,16 +3,16 @@
+ <head>
+   <title>CSS 2.1 Test Suite: :first-letter</title>
+   <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
+   <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+   <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
+   <meta name="flags" content="" />
+   <style>
+   div { color: black; }
+-  div::first-letter { color: green; }
++  div:first-letter { color: green; }
+   span:before { content: "\"This "; }
+   </style>
+ </head>
+ <body>
+   <div><span>is text"</span></div>
+ </body>
+ </html>
+diff --git a/layout/reftests/first-line/basic-1.html b/layout/reftests/first-line/basic-1.html
+--- a/layout/reftests/first-line/basic-1.html
++++ b/layout/reftests/first-line/basic-1.html
+@@ -3,15 +3,15 @@
+   <head>
+     <title>CSS 2.1 Test Suite: :first-line</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
+     <meta name="flags" content="" />
+     <style>
+       body { color: red }
+-      body::first-line { color: green; }
++      body:first-line { color: green; }
+     </style>
+   </head>
+   <body>
+     This should be green
+   </body>
+ </html>
+diff --git a/layout/reftests/first-line/out-of-flow-1a.html b/layout/reftests/first-line/out-of-flow-1a.html
+--- a/layout/reftests/first-line/out-of-flow-1a.html
++++ b/layout/reftests/first-line/out-of-flow-1a.html
+@@ -3,16 +3,16 @@
+   <head>
+     <title>CSS 2.1 Test Suite: :first-line</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
+     <meta name="flags" content="" />
+     <style>
+       div { color: green }
+-      div::first-line { color: red }
++      div:first-line { color: red }
+     </style>
+   </head>
+   <body>
+     <div><span style="float: left">This should be green</span></div>
+   </body>
+ </html>
+ 
+diff --git a/layout/reftests/first-line/out-of-flow-1b.html b/layout/reftests/first-line/out-of-flow-1b.html
+--- a/layout/reftests/first-line/out-of-flow-1b.html
++++ b/layout/reftests/first-line/out-of-flow-1b.html
+@@ -3,15 +3,15 @@
+   <head>
+     <title>CSS 2.1 Test Suite: :first-line</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
+     <meta name="flags" content="" />
+     <style>
+       div { color: red }
+-      div::first-line { color: green }
++      div:first-line { color: green }
+     </style>
+   </head>
+   <body>
+     <div><span><span style="float: left">This should be green</span></span></div>
+   </body>
+ </html>
+diff --git a/layout/reftests/first-line/out-of-flow-1c.html b/layout/reftests/first-line/out-of-flow-1c.html
+--- a/layout/reftests/first-line/out-of-flow-1c.html
++++ b/layout/reftests/first-line/out-of-flow-1c.html
+@@ -3,17 +3,17 @@
+   <head>
+     <title>CSS 2.1 Test Suite: :first-line</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
+     <meta name="flags" content="dom" />
+     <style>
+       div { color: green }
+-      div::first-line { color: red }
++      div:first-line { color: red }
+     </style>
+   </head>
+   <body onload="document.getElementById('test').className = ''">
+     <div>
+       <span class="some value" style="float: left">
+         This should be green
+       </span>
+     </div>
+diff --git a/layout/reftests/first-line/out-of-flow-1d.html b/layout/reftests/first-line/out-of-flow-1d.html
+--- a/layout/reftests/first-line/out-of-flow-1d.html
++++ b/layout/reftests/first-line/out-of-flow-1d.html
+@@ -3,17 +3,17 @@
+   <head>
+     <title>CSS 2.1 Test Suite: :first-line</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
+     <meta name="flags" content="dom" />
+     <style>
+       div { color: green }
+-      div::first-line { color: red }
++      div:first-line { color: red }
+     </style>
+     <script>
+       function runTest() {
+         var s = document.createElement("span");
+         s.setAttribute("style", "float: left");
+         s.appendChild(document.createTextNode("This should be green"));
+         var i = document.getElementById("i");
+         i.parentNode.insertBefore(s, i);
+diff --git a/layout/reftests/first-line/parent-style-2.html b/layout/reftests/first-line/parent-style-2.html
+--- a/layout/reftests/first-line/parent-style-2.html
++++ b/layout/reftests/first-line/parent-style-2.html
+@@ -3,16 +3,16 @@
+   <head>
+     <title>CSS 2.1 Test Suite: :first-line</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
+     <meta name="flags" content="" />
+     <style>
+       div { background: green; }
+-      div::first-line { background-color: red; }
++      div:first-line { background-color: red; }
+       span.one { background: inherit; }
+       span.two { background-color: inherit; }
+     </style>
+   </head>
+   <body>
+     <div><span class="one">One</span><span class="two">Two</span></div>
+   </body>
+diff --git a/layout/reftests/first-line/parent-style-3.html b/layout/reftests/first-line/parent-style-3.html
+--- a/layout/reftests/first-line/parent-style-3.html
++++ b/layout/reftests/first-line/parent-style-3.html
+@@ -3,16 +3,16 @@
+   <head>
+     <title>CSS 2.1 Test Suite: :first-line</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
+     <meta name="flags" content="" />
+     <style>
+       div, p { background: green; }
+-      div::first-line, p::first-line { background-color: red; }
++      div:first-line, p:first-line { background-color: red; }
+       span.one { background: inherit; }
+       span.two { background-color: inherit; }
+     </style>
+   </head>
+   <body>
+     <div><p><span class="one">One</span><span class="two">Two</span></p></div>
+   </body>
+diff --git a/layout/reftests/first-line/reftest.list b/layout/reftests/first-line/reftest.list
+--- a/layout/reftests/first-line/reftest.list
++++ b/layout/reftests/first-line/reftest.list
+@@ -1,12 +1,12 @@
+ # basic functionality
+ == basic-1.html basic-ref.html
+ 
+-# handling of out-of-flows when ::first-line happens
++# handling of out-of-flows when :first-line happens
+ == out-of-flow-1a.html out-of-flow-1-ref.html
+ == out-of-flow-1b.html out-of-flow-1-ref.html
+ == out-of-flow-1c.html out-of-flow-1-ref.html
+ == out-of-flow-1d.html out-of-flow-1-ref.html
+ 
+ # parent style context correct
+ == parent-style-1.html parent-style-1-ref.html
+ == parent-style-2.html parent-style-2-ref.html
+diff --git a/layout/reftests/generated-content/display-types-01.html b/layout/reftests/generated-content/display-types-01.html
+--- a/layout/reftests/generated-content/display-types-01.html
++++ b/layout/reftests/generated-content/display-types-01.html
+@@ -4,36 +4,36 @@
+     <title>CSS 2.1 Test Suite: generated content</title>
+     <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
+     <meta name="flags" content="" />
+ <style>
+ div { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"}
+ 
+-div::before {
++div:before {
+   content:counter(ctr) url(square-outline-32x32.png) open-quote "Before " attr(class);
+   counter-increment:ctr;
+ }
+-div::after {
++div:after {
+   content:counter(ctr) url(square-outline-32x32.png) "After " attr(class) close-quote;
+   counter-increment:ctr;
+ }
+ 
+-.block::before, .block::after { display:block; }
+-.inline::before, .inline::after { display:inline; }
+-.inline-block::before, .inline-block::after { display:inline-block; }
+-.table::before, .table::after { display:table; }
+-.inline-table::before, .inline-table::after { display:inline-table; }
+-.table-row-group::before, .table-row-group::after { display:table-row-group; }
+-.table-row::before, .table-row::after { display:table-row; }
+-.table-cell::before, .table-cell::after { display:table-cell; }
+-.table-caption::before, .table-caption::after { display:table-caption; }
+-.flexbox::before, .flexbox::after { display:-moz-box; }
+-.inline-flexbox::before, .inline-flexbox::after { display:-moz-inline-box; }
++.block:before, .block:after { display:block; }
++.inline:before, .inline:after { display:inline; }
++.inline-block:before, .inline-block:after { display:inline-block; }
++.table:before, .table:after { display:table; }
++.inline-table:before, .inline-table:after { display:inline-table; }
++.table-row-group:before, .table-row-group:after { display:table-row-group; }
++.table-row:before, .table-row:after { display:table-row; }
++.table-cell:before, .table-cell:after { display:table-cell; }
++.table-caption:before, .table-caption:after { display:table-caption; }
++.flexbox:before, .flexbox:after { display:-moz-box; }
++.inline-flexbox:before, .inline-flexbox:after { display:-moz-inline-box; }
+ 
+ div { border:1px solid green; margin:5px; }
+ </style>
+ </head>
+ 
+ <body>
+ <table width="100%"><tr><td valign="top">
+   <div class="block">Inner</div>
+diff --git a/layout/reftests/generated-content/dynamic-attr-01.html b/layout/reftests/generated-content/dynamic-attr-01.html
+--- a/layout/reftests/generated-content/dynamic-attr-01.html
++++ b/layout/reftests/generated-content/dynamic-attr-01.html
+@@ -2,20 +2,20 @@
+ <html class="reftest-wait">
+ <head>
+     <title>CSS 2.1 Test Suite: generated content</title>
+     <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
+     <meta name="flags" content="dom" />
+ <style>
+-body::before {
++body:before {
+   content:attr(my-attr);
+ }
+-body::after {
++body:after {
+   content:attr(my-attr-2);
+ }
+ </style>
+ <script>
+ function fixupDOM() {
+   document.body.setAttribute("my-attr", "before");
+   document.body.setAttribute("my-attr-2", "after");
+   document.documentElement.className = "";
+diff --git a/layout/reftests/generated-content/dynamic-restyle-01.html b/layout/reftests/generated-content/dynamic-restyle-01.html
+--- a/layout/reftests/generated-content/dynamic-restyle-01.html
++++ b/layout/reftests/generated-content/dynamic-restyle-01.html
+@@ -2,21 +2,21 @@
+ <html class="reftest-wait">
+ <head>
+     <title>CSS 2.1 Test Suite: generated content</title>
+     <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
+     <meta name="flags" content="dom" />
+ <style>
+-body::before {
++body:before {
+   content:"Before";
+   border:inherit;
+ }
+-.cl::after {
++.cl:after {
+   display:block;
+   content:"After";
+ }
+ </style>
+ <script>
+ function fixupDOM() {
+   document.body.setAttribute("style", "border:2px solid red;");
+   document.body.className = "cl";
+diff --git a/layout/reftests/generated-content/floated-01.html b/layout/reftests/generated-content/floated-01.html
+--- a/layout/reftests/generated-content/floated-01.html
++++ b/layout/reftests/generated-content/floated-01.html
+@@ -4,35 +4,35 @@
+     <title>CSS 2.1 Test Suite: generated content</title>
+     <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
+     <meta name="flags" content="" />
+ <style>
+ div { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"; }
+ 
+-div::before {
++div:before {
+   content:counter(ctr) url(square-outline-32x32.png) open-quote "Before " attr(class);
+   counter-increment:ctr;
+ }
+-div::after {
++div:after {
+   content:counter(ctr) url(square-outline-32x32.png) "After " attr(class) close-quote;
+   counter-increment:ctr;
+ }
+ 
+-.beforeleft::before {
++.beforeleft:before {
+   float:left;
+ }
+-.beforeright::before {
++.beforeright:before {
+   float:right;
+ }
+-.afterleft::after {
++.afterleft:after {
+   float:left;
+ }
+-.afterright::after {
++.afterright:after {
+   float:right;
+ }
+ 
+ div { border:1px solid green; margin:5px; }
+ div { overflow:auto; }
+ </style>
+ </head>
+ <body>
+diff --git a/layout/reftests/generated-content/images-01.html b/layout/reftests/generated-content/images-01.html
+--- a/layout/reftests/generated-content/images-01.html
++++ b/layout/reftests/generated-content/images-01.html
+@@ -2,17 +2,17 @@
+ <html>
+ <head>
+     <title>CSS 2.1 Test Suite: generated content</title>
+     <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
+     <meta name="flags" content="" />
+ <style>
+-div::before {
++div:before {
+   content:url(missing-image.png);
+ }
+ div { border:1px solid green; margin:5px; }
+ </style>
+ </head>
+ <div>Inner</div>
+ </body>
+ </html>
+diff --git a/layout/reftests/generated-content/positioned-01.html b/layout/reftests/generated-content/positioned-01.html
+--- a/layout/reftests/generated-content/positioned-01.html
++++ b/layout/reftests/generated-content/positioned-01.html
+@@ -4,39 +4,39 @@
+     <title>CSS 2.1 Test Suite: generated content</title>
+     <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
+     <meta name="flags" content="" />
+ <style>
+ div { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"; }
+ 
+-.gen::before {
++.gen:before {
+   content:counter(ctr) url(square-outline-32x32.png) open-quote "Before " attr(class);
+   counter-increment:ctr;
+ }
+-.gen::after {
++.gen:after {
+   content:counter(ctr) url(square-outline-32x32.png) "After " attr(class) close-quote;
+   counter-increment:ctr;
+ }
+ 
+-.abs::before {
++.abs:before {
+   position:absolute;
+   left:0;
+ }
+-.abs::after {
++.abs:after {
+   position:absolute;
+   right:0;
+ }
+ 
+-.rel::before {
++.rel:before {
+   position:relative;
+   top:-10px;
+ }
+-.rel::after {
++.rel:after {
+   position:relative;
+   top:10px;
+ }
+ 
+ div { border:1px solid green; margin:5px; height:100px; }
+ </style>
+ </head>
+ <div class="gen abs">Inner</div>
+diff --git a/layout/reftests/generated-content/table-ignoring-whitespace-01.html b/layout/reftests/generated-content/table-ignoring-whitespace-01.html
+--- a/layout/reftests/generated-content/table-ignoring-whitespace-01.html
++++ b/layout/reftests/generated-content/table-ignoring-whitespace-01.html
+@@ -2,26 +2,26 @@
+ <html>
+ <head>
+     <title>CSS 2.1 Test Suite: generated content</title>
+     <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
+     <meta name="flags" content="" />
+ <style>
+-.gen0::before {
++.gen0:before {
+   padding:1px;
+ }
+-.gen1::before {
++.gen1:before {
+   content: " ";
+ }
+-.gen2::before {
++.gen2:before {
+   content: attr(missing);
+ }
+-.gen3::before {
++.gen3:before {
+   content: url(missing-image.png);
+ }
+ 
+ div { border:1px solid green; margin:5px; }
+ </style>
+ </head>
+ 
+ <!-- This tests that generated content items that evaluate to empty strings or
+diff --git a/layout/reftests/generated-content/table-parts-01.html b/layout/reftests/generated-content/table-parts-01.html
+--- a/layout/reftests/generated-content/table-parts-01.html
++++ b/layout/reftests/generated-content/table-parts-01.html
+@@ -4,55 +4,55 @@
+     <title>CSS 2.1 Test Suite: generated content</title>
+     <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
+     <meta name="flags" content="" />
+ <style>
+ table, div.gen { counter-reset:ctr; quotes:"\0022" "\0022" "\0022" "\0022"; }
+ 
+-.gen::before {
++.gen:before {
+   content:counter(ctr) url(square-outline-32x32.png) open-quote "Before " attr(class);
+   counter-increment:ctr;
+ }
+-.gen::after {
++.gen:after {
+   content:counter(ctr) url(square-outline-32x32.png) "After " attr(class) close-quote;
+   counter-increment:ctr;
+ }
+ 
+ table { border:1px solid blue; }
+ td { border:1px solid cyan; }
+ td { border-spacing:0; padding:0; }
+ 
+-tr.gen::before, tr.gen::after { display:table-cell; }
+-tbody.gen::before, tbody.gen::after { display:table-row; }
+-table.gen::before, table.gen::after { display:table-row-group; }
+-table.col::before, table.gen.col::after { display:table-column-group; }
++tr.gen:before, tr.gen:after { display:table-cell; }
++tbody.gen:before, tbody.gen:after { display:table-row; }
++table.gen:before, table.gen:after { display:table-row-group; }
++table.col:before, table.gen.col:after { display:table-column-group; }
+ /* note reordering here! */
+-table.headfoot::after { display:table-header-group; }
+-table.headfoot::before { display:table-footer-group; }
++table.headfoot:after { display:table-header-group; }
++table.headfoot:before { display:table-footer-group; }
+ 
+ .cell { display:table-cell; }
+ .row { display:table-row; }
+ .rowgroup { display:table-row-group; }
+ .table { display:table; }
+-div.gencell::before, div.gencell::after { display:table-cell; }
+-div.genrow::before, div.genrow::after { display:table-row; }
+-div.genblock::before, div.genblock::after { display:block; }
+-div.geninline::before, div.geninline::after { display:inline; }
++div.gencell:before, div.gencell:after { display:table-cell; }
++div.genrow:before, div.genrow:after { display:table-row; }
++div.genblock:before, div.genblock:after { display:block; }
++div.geninline:before, div.geninline:after { display:inline; }
+ 
+ div { border:1px solid green; margin:5px; }
+ 
+-.varyheight::before { height:100px; background:yellow; }
++.varyheight:before { height:100px; background:yellow; }
+ .varyheight > div { height:80px; background:orange; }
+-.varyheight::after { height:60px; background:brown; }
++.varyheight:after { height:60px; background:brown; }
+ 
+-.varywidth::before { background:yellow; }
++.varywidth:before { background:yellow; }
+ .varywidth > div { background:orange; }
+-.varywidth::after { background:brown; }
++.varywidth:after { background:brown; }
+ </style>
+ </head>
+ 
+ <body>
+ <table style="border:none" width="100%"><tr><td style="border:none" valign="top">
+   <div><table><tbody><tr class="gen"><td>Inner</td></tr></tbody></table></div>
+   <div><table><tbody class="gen"><tr><td>Inner</td></tr></tbody></table></div>
+   <div><table class="gen"><tfoot><tr><td>Inner</td></tr></tfoot></table></div>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-10.html b/layout/reftests/ib-split/insert-into-split-inline-10.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-10.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-10.html
+@@ -11,17 +11,17 @@
+      var newNode = document.createElement("span");
+      newNode.appendChild(document.createTextNode("Nine"));
+      document.getElementById("target").appendChild(newNode);
+    }
+   </script>
+   <style>
+    body > span { border: 3px solid blue }
+    body > span > span { border: 3px solid cyan }
+-   body > span > span::after { content: "Ten" }
++   body > span > span:after { content: "Ten" }
+   </style>
+  </head>
+  <body onload='doit()'>
+   <span><span id="target"
+   ><span>One</span
+   ><span>Two</span
+   ><span>Three</span
+   ><div>Four</div
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-12.html b/layout/reftests/ib-split/insert-into-split-inline-12.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-12.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-12.html
+@@ -3,15 +3,15 @@
+   <head>
+     <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
+     <meta name="flags" content="dom" />
+     <style>
+       #i { display: inline; border: 2px solid; }
+-      #i::after { display: block; content: "Three"; }
++      #i:after { display: block; content: "Three"; }
+     </style>
+   </head>
+   <body>
+     <div id="i"><script>document.body.offsetWidth</script>One<div>Two</div></div>
+   </body>
+ </html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-13.html b/layout/reftests/ib-split/insert-into-split-inline-13.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-13.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-13.html
+@@ -3,18 +3,18 @@
+   <head>
+     <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
+     <meta name="flags" content="dom" />
+     <style>
+       #i { border: 2px solid; }
+-      #i::before { display: block; content: "One"; }
+-      #i::after { content: "Three"; }
++      #i:before { display: block; content: "One"; }
++      #i:after { content: "Three"; }
+     </style>
+     <script>
+       function doTest() {
+         var i = document.getElementById("i");
+         i.insertBefore(document.createTextNode("Two"), i.firstChild);
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-14.html b/layout/reftests/ib-split/insert-into-split-inline-14.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-14.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-14.html
+@@ -3,17 +3,17 @@
+   <head>
+     <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
+     <meta name="flags" content="dom" />
+     <style>
+       #i { border: 2px solid; }
+-      #i::before { display: block; content: "One"; }
++      #i:before { display: block; content: "One"; }
+     </style>
+     <script>
+       function doTest() {
+         var i = document.getElementById("i");
+         dump('a');
+         i.insertBefore(document.createTextNode("Two"), i.firstChild);
+       }
+     </script>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-15.html b/layout/reftests/ib-split/insert-into-split-inline-15.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-15.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-15.html
+@@ -3,15 +3,15 @@
+   <head>
+     <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
+     <meta name="flags" content="dom" />
+     <style>
+       #i { display: inline; border: 2px solid; }
+-      #i::after { display: block; content: "Three"; }
++      #i:after { display: block; content: "Three"; }
+     </style>
+   </head>
+   <body onload="doTest()">
+     <div id="i"><script>document.body.offsetWidth</script><div>One</div>Two</div>
+   </body>
+ </html>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-16a.html b/layout/reftests/ib-split/insert-into-split-inline-16a.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-16a.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-16a.html
+@@ -3,17 +3,17 @@
+   <head>
+     <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
+     <meta name="flags" content="dom" />
+     <style>
+       #i { border: 2px solid; }
+-      #i::after { display: block; content: "Two"; }
++      #i:after { display: block; content: "Two"; }
+     </style>
+     <script>
+       function doTest() {
+         var i = document.getElementById("i");
+         i.insertBefore(document.createTextNode("One"), i.firstChild);
+       }
+     </script>
+   </head>
+diff --git a/layout/reftests/ib-split/insert-into-split-inline-16b.html b/layout/reftests/ib-split/insert-into-split-inline-16b.html
+--- a/layout/reftests/ib-split/insert-into-split-inline-16b.html
++++ b/layout/reftests/ib-split/insert-into-split-inline-16b.html
+@@ -3,17 +3,17 @@
+   <head>
+     <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
+     <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
+     <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+     <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
+     <meta name="flags" content="dom" />
+     <style>
+       #i { border: 2px solid; }
+-      #i::after { display: block; content: "Two"; }
++      #i:after { display: block; content: "Two"; }
+     </style>
+     <script>
+       function doTest() {
+         var i = document.getElementById("i");
+         i.appendChild(document.createTextNode("One"));
+       }
+     </script>
+   </head>

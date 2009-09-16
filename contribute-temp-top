@@ -538,6 +538,66 @@ diff --git a/layout/reftests/table-background/reftest.list b/layout/reftests/tab
  == border-separate-opacity-table-row-group.html border-separate-opacity-table-row-group-ref.html
  == border-separate-opacity-table-row.html border-separate-opacity-table-row-ref.html
  == border-separate-opacity-table.html border-separate-opacity-table-ref.html
+diff --git a/layout/reftests/table-bordercollapse/reftest.list b/layout/reftests/table-bordercollapse/reftest.list
+--- a/layout/reftests/table-bordercollapse/reftest.list
++++ b/layout/reftests/table-bordercollapse/reftest.list
+@@ -14,55 +14,9 @@
+ == bc_dyn_col3.html bc_dyn_cg3_ref.html
+ == bc_dyn_cg1.html bc_dyn_cg1_ref.html
+ == bc_dyn_cg2.html bc_dyn_cg2_ref.html
+ == bc_dyn_cg3.html bc_dyn_cg3_ref.html
+ == bc_dyn_table1.html bc_dyn_table1_ref.html
+ == bc_dyn_table2.html bc_dyn_table2_ref.html
+ == bc_dyn_table3.html bc_dyn_table3_ref.html
+ == bc_borderoffset1.html bc_borderoffset1_ref.html
+-fails-if(MOZ_WIDGET_TOOLKIT=="cocoa") == bc_borderoffset2.html bc_borderoffset2_ref.html # bug 477504 
+-== frame_above_rules_all.html frame_above_rules_all_ref.html
+-== frame_above_rules_cols.html frame_above_rules_cols_ref.html
+-== frame_above_rules_groups.html frame_above_rules_groups_ref.html
+-== frame_above_rules_none.html frame_above_rules_none_ref.html
+-== frame_above_rules_rows.html frame_above_rules_rows_ref.html
+-== frame_below_rules_all.html frame_below_rules_all_ref.html
+-== frame_below_rules_cols.html frame_below_rules_cols_ref.html
+-== frame_below_rules_groups.html frame_below_rules_groups_ref.html
+-== frame_below_rules_none.html frame_below_rules_none_ref.html
+-== frame_below_rules_rows.html frame_below_rules_rows_ref.html
+-== frame_border_rules_all.html frame_border_rules_all_ref.html
+-== frame_border_rules_cols.html frame_border_rules_cols_ref.html
+-== frame_border_rules_groups.html frame_border_rules_groups_ref.html
+-== frame_border_rules_none.html frame_border_rules_none_ref.html
+-== frame_border_rules_rows.html frame_border_rules_rows_ref.html
+-== frame_box_rules_all.html frame_box_rules_all_ref.html
+-== frame_box_rules_cols.html frame_box_rules_cols_ref.html
+-== frame_box_rules_groups.html frame_box_rules_groups_ref.html
+-== frame_box_rules_none.html frame_box_rules_none_ref.html
+-== frame_box_rules_rows.html frame_box_rules_rows_ref.html
+-== frame_hsides_rules_all.html frame_hsides_rules_all_ref.html
+-== frame_hsides_rules_cols.html frame_hsides_rules_cols_ref.html
+-== frame_hsides_rules_groups.html frame_hsides_rules_groups_ref.html
+-== frame_hsides_rules_none.html frame_hsides_rules_none_ref.html
+-== frame_hsides_rules_rows.html frame_hsides_rules_rows_ref.html
+-== frame_lhs_rules_all.html frame_lhs_rules_all_ref.html
+-== frame_lhs_rules_cols.html frame_lhs_rules_cols_ref.html
+-== frame_lhs_rules_groups.html frame_lhs_rules_groups_ref.html
+-== frame_lhs_rules_none.html frame_lhs_rules_none_ref.html
+-== frame_lhs_rules_rows.html frame_lhs_rules_rows_ref.html
+-== frame_rhs_rules_all.html frame_rhs_rules_all_ref.html
+-== frame_rhs_rules_cols.html frame_rhs_rules_cols_ref.html
+-== frame_rhs_rules_groups.html frame_rhs_rules_groups_ref.html
+-== frame_rhs_rules_none.html  frame_rhs_rules_none_ref.html
+-== frame_rhs_rules_rows.html frame_rhs_rules_rows_ref.html
+-== frame_void_rules_all.html frame_void_rules_all_ref.html
+-== frame_void_rules_cols.html frame_void_rules_cols_ref.html
+-== frame_void_rules_groups.html frame_void_rules_groups_ref.html
+-== frame_void_rules_none.html frame_void_rules_none_ref.html
+-== frame_void_rules_rows.html frame_void_rules_rows_ref.html
+-== frame_vsides_rules_all.html frame_vsides_rules_all_ref.html
+-== frame_vsides_rules_cols.html frame_vsides_rules_cols_ref.html
+-== frame_vsides_rules_groups.html frame_vsides_rules_groups_ref.html
+-== frame_vsides_rules_none.html frame_vsides_rules_none_ref.html
+-== frame_vsides_rules_rows.html frame_vsides_rules_rows_ref.html
+-
++== bc_borderoffset2.html bc_borderoffset2_ref.html
 diff --git a/layout/reftests/text-indent/reftest.list b/layout/reftests/text-indent/reftest.list
 --- a/layout/reftests/text-indent/reftest.list
 +++ b/layout/reftests/text-indent/reftest.list
@@ -565,7 +625,7 @@ diff --git a/layout/reftests/zip-list b/layout/reftests/zip-list
 new file mode 100644
 --- /dev/null
 +++ b/layout/reftests/zip-list
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,19 @@
 +css-charset/
 +first-letter/[a-z]*
 +first-line/basic*
@@ -578,6 +638,8 @@ new file mode 100644
 +table-background/border*
 +table-background/repeatable-diagonal-gradient-with-ticks.png
 +table-background/reftest.list
++table-bordercollapse/reftest.list
++table-bordercollapse/bc_*
 +text-indent/
 +text-transform/
 +z-index/reftest.list

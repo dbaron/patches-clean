@@ -1,0 +1,514 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+More grammatical titles for bordercollapse tests.
+
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell1.html b/layout/reftests/table-bordercollapse/bc_dyn_cell1.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell1.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell1.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change cell style</title>
++<head><title>border collapse dynamic change to cell style</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderStyle="solid";
+ }
+ </script>
+ <style>
+ td { border: 10px green outset;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell1_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_cell1_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell1_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell1_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change cell style</title>
++<head><title>border collapse dynamic change to cell style</title>
+ <style>
+ td { border: 10px green outset;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+  <tr><td>c11</td><td>c12</td><td>c13</td></tr>
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell2.html b/layout/reftests/table-bordercollapse/bc_dyn_cell2.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell2.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell2.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change cell color</title>
++<head><title>border collapse dynamic change to cell color</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderColor="yellow";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell2_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_cell2_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell2_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell2_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change cell color</title>
++<head><title>border collapse dynamic change to cell color</title>
+ 
+ <style>
+ td { border: 10px green solid;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell3.html b/layout/reftests/table-bordercollapse/bc_dyn_cell3.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell3.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell3.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change cell border width</title>
++<head><title>border collapse dynamic change to cell border width</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderWidth="20px";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell3_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_cell3_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell3_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell3_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change cell border width</title>
++<head><title>border collapse dynamic change to cell border width</title>
+ <style>
+ td { border: 10px green solid;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+  <tr><td>c11</td><td>c12</td><td>c13</td></tr>
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell4.html b/layout/reftests/table-bordercollapse/bc_dyn_cell4.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell4.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell4.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change colspan cell style</title>
++<head><title>border collapse dynamic change to colspan cell style</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderStyle="solid";
+ }
+ </script>
+ <style>
+ td { border: 10px green outset;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell4_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_cell4_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell4_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell4_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change colspan cell style</title>
++<head><title>border collapse dynamic change to colspan cell style</title>
+ <style>
+ td { border: 10px green outset;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+  <tr><td>c11</td><td>c12</td><td>c13</td></tr>
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell5.html b/layout/reftests/table-bordercollapse/bc_dyn_cell5.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell5.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell5.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change rowspan cell style </title>
++<head><title>border collapse dynamic change to rowspan cell style </title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderStyle="solid";
+ }
+ </script>
+ <style>
+ td { border: 10px green outset;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell5_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_cell5_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cell5_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cell5_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change rowspan cell style </title>
++<head><title>border collapse dynamic change to rowspan cell style </title>
+ <style>
+ td { border: 10px green outset;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+   <tr><td>c11</td><td rowspan="3" style="border-style:solid">c12</td><td>c13</td></tr>
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cg1.html b/layout/reftests/table-bordercollapse/bc_dyn_cg1.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cg1.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cg1.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change colgroup border color</title>
++<head><title>border collapse dynamic change to colgroup border color</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderColor="yellow";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cg1_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_cg1_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cg1_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cg1_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change colgroup border color</title>
++<head><title>border collapse dynamic change to colgroup border color</title>
+ <style>
+ td { border: 10px green solid;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+ <colgroup><col></colgroup>
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cg2.html b/layout/reftests/table-bordercollapse/bc_dyn_cg2.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cg2.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cg2.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change colgroup border width</title>
++<head><title>border collapse dynamic change to colgroup border width</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderWidth="20px";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cg2_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_cg2_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cg2_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cg2_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change colgroup border width</title>
++<head><title>border collapse dynamic change to colgroup border width</title>
+ <style>
+ td { border: 10px green solid;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+ <colgroup><col></colgroup>
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cg3.html b/layout/reftests/table-bordercollapse/bc_dyn_cg3.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cg3.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cg3.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change colgroup border style</title>
++<head><title>border collapse dynamic change to colgroup border style</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderStyle="solid";
+ }
+ </script>
+ <style>
+ td { border: 10px green outset;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cg3_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_cg3_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_cg3_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_cg3_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change colgroup border style</title>
++<head><title>border collapse dynamic change to colgroup border style</title>
+ <style>
+ td { border: 10px green outset;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+ <colgroup><col></colgroup>
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_col1.html b/layout/reftests/table-bordercollapse/bc_dyn_col1.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_col1.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_col1.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change col border color</title>
++<head><title>border collapse dynamic change to col border color</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderColor="yellow";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_col2.html b/layout/reftests/table-bordercollapse/bc_dyn_col2.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_col2.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_col2.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change col border width</title>
++<head><title>border collapse dynamic change to col border width</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderWidth="20px";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_col3.html b/layout/reftests/table-bordercollapse/bc_dyn_col3.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_col3.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_col3.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change col border style</title>
++<head><title>border collapse dynamic change to col border style</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderStyle="solid";
+ }
+ </script>
+ <style>
+ td { border: 10px green outset;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_rg1.html b/layout/reftests/table-bordercollapse/bc_dyn_rg1.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_rg1.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_rg1.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change rowgroup border color</title>
++<head><title>border collapse dynamic change to rowgroup border color</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderColor="yellow";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_rg1_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_rg1_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_rg1_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_rg1_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change rowgroup border color</title>
++<head><title>border collapse dynamic change to rowgroup border color</title>
+ <style>
+ td { border: 10px green solid;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+ <tbody></tbody><tr><td>c11</td><td>c12</td><td>c13</td></tr></tbody>
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_rg2.html b/layout/reftests/table-bordercollapse/bc_dyn_rg2.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_rg2.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_rg2.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change rowgroup border width</title>
++<head><title>border collapse dynamic change to rowgroup border width</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderWidth="20px";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_rg2_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_rg2_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_rg2_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_rg2_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change rowgroup border width</title>
++<head><title>border collapse dynamic change to rowgroup border width</title>
+ 
+ <style>
+ td { border: 10px green solid;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_rg3.html b/layout/reftests/table-bordercollapse/bc_dyn_rg3.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_rg3.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_rg3.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change rowgroup border style</title>
++<head><title>border collapse dynamic change to rowgroup border style</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderStyle="solid";
+ }
+ </script>
+ <style>
+ td { border: 10px green outset;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_rg3_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_rg3_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_rg3_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_rg3_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change rowgroup border style</title>
++<head><title>border collapse dynamic change to rowgroup border style</title>
+ 
+ <style>
+ td { border: 10px green outset;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse">
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_row1.html b/layout/reftests/table-bordercollapse/bc_dyn_row1.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_row1.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_row1.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change row border color</title>
++<head><title>border collapse dynamic change to row border color</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderColor="yellow";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_row2.html b/layout/reftests/table-bordercollapse/bc_dyn_row2.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_row2.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_row2.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change row border width</title>
++<head><title>border collapse dynamic change to row border width</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderWidth="20px";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_row3.html b/layout/reftests/table-bordercollapse/bc_dyn_row3.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_row3.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_row3.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change row border style</title>
++<head><title>border collapse dynamic change to row border style</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderStyle="solid";
+ }
+ </script>
+ <style>
+ td { border: 10px green outset;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_table1.html b/layout/reftests/table-bordercollapse/bc_dyn_table1.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_table1.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_table1.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change table border color</title>
++<head><title>border collapse dynamic change to table border color</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderColor="yellow";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_table1_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_table1_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_table1_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_table1_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change table border color</title>
++<head><title>border collapse dynamic change to table border color</title>
+ 
+ <style>
+ td { border: 10px green solid;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse; border:solid yellow 11px">
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_table2.html b/layout/reftests/table-bordercollapse/bc_dyn_table2.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_table2.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_table2.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change table border width</title>
++<head><title>border collapse dynamic change to table border width</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderWidth="20px";
+ }
+ </script>
+ <style>
+ td { border: 10px green solid;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_table2_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_table2_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_table2_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_table2_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change table border width</title>
++<head><title>border collapse dynamic change to table border width</title>
+ <style>
+ td { border: 10px green solid;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse; border:solid green 20px">
+ <colgroup><col></colgroup>
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_table3.html b/layout/reftests/table-bordercollapse/bc_dyn_table3.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_table3.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_table3.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change table border style</title>
++<head><title>border collapse dynamic change to table border style</title>
+ <script>
+ function doTest(){
+  var t1 =document.getElementById('target');
+  t1.style.borderStyle="solid";
+ }
+ </script>
+ <style>
+ td { border: 10px green outset;}
+diff --git a/layout/reftests/table-bordercollapse/bc_dyn_table3_ref.html b/layout/reftests/table-bordercollapse/bc_dyn_table3_ref.html
+--- a/layout/reftests/table-bordercollapse/bc_dyn_table3_ref.html
++++ b/layout/reftests/table-bordercollapse/bc_dyn_table3_ref.html
+@@ -1,10 +1,10 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+-<head><title>border collapse dynamical change table border style</title>
++<head><title>border collapse dynamic change to table border style</title>
+ 
+ <style>
+ td { border: 10px green outset;}
+ table {margin: 30px}
+ </style>
+ </head>
+ <body>
+ <table style="border-collapse:collapse; border:solid green 10px">

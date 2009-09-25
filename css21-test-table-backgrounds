@@ -11,7 +11,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-cell
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -33,7 +33,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-colu
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -55,7 +55,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-colu
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -77,7 +77,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-row-
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -99,7 +99,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-row.
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -121,7 +121,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table.html
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -275,7 +275,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-cell
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -297,7 +297,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-colu
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -319,7 +319,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-colu
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -341,7 +341,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-row-
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -363,7 +363,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-row.
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
@@ -385,7 +385,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table.html
  <html lang="en-US">
  <head>
 -	<title>Table background tests</title>
-+    <title>CSS 2.1 Test Suite: table backgrounds</title>
++    <title>CSS 2.1 combined with css3-color Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>

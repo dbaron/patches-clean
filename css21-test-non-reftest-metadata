@@ -41,7 +41,7 @@ diff --git a/layout/html/tests/block/bugs/299148.xml b/layout/html/tests/block/b
 diff --git a/layout/html/tests/block/bugs/300816-01.xml b/layout/html/tests/block/bugs/300816-01.xml
 --- a/layout/html/tests/block/bugs/300816-01.xml
 +++ b/layout/html/tests/block/bugs/300816-01.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -49,6 +49,7 @@ diff --git a/layout/html/tests/block/bugs/300816-01.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; }
@@ -56,10 +57,11 @@ diff --git a/layout/html/tests/block/bugs/300816-01.xml b/layout/html/tests/bloc
               left: 0; width: 60px; z-index: 1; }
      #cb { display: inline; position: relative; background: red; color: red; }
      #test { position: absolute; top: 0; right: 0; left: 0; bottom: 0; background: red; }
+   </style>
 diff --git a/layout/html/tests/block/bugs/300816-02.xml b/layout/html/tests/block/bugs/300816-02.xml
 --- a/layout/html/tests/block/bugs/300816-02.xml
 +++ b/layout/html/tests/block/bugs/300816-02.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -67,6 +69,7 @@ diff --git a/layout/html/tests/block/bugs/300816-02.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; }
@@ -74,10 +77,11 @@ diff --git a/layout/html/tests/block/bugs/300816-02.xml b/layout/html/tests/bloc
               left: 0; width: 60px; z-index: 1; }
      #cb { display: inline; position: relative; background: red; color: red; }
      #test { position: absolute; top: 0; right: 0; left: 0; bottom: 0;
+             background: green; z-index: 2; }
 diff --git a/layout/html/tests/block/bugs/300816-03.xml b/layout/html/tests/block/bugs/300816-03.xml
 --- a/layout/html/tests/block/bugs/300816-03.xml
 +++ b/layout/html/tests/block/bugs/300816-03.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -85,6 +89,7 @@ diff --git a/layout/html/tests/block/bugs/300816-03.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -92,10 +97,11 @@ diff --git a/layout/html/tests/block/bugs/300816-03.xml b/layout/html/tests/bloc
               left: 0; width: 210px; z-index: 1; }
      #cb { display: inline; position: relative; background: red; color: red;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }
 diff --git a/layout/html/tests/block/bugs/300816-04.xml b/layout/html/tests/block/bugs/300816-04.xml
 --- a/layout/html/tests/block/bugs/300816-04.xml
 +++ b/layout/html/tests/block/bugs/300816-04.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -103,6 +109,7 @@ diff --git a/layout/html/tests/block/bugs/300816-04.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -110,10 +117,11 @@ diff --git a/layout/html/tests/block/bugs/300816-04.xml b/layout/html/tests/bloc
               left: 0; width: 210px; z-index: 1; }
      #cb { display: inline; position: relative; background: red; color: red;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }
 diff --git a/layout/html/tests/block/bugs/300816-05.xml b/layout/html/tests/block/bugs/300816-05.xml
 --- a/layout/html/tests/block/bugs/300816-05.xml
 +++ b/layout/html/tests/block/bugs/300816-05.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -121,6 +129,7 @@ diff --git a/layout/html/tests/block/bugs/300816-05.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -128,10 +137,11 @@ diff --git a/layout/html/tests/block/bugs/300816-05.xml b/layout/html/tests/bloc
               left: 0; width: 60px; z-index: 1; }
      #cb { display: inline; position: relative; background: green; color: green;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }
 diff --git a/layout/html/tests/block/bugs/300816-06.xml b/layout/html/tests/block/bugs/300816-06.xml
 --- a/layout/html/tests/block/bugs/300816-06.xml
 +++ b/layout/html/tests/block/bugs/300816-06.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -139,6 +149,7 @@ diff --git a/layout/html/tests/block/bugs/300816-06.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -146,10 +157,11 @@ diff --git a/layout/html/tests/block/bugs/300816-06.xml b/layout/html/tests/bloc
               left: 0; width: 60px; z-index: 1; }
      #cb { display: inline; position: relative; background: green; color: green;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }
 diff --git a/layout/html/tests/block/bugs/300816-07.xml b/layout/html/tests/block/bugs/300816-07.xml
 --- a/layout/html/tests/block/bugs/300816-07.xml
 +++ b/layout/html/tests/block/bugs/300816-07.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -157,6 +169,7 @@ diff --git a/layout/html/tests/block/bugs/300816-07.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -164,10 +177,11 @@ diff --git a/layout/html/tests/block/bugs/300816-07.xml b/layout/html/tests/bloc
               left: 270px; width: 60px; z-index: 1; }
      #cb { display: inline; position: relative; background: green; color: green;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }
 diff --git a/layout/html/tests/block/bugs/300816-08.xml b/layout/html/tests/block/bugs/300816-08.xml
 --- a/layout/html/tests/block/bugs/300816-08.xml
 +++ b/layout/html/tests/block/bugs/300816-08.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -175,6 +189,7 @@ diff --git a/layout/html/tests/block/bugs/300816-08.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -182,10 +197,11 @@ diff --git a/layout/html/tests/block/bugs/300816-08.xml b/layout/html/tests/bloc
               left: 270px; width: 60px; z-index: 1; }
      #cb { display: inline; position: relative; background: green; color: green;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }
 diff --git a/layout/html/tests/block/bugs/300816-09.xml b/layout/html/tests/block/bugs/300816-09.xml
 --- a/layout/html/tests/block/bugs/300816-09.xml
 +++ b/layout/html/tests/block/bugs/300816-09.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -193,6 +209,7 @@ diff --git a/layout/html/tests/block/bugs/300816-09.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -200,10 +217,11 @@ diff --git a/layout/html/tests/block/bugs/300816-09.xml b/layout/html/tests/bloc
               left: 270px; width: 60px; z-index: 1; }
      #cb { display: inline; position: relative; background: green; color: green;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }
 diff --git a/layout/html/tests/block/bugs/300816-10.xml b/layout/html/tests/block/bugs/300816-10.xml
 --- a/layout/html/tests/block/bugs/300816-10.xml
 +++ b/layout/html/tests/block/bugs/300816-10.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -211,6 +229,7 @@ diff --git a/layout/html/tests/block/bugs/300816-10.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -218,10 +237,11 @@ diff --git a/layout/html/tests/block/bugs/300816-10.xml b/layout/html/tests/bloc
               left: 270px; width: 60px; z-index: 1; }
      #cb { display: inline; position: relative; background: green; color: green;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }
 diff --git a/layout/html/tests/block/bugs/300816-11.xml b/layout/html/tests/block/bugs/300816-11.xml
 --- a/layout/html/tests/block/bugs/300816-11.xml
 +++ b/layout/html/tests/block/bugs/300816-11.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -229,6 +249,7 @@ diff --git a/layout/html/tests/block/bugs/300816-11.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -236,10 +257,11 @@ diff --git a/layout/html/tests/block/bugs/300816-11.xml b/layout/html/tests/bloc
               left: 33px; width: 275px; z-index: 1; }
      #cb { display: inline; position: relative; background: green; color: green;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }
 diff --git a/layout/html/tests/block/bugs/300816-12.xml b/layout/html/tests/block/bugs/300816-12.xml
 --- a/layout/html/tests/block/bugs/300816-12.xml
 +++ b/layout/html/tests/block/bugs/300816-12.xml
-@@ -1,12 +1,13 @@
+@@ -1,13 +1,15 @@
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -247,6 +269,7 @@ diff --git a/layout/html/tests/block/bugs/300816-12.xml b/layout/html/tests/bloc
 +  <title>CSS Test: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
++  <meta name="flags" content="ahem" />
    <style type="text/css">
      #testBlock { font-family: Ahem; font-size: 20px; line-height: 1; }
      #testBlock { position: absolute; top: 100px; }
@@ -254,3 +277,4 @@ diff --git a/layout/html/tests/block/bugs/300816-12.xml b/layout/html/tests/bloc
               left: 33px; width: 275px; z-index: 1; }
      #cb { display: inline; position: relative; background: green; color: green;
            padding-left: 100px; padding-right: 50px; padding-top: 20px;
+ 	  padding-bottom: 40px; }

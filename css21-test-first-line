@@ -9,7 +9,7 @@ diff --git a/layout/reftests/first-line/basic-1.html b/layout/reftests/first-lin
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: :first-line</title>
++    <title>CSS Test: :first-line</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
@@ -29,7 +29,7 @@ diff --git a/layout/reftests/first-line/out-of-flow-1a.html b/layout/reftests/fi
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: :first-line</title>
++    <title>CSS Test: :first-line</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
@@ -49,7 +49,7 @@ diff --git a/layout/reftests/first-line/out-of-flow-1b.html b/layout/reftests/fi
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: :first-line</title>
++    <title>CSS Test: :first-line</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
@@ -69,7 +69,7 @@ diff --git a/layout/reftests/first-line/out-of-flow-1c.html b/layout/reftests/fi
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: :first-line</title>
++    <title>CSS Test: :first-line</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
@@ -89,7 +89,7 @@ diff --git a/layout/reftests/first-line/out-of-flow-1d.html b/layout/reftests/fi
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: :first-line</title>
++    <title>CSS Test: :first-line</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
@@ -109,7 +109,7 @@ diff --git a/layout/reftests/first-line/parent-style-1.html b/layout/reftests/fi
  <!DOCTYPE html>
  <html>
  <head>
-+    <title>CSS 2.1 Test Suite: :first-line</title>
++    <title>CSS Test: :first-line</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
@@ -129,7 +129,7 @@ diff --git a/layout/reftests/first-line/parent-style-2.html b/layout/reftests/fi
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: :first-line</title>
++    <title>CSS Test: :first-line</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>
@@ -149,7 +149,7 @@ diff --git a/layout/reftests/first-line/parent-style-3.html b/layout/reftests/fi
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: :first-line</title>
++    <title>CSS Test: :first-line</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-line"/>

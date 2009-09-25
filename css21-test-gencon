@@ -9,7 +9,7 @@ diff --git a/layout/reftests/generated-content/display-types-01.html b/layout/re
  <!DOCTYPE HTML>
  <html>
  <head>
-+    <title>CSS 2.1 Test Suite: generated content</title>
++    <title>CSS Test: generated content</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
@@ -29,7 +29,7 @@ diff --git a/layout/reftests/generated-content/dynamic-attr-01.html b/layout/ref
  <!DOCTYPE HTML>
  <html class="reftest-wait">
  <head>
-+    <title>CSS 2.1 Test Suite: generated content</title>
++    <title>CSS Test: generated content</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
@@ -49,7 +49,7 @@ diff --git a/layout/reftests/generated-content/dynamic-restyle-01.html b/layout/
  <!DOCTYPE HTML>
  <html class="reftest-wait">
  <head>
-+    <title>CSS 2.1 Test Suite: generated content</title>
++    <title>CSS Test: generated content</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
@@ -69,7 +69,7 @@ diff --git a/layout/reftests/generated-content/floated-01.html b/layout/reftests
  <!DOCTYPE HTML>
  <html>
  <head>
-+    <title>CSS 2.1 Test Suite: generated content</title>
++    <title>CSS Test: generated content</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
@@ -89,7 +89,7 @@ diff --git a/layout/reftests/generated-content/images-01.html b/layout/reftests/
  <!DOCTYPE HTML>
  <html>
  <head>
-+    <title>CSS 2.1 Test Suite: generated content</title>
++    <title>CSS Test: generated content</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
@@ -109,7 +109,7 @@ diff --git a/layout/reftests/generated-content/positioned-01.html b/layout/refte
  <!DOCTYPE HTML>
  <html>
  <head>
-+    <title>CSS 2.1 Test Suite: generated content</title>
++    <title>CSS Test: generated content</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>
@@ -152,7 +152,7 @@ diff --git a/layout/reftests/generated-content/table-ignoring-whitespace-01.html
  <!DOCTYPE HTML>
  <html>
  <head>
-+    <title>CSS 2.1 Test Suite: generated content</title>
++    <title>CSS Test: generated content</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#content"/>
@@ -172,7 +172,7 @@ diff --git a/layout/reftests/generated-content/table-parts-01.html b/layout/reft
  <!DOCTYPE HTML>
  <html>
  <head>
-+    <title>CSS 2.1 Test Suite: generated content</title>
++    <title>CSS Test: generated content</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/generate.html#before-after-content"/>

@@ -8,7 +8,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/blocks-divide-tables-1.html b
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -27,7 +27,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/blocks-divide-tables-2.html b
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -46,7 +46,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/cols-test-1.html b/layout/ref
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -65,7 +65,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/cols-test-2.html b/layout/ref
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -84,7 +84,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/cols-test-3.html b/layout/ref
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -105,7 +105,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-abs-pos-tbody.html b/
  <html>
  <head>
 -<title>Reftest for bug 398681</title>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes (Mozilla bug 398681)</title>
++    <title>CSS Test: anonymous table boxes (Mozilla bug 398681)</title>
 +    <link rel="author" title="Jesse Ruderman" href="mailto:jruderman@gmail.com" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -125,7 +125,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-insert-cell-1.html b/
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -145,7 +145,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-1.html b/layo
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -165,7 +165,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-10.html b/lay
  <!DOCTYPE HTML>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -185,7 +185,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-11.html b/lay
  <!DOCTYPE HTML>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -205,7 +205,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-12.html b/lay
  <!DOCTYPE HTML>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -225,7 +225,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-13.html b/lay
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -245,7 +245,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-14.html b/lay
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -265,7 +265,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-15.html b/lay
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -285,7 +285,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-16.html b/lay
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -305,7 +305,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-17.html b/lay
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -325,7 +325,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-2.html b/layo
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -345,7 +345,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-3.html b/layo
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -365,7 +365,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-4.html b/layo
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -385,7 +385,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-5.html b/layo
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -405,7 +405,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-6.html b/layo
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -425,7 +425,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-7.html b/layo
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -445,7 +445,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-8.html b/layo
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -465,7 +465,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-removal-9.html b/layo
  <!DOCTYPE HTML>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -485,7 +485,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -505,7 +505,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -525,7 +525,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -545,7 +545,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -565,7 +565,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-block-to-cell-
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -585,7 +585,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -605,7 +605,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -625,7 +625,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -645,7 +645,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -665,7 +665,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/dynamic-switch-inline-to-cell
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -684,7 +684,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-cells-1.html b/layout/r
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -703,7 +703,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-cells-2.html b/layout/r
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -722,7 +722,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-cells-3.html b/layout/r
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -741,7 +741,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-cells-4.html b/layout/r
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -760,7 +760,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-first-row-and-table.htm
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -779,7 +779,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-first-row.html b/layout
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -798,7 +798,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-rows-inside-rowgroups.h
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -817,7 +817,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-second-row-and-table.ht
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -836,7 +836,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-second-row.html b/layou
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -855,7 +855,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-table-around-headers-fo
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -874,7 +874,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-table-around-headers-fo
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -893,7 +893,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-table-around-headers-fo
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -912,7 +912,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-table-row-cell.html b/l
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -931,7 +931,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/infer-table.html b/layout/ref
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -951,7 +951,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-1.html b/layout/r
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -971,7 +971,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-10.html b/layout/
  <!DOCTYPE HTML>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -991,7 +991,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-11.html b/layout/
  <!DOCTYPE HTML>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1010,7 +1010,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-12.html b/layout/
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1029,7 +1029,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-13.html b/layout/
 @@ -1,10 +1,15 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1049,7 +1049,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-14.html b/layout/
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1069,7 +1069,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-15.html b/layout/
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1089,7 +1089,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-16.html b/layout/
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1109,7 +1109,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-17.html b/layout/
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1129,7 +1129,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-18.html b/layout/
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1149,7 +1149,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-19.html b/layout/
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1169,7 +1169,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-2.html b/layout/r
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1189,7 +1189,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-20.html b/layout/
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1209,7 +1209,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-21.html b/layout/
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1228,7 +1228,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-22.html b/layout/
 @@ -1,6 +1,11 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1243,7 +1243,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-23.html b/layout/
 @@ -1,6 +1,11 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1258,7 +1258,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-24.html b/layout/
 @@ -1,6 +1,11 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1274,7 +1274,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-25.html b/layout/
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1294,7 +1294,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-26.html b/layout/
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1314,7 +1314,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-3.html b/layout/r
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1334,7 +1334,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-4.html b/layout/r
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1354,7 +1354,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-5.html b/layout/r
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1374,7 +1374,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-6.html b/layout/r
  <!DOCTYPE html>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1393,7 +1393,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-7.html b/layout/r
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
  <html>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1413,7 +1413,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-8.html b/layout/r
  <!DOCTYPE HTML>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1433,7 +1433,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-9.html b/layout/r
  <!DOCTYPE HTML>
  <html class="reftest-wait">
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
@@ -1453,7 +1453,7 @@ diff --git a/layout/reftests/table-anonymous-boxes/white-space-pre-1.html b/layo
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS 2.1 Test Suite: anonymous table boxes</title>
++    <title>CSS Test: anonymous table boxes</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>

@@ -9,7 +9,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_borderoffset1.html b/layout
  <!DOCTYPE html>
  <html>
  <head>
-+    <title>CSS 2.1 Test Suite: border collapse</title>
++    <title>CSS Test: border collapse</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="" />
@@ -28,7 +28,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_borderoffset2.html b/layout
  <!DOCTYPE html>
  <html>
  <head>
-+    <title>CSS 2.1 Test Suite: border collapse</title>
++    <title>CSS Test: border collapse</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="" />
@@ -46,7 +46,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell1.html b/layout/ref
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to cell style</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to cell style</title>
++<head><title>CSS Test: border collapse dynamic change to cell style</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -64,7 +64,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell2.html b/layout/ref
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to cell color</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to cell color</title>
++<head><title>CSS Test: border collapse dynamic change to cell color</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -82,7 +82,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell3.html b/layout/ref
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to cell border width</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to cell border width</title>
++<head><title>CSS Test: border collapse dynamic change to cell border width</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -100,7 +100,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell4.html b/layout/ref
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to colspan cell style</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to colspan cell style</title>
++<head><title>CSS Test: border collapse dynamic change to colspan cell style</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -118,7 +118,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cell5.html b/layout/ref
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to rowspan cell style </title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to rowspan cell style </title>
++<head><title>CSS Test: border collapse dynamic change to rowspan cell style </title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -136,7 +136,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cg1.html b/layout/refte
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to colgroup border color</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to colgroup border color</title>
++<head><title>CSS Test: border collapse dynamic change to colgroup border color</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -154,7 +154,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cg2.html b/layout/refte
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to colgroup border width</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to colgroup border width</title>
++<head><title>CSS Test: border collapse dynamic change to colgroup border width</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -172,7 +172,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_cg3.html b/layout/refte
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to colgroup border style</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to colgroup border style</title>
++<head><title>CSS Test: border collapse dynamic change to colgroup border style</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -190,7 +190,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_col1.html b/layout/reft
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to col border color</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to col border color</title>
++<head><title>CSS Test: border collapse dynamic change to col border color</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -208,7 +208,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_col2.html b/layout/reft
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to col border width</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to col border width</title>
++<head><title>CSS Test: border collapse dynamic change to col border width</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -226,7 +226,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_col3.html b/layout/reft
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to col border style</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to col border style</title>
++<head><title>CSS Test: border collapse dynamic change to col border style</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -244,7 +244,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_rg1.html b/layout/refte
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to rowgroup border color</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to rowgroup border color</title>
++<head><title>CSS Test: border collapse dynamic change to rowgroup border color</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -262,7 +262,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_rg2.html b/layout/refte
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to rowgroup border width</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to rowgroup border width</title>
++<head><title>CSS Test: border collapse dynamic change to rowgroup border width</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -280,7 +280,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_rg3.html b/layout/refte
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to rowgroup border style</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to rowgroup border style</title>
++<head><title>CSS Test: border collapse dynamic change to rowgroup border style</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -298,7 +298,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_row1.html b/layout/reft
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to row border color</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to row border color</title>
++<head><title>CSS Test: border collapse dynamic change to row border color</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -316,7 +316,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_row2.html b/layout/reft
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to row border width</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to row border width</title>
++<head><title>CSS Test: border collapse dynamic change to row border width</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -334,7 +334,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_row3.html b/layout/reft
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to row border style</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to row border style</title>
++<head><title>CSS Test: border collapse dynamic change to row border style</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -352,7 +352,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_table1.html b/layout/re
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to table border color</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to table border color</title>
++<head><title>CSS Test: border collapse dynamic change to table border color</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -370,7 +370,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_table2.html b/layout/re
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to table border width</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to table border width</title>
++<head><title>CSS Test: border collapse dynamic change to table border width</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />
@@ -388,7 +388,7 @@ diff --git a/layout/reftests/table-bordercollapse/bc_dyn_table3.html b/layout/re
 @@ -1,10 +1,13 @@
  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 -<head><title>border collapse dynamic change to table border style</title>
-+<head><title>CSS 2.1 Test Suite: border collapse dynamic change to table border style</title>
++<head><title>CSS Test: border collapse dynamic change to table border style</title>
 +    <link rel="author" title="Bernd Mielke" href="mailto:bmlk@gmx.de" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#collapsing-borders" />
 +    <meta name="flags" content="dom" />

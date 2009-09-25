@@ -9,7 +9,7 @@ diff --git a/layout/reftests/css-charset/test-attribute.html b/layout/reftests/c
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -33,7 +33,7 @@ diff --git a/layout/reftests/css-charset/test-charset-leading-space.html b/layou
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -57,7 +57,7 @@ diff --git a/layout/reftests/css-charset/test-charset-quotes.html b/layout/refte
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -81,7 +81,7 @@ diff --git a/layout/reftests/css-charset/test-charset-trailing-space.html b/layo
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -105,7 +105,7 @@ diff --git a/layout/reftests/css-charset/test-charset-utf-16-be-bom.html b/layou
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -129,7 +129,7 @@ diff --git a/layout/reftests/css-charset/test-charset-utf-16-be-no-bom.html b/la
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -153,7 +153,7 @@ diff --git a/layout/reftests/css-charset/test-charset-utf-16-bom-be.html b/layou
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -177,7 +177,7 @@ diff --git a/layout/reftests/css-charset/test-charset-utf-16-bom-le.html b/layou
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -201,7 +201,7 @@ diff --git a/layout/reftests/css-charset/test-charset-utf-16-le-bom.html b/layou
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -225,7 +225,7 @@ diff --git a/layout/reftests/css-charset/test-charset-utf-16-le-no-bom.html b/la
  <!DOCTYPE html>
  <html>
    <head>
-+    <title>CSS Test: @charset</title>
++    <title>CSS 2.1 Test Suite: @charset</title>
 +    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>

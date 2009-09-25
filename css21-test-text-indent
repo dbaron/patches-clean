@@ -10,7 +10,7 @@ diff --git a/layout/reftests/text-indent/text-indent-intrinsic-min.html b/layout
  <html>
  <head>
 -<title>Test for intrinsic widths and text-indent</title>
-+<title>CSS Test: Test for intrinsic widths and text-indent</title>
++<title>CSS 2.1 Test Suite: Test for intrinsic widths and text-indent</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -31,7 +31,7 @@ diff --git a/layout/reftests/text-indent/text-indent-intrinsic-pref.html b/layou
  <html>
  <head>
 -<title>Test for intrinsic widths and text-indent</title>
-+<title>CSS Test: Test for intrinsic widths and text-indent</title>
++<title>CSS 2.1 Test Suite: Test for intrinsic widths and text-indent</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -51,7 +51,7 @@ diff --git a/layout/reftests/text-indent/text-indent-multiple-line-notref-block-
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -71,7 +71,7 @@ diff --git a/layout/reftests/text-indent/text-indent-multiple-line-ref-float.htm
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -91,7 +91,7 @@ diff --git a/layout/reftests/text-indent/text-indent-multiple-line-ref-inline-ma
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -111,7 +111,7 @@ diff --git a/layout/reftests/text-indent/text-indent-multiple-line.html b/layout
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -132,7 +132,7 @@ diff --git a/layout/reftests/text-indent/text-indent-negative-intrinsic-min.html
  <html>
  <head>
 -<title>Test for intrinsic widths and negative text-indent</title>
-+<title>CSS Test: Test for intrinsic widths and negative text-indent</title>
++<title>CSS 2.1 Test Suite: Test for intrinsic widths and negative text-indent</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -153,7 +153,7 @@ diff --git a/layout/reftests/text-indent/text-indent-negative-intrinsic-pref.htm
  <html>
  <head>
 -<title>Test for intrinsic widths and negative text-indent</title>
-+<title>CSS Test: Test for intrinsic widths and negative text-indent</title>
++<title>CSS 2.1 Test Suite: Test for intrinsic widths and negative text-indent</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -173,7 +173,7 @@ diff --git a/layout/reftests/text-indent/text-indent-single-line-0.html b/layout
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -193,7 +193,7 @@ diff --git a/layout/reftests/text-indent/text-indent-single-line-100.html b/layo
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -213,7 +213,7 @@ diff --git a/layout/reftests/text-indent/text-indent-single-line-indent-inline-r
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -233,7 +233,7 @@ diff --git a/layout/reftests/text-indent/text-indent-single-line-indent-inline-r
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -253,7 +253,7 @@ diff --git a/layout/reftests/text-indent/text-indent-single-line-indent-inline.h
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -273,7 +273,7 @@ diff --git a/layout/reftests/text-indent/text-indent-single-line-percent.html b/
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -293,7 +293,7 @@ diff --git a/layout/reftests/text-indent/text-indent-single-line-ref-margin.html
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />
@@ -313,7 +313,7 @@ diff --git a/layout/reftests/text-indent/text-indent-single-line-ref-unstyled.ht
  <!DOCTYPE html>
  <head>
 -<title>text-indent test</title>
-+<title>CSS Test: text-indent test</title>
++<title>CSS 2.1 Test Suite: text-indent test</title>
 +<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/text.html#indentation-prop" />

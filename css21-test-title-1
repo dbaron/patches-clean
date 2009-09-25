@@ -10,7 +10,7 @@ diff --git a/layout/reftests/box-properties/CSS21-t100301-ref.xhtml b/layout/ref
  <html xmlns="http://www.w3.org/1999/xhtml">
  	<head>
 -		<title>CSS 2.1: Inline, non-replaced elements (reference)</title>
-+		<title>CSS Test: Inline, non-replaced elements (reference)</title>
++		<title>CSS 2.1 Test Suite: Inline, non-replaced elements (reference)</title>
  		<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
  		<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
  		<link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-width" />
@@ -27,7 +27,7 @@ diff --git a/layout/reftests/box-properties/CSS21-t100301.xhtml b/layout/reftest
  <html xmlns="http://www.w3.org/1999/xhtml">
  	<head>
 -		<title>CSS 2.1: Inline, non-replaced elements</title>
-+		<title>CSS Test: Inline, non-replaced elements</title>
++		<title>CSS 2.1 Test Suite: Inline, non-replaced elements</title>
  		<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
  		<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
  		<link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#inline-width" />
@@ -44,7 +44,7 @@ diff --git a/layout/reftests/box-properties/CSS21-t100303-ref.xhtml b/layout/ref
  <html xmlns="http://www.w3.org/1999/xhtml">
  	<head>
 -		<title>CSS 2.1: Block-level, non-replaced elements in normal flow</title>
-+		<title>CSS Test: Block-level, non-replaced elements in normal flow</title>
++		<title>CSS 2.1 Test Suite: Block-level, non-replaced elements in normal flow</title>
  		<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
  		<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
  		<link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#blockwidth" />
@@ -61,7 +61,7 @@ diff --git a/layout/reftests/box-properties/CSS21-t100303-simple.xhtml b/layout/
  <html xmlns="http://www.w3.org/1999/xhtml">
  	<head>
 -		<title>CSS 2.1: Block-level, non-replaced elements in normal flow</title>
-+		<title>CSS Test: Block-level, non-replaced elements in normal flow</title>
++		<title>CSS 2.1 Test Suite: Block-level, non-replaced elements in normal flow</title>
  		<!--
  
  		    THIS IS NOT THE FULL TEST.  IT HAS BEEN MODIFIED TO WORK
@@ -78,7 +78,7 @@ diff --git a/layout/reftests/box-properties/CSS21-t100303.xhtml b/layout/reftest
  <html xmlns="http://www.w3.org/1999/xhtml">
  	<head>
 -		<title>CSS 2.1: Block-level, non-replaced elements in normal flow</title>
-+		<title>CSS Test: Block-level, non-replaced elements in normal flow</title>
++		<title>CSS 2.1 Test Suite: Block-level, non-replaced elements in normal flow</title>
  		<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
  		<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
  		<link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#blockwidth" />
@@ -95,7 +95,7 @@ diff --git a/layout/reftests/box-properties/CSS21-t100801-vertical-align-ref.xht
  <html xmlns="http://www.w3.org/1999/xhtml">
  	<head>
 -		<title>CSS 2.1: vertical-align (on an inline-block) (reference)</title>
-+		<title>CSS Test: vertical-align (on an inline-block) (reference)</title>
++		<title>CSS 2.1 Test Suite: vertical-align (on an inline-block) (reference)</title>
  		<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
  		<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
  		<link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#blockwidth" />
@@ -112,7 +112,7 @@ diff --git a/layout/reftests/box-properties/CSS21-t100801-vertical-align.xhtml b
  <html xmlns="http://www.w3.org/1999/xhtml">
  	<head>
 -		<title>CSS 2.1: vertical-align (on an inline-block)</title>
-+		<title>CSS Test: vertical-align (on an inline-block)</title>
++		<title>CSS 2.1 Test Suite: vertical-align (on an inline-block)</title>
  		<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
  		<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
  		<link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#blockwidth" />

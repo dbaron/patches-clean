@@ -9,8 +9,7 @@ diff --git a/layout/html/tests/block/bugs/239079.xml b/layout/html/tests/block/b
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: ID selectors starting with number</title>
-+  <title>CSS Test: ID selectors starting with number</title>
+   <title>CSS 2.1 Test Suite: ID selectors starting with number</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#id-selectors"/>
    <style type="text/css">
@@ -27,8 +26,7 @@ diff --git a/layout/html/tests/block/bugs/299148.xml b/layout/html/tests/block/b
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Escapes in ID selectors</title>
-+  <title>CSS Test: Escapes in ID selectors</title>
+   <title>CSS 2.1 Test Suite: Escapes in ID selectors</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#id-selectors"/>
    <style type="text/css">
@@ -45,8 +43,7 @@ diff --git a/layout/html/tests/block/bugs/300816-01.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -65,8 +62,7 @@ diff --git a/layout/html/tests/block/bugs/300816-02.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -85,8 +81,7 @@ diff --git a/layout/html/tests/block/bugs/300816-03.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -105,8 +100,7 @@ diff --git a/layout/html/tests/block/bugs/300816-04.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -125,8 +119,7 @@ diff --git a/layout/html/tests/block/bugs/300816-05.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -145,8 +138,7 @@ diff --git a/layout/html/tests/block/bugs/300816-06.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -165,8 +157,7 @@ diff --git a/layout/html/tests/block/bugs/300816-07.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -185,8 +176,7 @@ diff --git a/layout/html/tests/block/bugs/300816-08.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -205,8 +195,7 @@ diff --git a/layout/html/tests/block/bugs/300816-09.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -225,8 +214,7 @@ diff --git a/layout/html/tests/block/bugs/300816-10.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -245,8 +233,7 @@ diff --git a/layout/html/tests/block/bugs/300816-11.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />
@@ -265,8 +252,7 @@ diff --git a/layout/html/tests/block/bugs/300816-12.xml b/layout/html/tests/bloc
  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
  <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
--  <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
-+  <title>CSS Test: Positioned inline as absolute containing block</title>
+   <title>CSS 2.1 Test Suite: Positioned inline as absolute containing block</title>
 +  <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
    <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#containing-block-details"/>
 +  <meta name="flags" content="ahem" />

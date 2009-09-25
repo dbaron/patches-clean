@@ -8,7 +8,7 @@ diff --git a/layout/reftests/text-transform/capitalize-1.html b/layout/reftests/
 @@ -1,6 +1,11 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS Test: text-transform</title>
++    <title>CSS 2.1 Test Suite: text-transform</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#caps-prop" />
@@ -23,7 +23,7 @@ diff --git a/layout/reftests/text-transform/capitalize-2.html b/layout/reftests/
 @@ -1,6 +1,11 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS Test: text-transform</title>
++    <title>CSS 2.1 Test Suite: text-transform</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#caps-prop" />
@@ -38,7 +38,7 @@ diff --git a/layout/reftests/text-transform/capitalize-3.html b/layout/reftests/
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
  <html>
-+    <title>CSS Test: text-transform</title>
++    <title>CSS 2.1 Test Suite: text-transform</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#caps-prop" />
@@ -57,7 +57,7 @@ diff --git a/layout/reftests/text-transform/lowercase-1.html b/layout/reftests/t
 @@ -1,6 +1,11 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS Test: text-transform</title>
++    <title>CSS 2.1 Test Suite: text-transform</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#caps-prop" />
@@ -72,7 +72,7 @@ diff --git a/layout/reftests/text-transform/small-caps-1.html b/layout/reftests/
 @@ -1,4 +1,9 @@
  <!DOCTYPE HTML>
  <html>
-+    <title>CSS Test: text-transform</title>
++    <title>CSS 2.1 Test Suite: text-transform</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#caps-prop" />
@@ -85,7 +85,7 @@ diff --git a/layout/reftests/text-transform/uppercase-1.html b/layout/reftests/t
 @@ -1,6 +1,11 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS Test: text-transform</title>
++    <title>CSS 2.1 Test Suite: text-transform</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#caps-prop" />
@@ -100,7 +100,7 @@ diff --git a/layout/reftests/text-transform/uppercase-szlig-1.html b/layout/reft
 @@ -1,6 +1,11 @@
  <!DOCTYPE html>
  <html>
-+    <title>CSS Test: text-transform</title>
++    <title>CSS 2.1 Test Suite: text-transform</title>
 +    <link rel="author" title="Robert O'Callahan" href="mailto:robert@ocallahan.org" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/text.html#caps-prop" />

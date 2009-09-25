@@ -9,7 +9,7 @@ diff --git a/layout/reftests/first-letter/basic-1.html b/layout/reftests/first-l
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -29,7 +29,7 @@ diff --git a/layout/reftests/first-letter/basic-2.html b/layout/reftests/first-l
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -49,7 +49,7 @@ diff --git a/layout/reftests/first-letter/dynamic-1.html b/layout/reftests/first
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -69,7 +69,7 @@ diff --git a/layout/reftests/first-letter/dynamic-2.html b/layout/reftests/first
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -89,7 +89,7 @@ diff --git a/layout/reftests/first-letter/dynamic-3a.html b/layout/reftests/firs
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -109,7 +109,7 @@ diff --git a/layout/reftests/first-letter/dynamic-3b.html b/layout/reftests/firs
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -129,7 +129,7 @@ diff --git a/layout/reftests/first-letter/nested-1a.html b/layout/reftests/first
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -149,7 +149,7 @@ diff --git a/layout/reftests/first-letter/nested-1b.html b/layout/reftests/first
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -169,7 +169,7 @@ diff --git a/layout/reftests/first-letter/nested-1c.html b/layout/reftests/first
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -189,7 +189,7 @@ diff --git a/layout/reftests/first-letter/nested-1d.html b/layout/reftests/first
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -209,7 +209,7 @@ diff --git a/layout/reftests/first-letter/nested-1e.html b/layout/reftests/first
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -229,7 +229,7 @@ diff --git a/layout/reftests/first-letter/nested-1f.html b/layout/reftests/first
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: @charset</title>
++  <title>CSS 2.1 Test Suite: @charset</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/syndata.html#charset"/>
@@ -249,7 +249,7 @@ diff --git a/layout/reftests/first-letter/nested-1g.html b/layout/reftests/first
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -269,7 +269,7 @@ diff --git a/layout/reftests/first-letter/parent-style-1.html b/layout/reftests/
  <!DOCTYPE html>
  <html>
  <head>
-+<title>CSS Test: :first-letter</title>
++<title>CSS 2.1 Test Suite: :first-letter</title>
 +<link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
 +<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +<link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -289,7 +289,7 @@ diff --git a/layout/reftests/first-letter/quote-1a.html b/layout/reftests/first-
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -309,7 +309,7 @@ diff --git a/layout/reftests/first-letter/quote-1b.html b/layout/reftests/first-
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -329,7 +329,7 @@ diff --git a/layout/reftests/first-letter/quote-1c.html b/layout/reftests/first-
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -349,7 +349,7 @@ diff --git a/layout/reftests/first-letter/quote-1d.html b/layout/reftests/first-
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="Simon Montagu" href="http://smontagu.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -369,7 +369,7 @@ diff --git a/layout/reftests/first-letter/quote-1e.html b/layout/reftests/first-
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>
@@ -389,7 +389,7 @@ diff --git a/layout/reftests/first-letter/quote-1f.html b/layout/reftests/first-
  <!DOCTYPE html>
  <html>
  <head>
-+  <title>CSS Test: :first-letter</title>
++  <title>CSS 2.1 Test Suite: :first-letter</title>
 +  <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +  <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +  <link rel="help" href="http://www.w3.org/TR/CSS21/selector.html#first-letter"/>

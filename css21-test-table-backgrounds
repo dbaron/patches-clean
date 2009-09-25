@@ -14,7 +14,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-cell
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -36,7 +36,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-colu
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -58,7 +58,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-colu
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -80,7 +80,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-row-
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -102,7 +102,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table-row.
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -124,7 +124,7 @@ diff --git a/layout/reftests/table-background/border-collapse-opacity-table.html
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -146,7 +146,7 @@ diff --git a/layout/reftests/table-background/border-collapse-table-cell.html b/
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -168,7 +168,7 @@ diff --git a/layout/reftests/table-background/border-collapse-table-column-group
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -190,7 +190,7 @@ diff --git a/layout/reftests/table-background/border-collapse-table-column.html 
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -212,7 +212,7 @@ diff --git a/layout/reftests/table-background/border-collapse-table-row-group.ht
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -234,7 +234,7 @@ diff --git a/layout/reftests/table-background/border-collapse-table-row.html b/l
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -256,7 +256,7 @@ diff --git a/layout/reftests/table-background/border-collapse-table.html b/layou
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -278,7 +278,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-cell
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -300,7 +300,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-colu
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -322,7 +322,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-colu
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -344,7 +344,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-row-
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -366,7 +366,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table-row.
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -388,7 +388,7 @@ diff --git a/layout/reftests/table-background/border-separate-opacity-table.html
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -410,7 +410,7 @@ diff --git a/layout/reftests/table-background/border-separate-table-cell.html b/
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -432,7 +432,7 @@ diff --git a/layout/reftests/table-background/border-separate-table-column-group
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -454,7 +454,7 @@ diff --git a/layout/reftests/table-background/border-separate-table-column.html 
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -476,7 +476,7 @@ diff --git a/layout/reftests/table-background/border-separate-table-row-group.ht
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -498,7 +498,7 @@ diff --git a/layout/reftests/table-background/border-separate-table-row.html b/l
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
@@ -520,7 +520,7 @@ diff --git a/layout/reftests/table-background/border-separate-table.html b/layou
 +    <title>CSS 2.1 Test Suite: table backgrounds</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
-+    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#anonymous-boxes"/>
++    <link rel="help" href="http://www.w3.org/TR/CSS21/tables.html#table-layers"/>
 +    <meta name="flags" content="" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">

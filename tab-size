@@ -471,7 +471,7 @@ diff --git a/layout/style/nsComputedDOMStyle.h b/layout/style/nsComputedDOMStyle
 diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
 --- a/layout/style/nsRuleNode.cpp
 +++ b/layout/style/nsRuleNode.cpp
-@@ -3209,17 +3209,22 @@ nsRuleNode::ComputeTextData(void* aStart
+@@ -3217,17 +3217,22 @@ nsRuleNode::ComputeTextData(void* aStart
                              const nsRuleDataStruct& aData, 
                              nsStyleContext* aContext, 
                              nsRuleNode* aHighestNode,
@@ -498,7 +498,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
 diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
 --- a/layout/style/nsStyleStruct.cpp
 +++ b/layout/style/nsStyleStruct.cpp
-@@ -2342,28 +2342,30 @@ nsStyleText::nsStyleText(void)
+@@ -2340,28 +2340,30 @@ nsStyleText::nsStyleText(void)
    mWordWrap = NS_STYLE_WORDWRAP_NORMAL;
  
    mLetterSpacing.SetNormalValue();
@@ -530,7 +530,7 @@ diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
  {
    MOZ_COUNT_DTOR(nsStyleText);
  }
-@@ -2377,17 +2379,18 @@ nsChangeHint nsStyleText::CalcDifference
+@@ -2375,17 +2377,18 @@ nsChangeHint nsStyleText::CalcDifference
  
    if ((mTextAlign != aOther.mTextAlign) ||
        (mTextTransform != aOther.mTextTransform) ||

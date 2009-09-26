@@ -5,7 +5,7 @@ Bug 513684.  Stop :hover from bleeding through certain elements.  r=roc
 diff --git a/layout/base/nsPresShell.cpp b/layout/base/nsPresShell.cpp
 --- a/layout/base/nsPresShell.cpp
 +++ b/layout/base/nsPresShell.cpp
-@@ -4363,19 +4363,19 @@ PresShell::InvalidateFrameForView(nsIVie
+@@ -4433,19 +4433,19 @@ PresShell::NotifyInvalidateForScrolledVi
  }
  
  NS_IMETHODIMP_(void)

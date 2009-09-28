@@ -136,9 +136,9 @@ diff --git a/layout/base/nsCSSFrameConstructor.cpp b/layout/base/nsCSSFrameConst
          }
        }
        else {
-+		if (mDocument->IsHTML() && aParentContent->IsNodeOfType(nsINode::eHTML)) {
++        if (mDocument->IsHTML() && aParentContent->IsNodeOfType(nsINode::eHTML)) {
 +          ToLowerCase(contentString);
-+		}
++        }
          attrName = do_GetAtom(contentString);
        }
  
@@ -748,7 +748,7 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
 +
 +  if (aSelector->mLowercaseTag && 
 +    (isHTML ? aSelector->mLowercaseTag : aSelector->mCasedTag) != data.mContentTag) {
-+	  return PR_FALSE;
++    return PR_FALSE;
    }
  
    PRBool result = PR_TRUE;

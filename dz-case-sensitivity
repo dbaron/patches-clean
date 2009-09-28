@@ -1,0 +1,1153 @@
+From: David Zbarsky <dzbarsky@gmail.com>
+
+Bug 507762:  Parse CSS style sheets independently of case-sensitivity, and instead check case correctly when using the stylesheets.  r=dbaron
+
+diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
+--- a/content/base/src/nsDocument.cpp
++++ b/content/base/src/nsDocument.cpp
+@@ -1859,18 +1859,17 @@ nsDocument::Init()
+                  NS_ERROR_OUT_OF_MEMORY);
+ 
+ 
+   mOnloadBlocker = new nsOnloadBlocker();
+   NS_ENSURE_TRUE(mOnloadBlocker, NS_ERROR_OUT_OF_MEMORY);
+   
+   NS_NewCSSLoader(this, &mCSSLoader);
+   NS_ENSURE_TRUE(mCSSLoader, NS_ERROR_OUT_OF_MEMORY);
+-  // Assume we're not HTML and not quirky, until we know otherwise
+-  mCSSLoader->SetCaseSensitive(PR_TRUE);
++  // Assume we're not quirky, until we know otherwise
+   mCSSLoader->SetCompatibilityMode(eCompatibility_FullStandards);
+ 
+   mNodeInfoManager = new nsNodeInfoManager();
+   NS_ENSURE_TRUE(mNodeInfoManager, NS_ERROR_OUT_OF_MEMORY);
+ 
+   NS_ADDREF(mNodeInfoManager);
+ 
+   nsresult  rv = mNodeInfoManager->Init(this);
+diff --git a/content/html/document/src/nsHTMLDocument.cpp b/content/html/document/src/nsHTMLDocument.cpp
+--- a/content/html/document/src/nsHTMLDocument.cpp
++++ b/content/html/document/src/nsHTMLDocument.cpp
+@@ -269,20 +269,18 @@ NS_INTERFACE_MAP_END_INHERITING(nsDocume
+ 
+ 
+ nsresult
+ nsHTMLDocument::Init()
+ {
+   nsresult rv = nsDocument::Init();
+   NS_ENSURE_SUCCESS(rv, rv);
+ 
+-  // Now reset the case-sensitivity of the CSSLoader, since we default
+-  // to being HTML, not XHTML.  Also, reset the compatibility mode to
+-  // match our compat mode.
+-  CSSLoader()->SetCaseSensitive(!IsHTML());
++  // Now reset the compatibility mode of the CSSLoader
++  // to match our compat mode.
+   CSSLoader()->SetCompatibilityMode(mCompatMode);
+ 
+   PrePopulateIdentifierMap();
+   return NS_OK;
+ }
+ 
+ 
+ void
+@@ -677,17 +675,16 @@ nsHTMLDocument::StartDocumentLoad(const 
+   }
+ #ifdef DEBUG
+   else {
+     NS_ASSERTION(mIsRegularHTML,
+                  "Hey, someone forgot to reset mIsRegularHTML!!!");
+   }
+ #endif
+ 
+-  CSSLoader()->SetCaseSensitive(!IsHTML());
+   CSSLoader()->SetCompatibilityMode(mCompatMode);
+   
+   PRBool needsParser = PR_TRUE;
+   if (aCommand)
+   {
+     if (!nsCRT::strcmp(aCommand, "view delayedContentLoad")) {
+       needsParser = PR_FALSE;
+     }
+diff --git a/content/xul/content/src/nsXULElement.h b/content/xul/content/src/nsXULElement.h
+--- a/content/xul/content/src/nsXULElement.h
++++ b/content/xul/content/src/nsXULElement.h
+@@ -308,17 +308,16 @@ public:
+     }
+ 
+ protected:
+     static nsICSSParser* GetCSSParser()
+     {
+         if (!sCSSParser) {
+             CallCreateInstance(kCSSParserCID, &sCSSParser);
+             if (sCSSParser) {
+-                sCSSParser->SetCaseSensitive(PR_TRUE);
+                 sCSSParser->SetQuirkMode(PR_FALSE);
+             }
+         }
+         return sCSSParser;
+     }
+     static nsICSSParser* sCSSParser;
+ };
+ 
+diff --git a/layout/base/nsCSSFrameConstructor.cpp b/layout/base/nsCSSFrameConstructor.cpp
+--- a/layout/base/nsCSSFrameConstructor.cpp
++++ b/layout/base/nsCSSFrameConstructor.cpp
+@@ -58,16 +58,17 @@
+ #include "nsTableFrame.h"
+ #include "nsTableColGroupFrame.h"
+ #include "nsTableColFrame.h"
+ #include "nsIDOMHTMLDocument.h"
+ #include "nsIDOMHTMLTableColElement.h"
+ #include "nsIDOMHTMLTableCaptionElem.h"
+ #include "nsHTMLParts.h"
+ #include "nsIPresShell.h"
++#include "nsUnicharUtils.h"
+ #include "nsStyleSet.h"
+ #include "nsIViewManager.h"
+ #include "nsIEventStateManager.h"
+ #include "nsIScrollableView.h"
+ #include "nsStyleConsts.h"
+ #include "nsTableOuterFrame.h"
+ #include "nsIDOMXULElement.h"
+ #include "nsHTMLContainerFrame.h"
+@@ -1711,41 +1712,48 @@ nsCSSFrameConstructor::CreateGeneratedCo
+                                 nsDependentString(data.mContent.mString),
+                                 nsnull, nsnull);
+ 
+   case eStyleContentType_Attr:
+     {
+       nsCOMPtr<nsIAtom> attrName;
+       PRInt32 attrNameSpace = kNameSpaceID_None;
+       nsAutoString contentString(data.mContent.mString);
++      
+       PRInt32 barIndex = contentString.FindChar('|'); // CSS namespace delimiter
+       if (-1 != barIndex) {
+         nsAutoString  nameSpaceVal;
+         contentString.Left(nameSpaceVal, barIndex);
+         PRInt32 error;
+         attrNameSpace = nameSpaceVal.ToInteger(&error, 10);
+         contentString.Cut(0, barIndex + 1);
+         if (contentString.Length()) {
++          if (mDocument->IsHTML() && aParentContent->IsNodeOfType(nsINode::eHTML)) {
++            ToLowerCase(contentString);
++          }
+           attrName = do_GetAtom(contentString);
+         }
+       }
+       else {
++		if (mDocument->IsHTML() && aParentContent->IsNodeOfType(nsINode::eHTML)) {
++          ToLowerCase(contentString);
++		}
+         attrName = do_GetAtom(contentString);
+       }
+ 
+       if (!attrName) {
+         return nsnull;
+       }
+ 
+       nsCOMPtr<nsIContent> content;
+       NS_NewAttributeContent(mDocument->NodeInfoManager(),
+                              attrNameSpace, attrName, getter_AddRefs(content));
+       return content.forget();
+     }
+-  
++
+   case eStyleContentType_Counter:
+   case eStyleContentType_Counters:
+     {
+       nsCSSValue::Array* counters = data.mContent.mCounters;
+       nsCounterList* counterList = mCounterManager.CounterListFor(
+           nsDependentString(counters->Item(0).GetStringBufferValue()));
+       if (!counterList)
+         return nsnull;
+diff --git a/layout/reftests/bugs/507762-1-ref.html b/layout/reftests/bugs/507762-1-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/bugs/507762-1-ref.html
+@@ -0,0 +1,7 @@
++<!DOCTYPE html>
++<html>
++<head>
++<body>
++<span style="background-color: green">text</span>
++</body>
++</html>
+diff --git a/layout/reftests/bugs/507762-1.html b/layout/reftests/bugs/507762-1.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/bugs/507762-1.html
+@@ -0,0 +1,23 @@
++<!DOCTYPE html>
++<html>
++<head>
++<style>
++@namespace url(test);
++div {
++background-color: red;
++}
++div[mixedCase=true] {
++background-color: green !important;
++}
++</style>
++<script>
++function f() {
++var elem = document.createElementNS("test","div");
++elem.setAttribute("mixedCase",true);
++elem.appendChild(document.createTextNode("text"));
++document.getElementsByTagName("body")[0].appendChild(elem); }
++</script>
++</head>
++<body onload="f();">
++</body>
++</html>
+diff --git a/layout/reftests/bugs/507762-2-ref.html b/layout/reftests/bugs/507762-2-ref.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/bugs/507762-2-ref.html
+@@ -0,0 +1,7 @@
++<!DOCTYPE html>
++<html>
++<head>
++<body>
++<div style="background-color: green">text</div>
++</body>
++</html>
+diff --git a/layout/reftests/bugs/507762-2.html b/layout/reftests/bugs/507762-2.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/bugs/507762-2.html
+@@ -0,0 +1,22 @@
++<!DOCTYPE html>
++<html>
++<head>
++<style>
++div {
++background-color: red;
++}
++div[mixedCase=true] {
++background-color: green !important;
++}
++</style>
++<script>
++function f() {
++var elem = document.createElement("div");
++elem.setAttribute("mixedcase",true);
++elem.appendChild(document.createTextNode("text"));
++document.getElementsByTagName("body")[0].appendChild(elem); }
++</script>
++</head>
++<body onload="f();">
++</body>
++</html>
+diff --git a/layout/reftests/bugs/507762-3.html b/layout/reftests/bugs/507762-3.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/bugs/507762-3.html
+@@ -0,0 +1,23 @@
++<!DOCTYPE html>
++<html>
++<head>
++<style>
++@namespace url(test);
++div {
++background-color: green;
++}
++div[dir=RTL ] 
++{background-color: red !important;
++}
++</style>
++<script>
++function f() {
++var elem = document.createElementNS("test","div");
++elem.setAttribute("dir","rtl");
++elem.appendChild(document.createTextNode("text"));
++document.getElementsByTagName("body")[0].appendChild(elem); }
++</script>
++</head>
++<body onload="f();">
++</body>
++</html>
+diff --git a/layout/reftests/bugs/507762-4.html b/layout/reftests/bugs/507762-4.html
+new file mode 100644
+--- /dev/null
++++ b/layout/reftests/bugs/507762-4.html
+@@ -0,0 +1,22 @@
++<!DOCTYPE html>
++<html>
++<head>
++<style>
++div {
++background-color: red;
++}
++div[dir=ltr] 
++{background-color: green !important;
++}
++</style>
++<script>
++function f() {
++var elem = document.createElement("div");
++elem.setAttribute("dir","LTR");
++elem.appendChild(document.createTextNode("text"));
++document.getElementsByTagName("body")[0].appendChild(elem); }
++</script>
++</head>
++<body onload="f();">
++</body>
++</html>
+diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.list
+--- a/layout/reftests/bugs/reftest.list
++++ b/layout/reftests/bugs/reftest.list
+@@ -1304,11 +1304,15 @@ fails-if(MOZ_WIDGET_TOOLKIT!="cocoa") ==
+ == 503364-1a.html 503364-1-ref.html
+ == 503364-1b.html 503364-1-ref.html
+ == 504032-1.html 504032-1-ref.html
+ == 505743-1.html about:blank
+ == 506481-1.html 506481-1-ref.html
+ == 507187-1.html 507187-1-ref.html
+ == 507487-1.html 507487-1-ref.html
+ == 507487-2.xhtml 507487-2-ref.xhtml
++== 507762-1.html 507762-1-ref.html
++== 507762-2.html 507762-2-ref.html
++== 507762-3.html 507762-1-ref.html
++== 507762-4.html 507762-2-ref.html
+ == 508919-1.xhtml 508919-1-ref.xhtml
+ == 509155-1.xhtml 509155-1-ref.xhtml
+ == 512410.html 512410-ref.html
+diff --git a/layout/style/nsCSSLoader.cpp b/layout/style/nsCSSLoader.cpp
+--- a/layout/style/nsCSSLoader.cpp
++++ b/layout/style/nsCSSLoader.cpp
+@@ -269,17 +269,16 @@ SheetLoadData::Run()
+  * Loader Implementation *
+  *************************/
+ 
+ // static
+ nsCOMArray<nsICSSParser>* CSSLoaderImpl::gParsers = nsnull;
+ 
+ CSSLoaderImpl::CSSLoaderImpl(void)
+   : mDocument(nsnull), 
+-    mCaseSensitive(PR_FALSE),
+     mEnabled(PR_TRUE), 
+     mCompatMode(eCompatibility_FullStandards),
+     mDatasToNotifyOn(0)
+ {
+ }
+ 
+ CSSLoaderImpl::~CSSLoaderImpl(void)
+ {
+@@ -327,23 +326,16 @@ CSSLoaderImpl::DropDocumentReference(voi
+   // LoadSheet and just end up in SheetComplete immediately
+   if (mPendingDatas.IsInitialized()) {
+     StartAlternateLoads();
+   }
+   return NS_OK;
+ }
+ 
+ NS_IMETHODIMP
+-CSSLoaderImpl::SetCaseSensitive(PRBool aCaseSensitive)
+-{
+-  mCaseSensitive = aCaseSensitive;
+-  return NS_OK;
+-}
+-
+-NS_IMETHODIMP
+ CSSLoaderImpl::SetCompatibilityMode(nsCompatibility aCompatMode)
+ {
+   mCompatMode = aCompatMode;
+   return NS_OK;
+ }
+ 
+ static PLDHashOperator
+ CollectNonAlternates(nsURIAndPrincipalHashKey *aKey,
+@@ -426,17 +418,16 @@ CSSLoaderImpl::GetParserFor(nsICSSStyleS
+   }
+ 
+   nsresult result = NS_OK;
+   if (! *aParser) {
+     result = NS_NewCSSParser(aParser);
+   }
+   
+   if (*aParser) {
+-    (*aParser)->SetCaseSensitive(mCaseSensitive);
+     (*aParser)->SetQuirkMode(mCompatMode == eCompatibility_NavQuirks);
+     if (aSheet) {
+       (*aParser)->SetStyleSheet(aSheet);
+     }
+     (*aParser)->SetChildLoader(this);
+   }
+   return result;
+ }
+diff --git a/layout/style/nsCSSLoader.h b/layout/style/nsCSSLoader.h
+--- a/layout/style/nsCSSLoader.h
++++ b/layout/style/nsCSSLoader.h
+@@ -313,17 +313,16 @@ public:
+   NS_DECL_ISUPPORTS
+ 
+   static void Shutdown(); // called at app shutdown
+   
+   // nsICSSLoader methods
+   NS_IMETHOD Init(nsIDocument* aDocument);
+   NS_IMETHOD DropDocumentReference(void);
+ 
+-  NS_IMETHOD SetCaseSensitive(PRBool aCaseSensitive);
+   NS_IMETHOD SetCompatibilityMode(nsCompatibility aCompatMode);
+   NS_IMETHOD SetPreferredSheet(const nsAString& aTitle);
+   NS_IMETHOD GetPreferredSheet(nsAString& aTitle);
+ 
+   NS_IMETHOD GetParserFor(nsICSSStyleSheet* aSheet,
+                           nsICSSParser** aParser);
+   NS_IMETHOD RecycleParser(nsICSSParser* aParser);
+ 
+@@ -489,17 +488,16 @@ private:
+ 
+   // the load data needs access to the document...
+   nsIDocument*      mDocument;  // the document we live for
+ 
+ #ifdef DEBUG
+   PRPackedBool            mSyncCallback;
+ #endif
+ 
+-  PRPackedBool      mCaseSensitive; // is document CSS case sensitive
+   PRPackedBool      mEnabled; // is enabled to load new styles
+   nsCompatibility   mCompatMode;
+   nsString          mPreferredSheet;  // title of preferred sheet
+ 
+   nsInterfaceHashtable<nsURIAndPrincipalHashKey,
+                        nsICSSStyleSheet> mCompleteSheets;
+   nsDataHashtable<nsURIAndPrincipalHashKey,
+                   SheetLoadData*> mLoadingDatas; // weak refs
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -156,18 +156,16 @@ class CSSParserImpl : public nsICSSParse
+ public:
+   CSSParserImpl();
+   virtual ~CSSParserImpl();
+ 
+   NS_DECL_ISUPPORTS
+ 
+   NS_IMETHOD SetStyleSheet(nsICSSStyleSheet* aSheet);
+ 
+-  NS_IMETHOD SetCaseSensitive(PRBool aCaseSensitive);
+-
+   NS_IMETHOD SetQuirkMode(PRBool aQuirkMode);
+ 
+ #ifdef  MOZ_SVG
+   NS_IMETHOD SetSVGMode(PRBool aSVGMode);
+ #endif
+ 
+   NS_IMETHOD SetChildLoader(nsICSSLoader* aChildLoader);
+ 
+@@ -620,19 +618,16 @@ protected:
+ 
+   // True if unsafe rules should be allowed
+   PRPackedBool mUnsafeRulesEnabled : 1;
+ 
+   // True for parsing media lists for HTML attributes, where we have to
+   // ignore CSS comments.
+   PRPackedBool mHTMLMediaMode : 1;
+ 
+-  // True if tagnames and attributes are case-sensitive
+-  PRPackedBool  mCaseSensitive : 1;
+-
+   // This flag is set when parsing a non-box shorthand; it's used to not apply
+   // some quirks during shorthand parsing
+   PRPackedBool  mParsingCompoundProperty : 1;
+ 
+   // If this flag is true, failure to resolve a namespace prefix
+   // should set the low-level error to NS_ERROR_DOM_NAMESPACE_ERR
+   PRPackedBool  mUnresolvablePrefixException : 1;
+ 
+@@ -723,17 +718,16 @@ CSSParserImpl::CSSParserImpl()
+     mScanner(),
+     mChildLoader(nsnull),
+     mSection(eCSSSection_Charset),
+     mNameSpaceMap(nsnull),
+     mHavePushBack(PR_FALSE),
+     mNavQuirkMode(PR_FALSE),
+     mUnsafeRulesEnabled(PR_FALSE),
+     mHTMLMediaMode(PR_FALSE),
+-    mCaseSensitive(PR_FALSE),
+     mParsingCompoundProperty(PR_FALSE),
+     mUnresolvablePrefixException(PR_FALSE)
+ #ifdef DEBUG
+     , mScannerInited(PR_FALSE)
+ #endif
+ {
+ }
+ 
+@@ -758,24 +752,16 @@ CSSParserImpl::SetStyleSheet(nsICSSStyle
+       mNameSpaceMap = nsnull;
+     }
+   }
+ 
+   return NS_OK;
+ }
+ 
+ NS_IMETHODIMP
+-CSSParserImpl::SetCaseSensitive(PRBool aCaseSensitive)
+-{
+-  NS_ASSERTION(aCaseSensitive == PR_TRUE || aCaseSensitive == PR_FALSE, "bad PRBool value");
+-  mCaseSensitive = aCaseSensitive;
+-  return NS_OK;
+-}
+-
+-NS_IMETHODIMP
+ CSSParserImpl::SetQuirkMode(PRBool aQuirkMode)
+ {
+   NS_ASSERTION(aQuirkMode == PR_TRUE || aQuirkMode == PR_FALSE, "bad PRBool value");
+   mNavQuirkMode = aQuirkMode;
+   return NS_OK;
+ }
+ 
+ #ifdef MOZ_SVG
+@@ -2704,17 +2690,17 @@ CSSParserImpl::ParseTypeOrUniversalSelec
+ 
+       if (! GetToken(PR_FALSE)) {
+         REPORT_UNEXPECTED_EOF(PETypeSelEOF);
+         return eSelectorParsingStatus_Error;
+       }
+       if (eCSSToken_Ident == mToken.mType) {  // element name
+         aDataMask |= SEL_MASK_ELEM;
+ 
+-        aSelector.SetTag(mToken.mIdent, mCaseSensitive);
++        aSelector.SetTag(mToken.mIdent);
+       }
+       else if (mToken.IsSymbol('*')) {  // universal selector
+         aDataMask |= SEL_MASK_ELEM;
+         // don't set tag
+       }
+       else {
+         REPORT_UNEXPECTED_TOKEN(PETypeSelNotType);
+         UngetToken();
+@@ -2742,32 +2728,31 @@ CSSParserImpl::ParseTypeOrUniversalSelec
+       aSelector.SetNameSpace(nameSpaceID);
+ 
+       if (! GetToken(PR_FALSE)) {
+         REPORT_UNEXPECTED_EOF(PETypeSelEOF);
+         return eSelectorParsingStatus_Error;
+       }
+       if (eCSSToken_Ident == mToken.mType) {  // element name
+         aDataMask |= SEL_MASK_ELEM;
+-       
+-        aSelector.SetTag(mToken.mIdent, mCaseSensitive);
++        aSelector.SetTag(mToken.mIdent);
+       }
+       else if (mToken.IsSymbol('*')) {  // universal selector
+         aDataMask |= SEL_MASK_ELEM;
+         // don't set tag
+       }
+       else {
+         REPORT_UNEXPECTED_TOKEN(PETypeSelNotType);
+         UngetToken();
+         return eSelectorParsingStatus_Error;
+       }
+     }
+     else {  // was element name
+       SetDefaultNamespaceOnSelector(aSelector);
+-      aSelector.SetTag(buffer, mCaseSensitive);
++      aSelector.SetTag(buffer);
+ 
+       aDataMask |= SEL_MASK_ELEM;
+     }
+     if (! GetToken(PR_FALSE)) {   // premature eof is ok (here!)
+       return eSelectorParsingStatus_Done;
+     }
+   }
+   else if (mToken.IsSymbol('|')) {  // No namespace
+@@ -2776,17 +2761,17 @@ CSSParserImpl::ParseTypeOrUniversalSelec
+ 
+     // get mandatory tag
+     if (! GetToken(PR_FALSE)) {
+       REPORT_UNEXPECTED_EOF(PETypeSelEOF);
+       return eSelectorParsingStatus_Error;
+     }
+     if (eCSSToken_Ident == mToken.mType) {  // element name
+       aDataMask |= SEL_MASK_ELEM;
+-      aSelector.SetTag(mToken.mIdent, mCaseSensitive);
++      aSelector.SetTag(mToken.mIdent);
+     }
+     else if (mToken.IsSymbol('*')) {  // universal selector
+       aDataMask |= SEL_MASK_ELEM;
+       // don't set tag
+     }
+     else {
+       REPORT_UNEXPECTED_TOKEN(PETypeSelNotType);
+       UngetToken();
+@@ -2878,19 +2863,16 @@ CSSParserImpl::ParseAttributeSelector(PR
+     }
+   }
+   else {  // malformed
+     REPORT_UNEXPECTED_TOKEN(PEAttributeNameOrNamespaceExpected);
+     UngetToken();
+     return eSelectorParsingStatus_Error;
+   }
+ 
+-  if (! mCaseSensitive) {
+-    ToLowerCase(attr);
+-  }
+   if (! GetToken(PR_TRUE)) { // premature EOF
+     REPORT_UNEXPECTED_EOF(PEAttSelInnerEOF);
+     return eSelectorParsingStatus_Error;
+   }
+   if ((eCSSToken_Symbol == mToken.mType) ||
+       (eCSSToken_Includes == mToken.mType) ||
+       (eCSSToken_Dashmatch == mToken.mType) ||
+       (eCSSToken_Beginsmatch == mToken.mType) ||
+@@ -2934,21 +2916,22 @@ CSSParserImpl::ParseAttributeSelector(PR
+         nsAutoString  value(mToken.mIdent);
+         if (! GetToken(PR_TRUE)) { // premature EOF
+           REPORT_UNEXPECTED_EOF(PEAttSelCloseEOF);
+           return eSelectorParsingStatus_Error;
+         }
+         if (mToken.IsSymbol(']')) {
+           PRBool isCaseSensitive = PR_TRUE;
+ 
+-          // If we're parsing a style sheet for an HTML document, and
++          // For cases when this style sheet is applied to
++          // an HTML element in an HTML document, and
+           // the attribute selector is for a non-namespaced attribute,
+           // then check to see if it's one of the known attributes whose
+           // VALUE is case-insensitive.
+-          if (!mCaseSensitive && nameSpaceID == kNameSpaceID_None) {
++          if (nameSpaceID == kNameSpaceID_None) {
+             static const char* caseInsensitiveHTMLAttribute[] = {
+               // list based on http://www.w3.org/TR/html4/
+               "lang",
+               "dir",
+               "http-equiv",
+               "text",
+               "link",
+               "vlink",
+@@ -4703,58 +4686,41 @@ CSSParserImpl::ParseAttr(nsCSSValue& aVa
+           }
+           attr.AppendInt(nameSpaceID, 10);
+           attr.Append(PRUnichar('|'));
+           if (! GetToken(PR_FALSE)) {
+             REPORT_UNEXPECTED_EOF(PEAttributeNameEOF);
+             return PR_FALSE;
+           }
+           if (eCSSToken_Ident == mToken.mType) {
+-            if (mCaseSensitive) {
+-              attr.Append(mToken.mIdent);
+-            } else {
+-              nsAutoString buffer;
+-              ToLowerCase(mToken.mIdent, buffer);
+-              attr.Append(buffer);
+-            }
++            attr.Append(mToken.mIdent);
+           }
+           else {
+             REPORT_UNEXPECTED_TOKEN(PEAttributeNameExpected);
+             UngetToken();
+             return PR_FALSE;
+           }
+         }
+         else {  // no namespace
+-          if (mCaseSensitive) {
+-            attr = holdIdent;
+-          }
+-          else {
+-            ToLowerCase(holdIdent, attr);
+-          }
++          attr = holdIdent;
+         }
+       }
+       else if (mToken.IsSymbol('*')) {  // namespace wildcard
+         // Wildcard namespace makes no sense here and is not allowed
+         REPORT_UNEXPECTED_TOKEN(PEAttributeNameExpected);
+         UngetToken();
+         return PR_FALSE;
+       }
+       else if (mToken.IsSymbol('|')) {  // explicit NO namespace
+         if (! GetToken(PR_FALSE)) {
+           REPORT_UNEXPECTED_EOF(PEAttributeNameEOF);
+           return PR_FALSE;
+         }
+         if (eCSSToken_Ident == mToken.mType) {
+-          if (mCaseSensitive) {
+-            attr.Append(mToken.mIdent);
+-          } else {
+-            nsAutoString buffer;
+-            ToLowerCase(mToken.mIdent, buffer);
+-            attr.Append(buffer);
+-          }
++          attr.Append(mToken.mIdent);
+         }
+         else {
+           REPORT_UNEXPECTED_TOKEN(PEAttributeNameExpected);
+           UngetToken();
+           return PR_FALSE;
+         }
+       }
+       else {
+diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcessor.cpp
+--- a/layout/style/nsCSSRuleProcessor.cpp
++++ b/layout/style/nsCSSRuleProcessor.cpp
+@@ -1162,35 +1162,36 @@ IsSignificantChild(nsIContent* aChild, P
+   return nsStyleUtil::IsSignificantChild(aChild, aTextIsSignificant,
+                                          aWhitespaceIsSignificant);
+ }
+ 
+ // This function is to be called once we have fetched a value for an attribute
+ // whose namespace and name match those of aAttrSelector.  This function
+ // performs comparisons on the value only, based on aAttrSelector->mFunction.
+ static PRBool AttrMatchesValue(const nsAttrSelector* aAttrSelector,
+-                               const nsString& aValue)
++                               const nsString& aValue, PRBool isHTML)
+ {
+   NS_PRECONDITION(aAttrSelector, "Must have an attribute selector");
+ 
+   // http://lists.w3.org/Archives/Public/www-style/2008Apr/0038.html
+   // *= (CONTAINSMATCH) ~= (INCLUDES) ^= (BEGINSMATCH) $= (ENDSMATCH)
+   // all accept the empty string, but match nothing.
+   if (aAttrSelector->mValue.IsEmpty() &&
+       (aAttrSelector->mFunction == NS_ATTR_FUNC_INCLUDES ||
+        aAttrSelector->mFunction == NS_ATTR_FUNC_ENDSMATCH ||
+        aAttrSelector->mFunction == NS_ATTR_FUNC_BEGINSMATCH ||
+        aAttrSelector->mFunction == NS_ATTR_FUNC_CONTAINSMATCH))
+     return PR_FALSE;
+ 
+   const nsDefaultStringComparator defaultComparator;
+   const nsCaseInsensitiveStringComparator ciComparator;
+-  const nsStringComparator& comparator = aAttrSelector->mCaseSensitive
++  const nsStringComparator& comparator = (aAttrSelector->mCaseSensitive || !isHTML)
+                 ? static_cast<const nsStringComparator&>(defaultComparator)
+                 : static_cast<const nsStringComparator&>(ciComparator);
++
+   switch (aAttrSelector->mFunction) {
+     case NS_ATTR_FUNC_EQUALS: 
+       return aValue.Equals(aAttrSelector->mValue, comparator);
+     case NS_ATTR_FUNC_INCLUDES: 
+       return ValueIncludes(aValue, aAttrSelector->mValue, comparator);
+     case NS_ATTR_FUNC_DASHMATCH: 
+       return nsStyleUtil::DashMatchCompare(aValue, aAttrSelector->mValue, comparator);
+     case NS_ATTR_FUNC_ENDSMATCH:
+@@ -1229,28 +1230,21 @@ static PRBool SelectorMatches(RuleProces
+ 
+ {
+   // namespace/tag match
+   // optimization : bail out early if we can
+   if ((kNameSpaceID_Unknown != aSelector->mNameSpace &&
+        data.mNameSpaceID != aSelector->mNameSpace))
+     return PR_FALSE;
+ 
+-  if (aSelector->mLowercaseTag) {
+-    //If we tested that this is an HTML node in a text/html document and
+-    //had some tweaks in RuleHash, we could remove case-sensitivity from
+-    //style sheets.
+-    if (data.mIsHTMLContent) {
+-      if (data.mContentTag != aSelector->mLowercaseTag)
+-        return PR_FALSE;
+-    }
+-    else {
+-      if (data.mContentTag != aSelector->mCasedTag)
+-        return PR_FALSE;
+-    }
++  const PRBool isHTML = data.mIsHTMLContent && data.mContent->GetOwnerDoc()->IsHTML();
++
++  if (aSelector->mLowercaseTag && 
++    (isHTML ? aSelector->mLowercaseTag : aSelector->mCasedTag) != data.mContentTag) {
++	  return PR_FALSE;
+   }
+ 
+   PRBool result = PR_TRUE;
+   const PRBool isNegated = (aDependence != nsnull);
+   // The selectors for which we set node bits are, unfortunately, early
+   // in this function (because they're pseudo-classes, which are
+   // generally quick to test, and thus earlier).  If they were later,
+   // we'd probably avoid setting those bits in more cases where setting
+@@ -1674,18 +1668,21 @@ static PRBool SelectorMatches(RuleProces
+       // if no attributes on the content, no match
+       result = PR_FALSE;
+     } else {
+       NS_ASSERTION(data.mContent,
+                    "Must have content if either data.mHasAttributes or "
+                    "aAttribute is set!");
+       result = PR_TRUE;
+       nsAttrSelector* attr = aSelector->mAttrList;
++      nsIAtom* matchAttribute;
++
+       do {
+-        if (attr->mAttr == aAttribute) {
++        matchAttribute = isHTML ? attr->mLowercaseAttr : attr->mCasedAttr;
++        if (matchAttribute == aAttribute) {
+           // XXX we should really have a namespace, not just an attr
+           // name, in HasAttributeDependentStyle!
+           result = PR_TRUE;
+           if (aDependence)
+             *aDependence = PR_TRUE;
+         }
+         else if (attr->mNameSpace == kNameSpaceID_Unknown) {
+           // Attr selector with a wildcard namespace.  We have to examine all
+@@ -1696,59 +1693,59 @@ static PRBool SelectorMatches(RuleProces
+           // have a chance at matching, of course, are ones that the element
+           // actually has attributes in), short-circuiting if we ever match.
+           PRUint32 attrCount = data.mContent->GetAttrCount();
+           result = PR_FALSE;
+           for (PRUint32 i = 0; i < attrCount; ++i) {
+             const nsAttrName* attrName =
+               data.mContent->GetAttrNameAt(i);
+             NS_ASSERTION(attrName, "GetAttrCount lied or GetAttrNameAt failed");
+-            if (attrName->LocalName() != attr->mAttr) {
++            if (attrName->LocalName() != matchAttribute) {
+               continue;
+             }
+             if (attr->mFunction == NS_ATTR_FUNC_SET) {
+               result = PR_TRUE;
+             } else {
+               nsAutoString value;
+ #ifdef DEBUG
+               PRBool hasAttr =
+ #endif
+                 data.mContent->GetAttr(attrName->NamespaceID(),
+                                        attrName->LocalName(), value);
+               NS_ASSERTION(hasAttr, "GetAttrNameAt lied");
+-              result = AttrMatchesValue(attr, value);
++              result = AttrMatchesValue(attr, value, isHTML);
+             }
+ 
+             // At this point |result| has been set by us
+             // explicitly in this loop.  If it's PR_FALSE, we may still match
+             // -- the content may have another attribute with the same name but
+             // in a different namespace.  But if it's PR_TRUE, we are done (we
+             // can short-circuit the boolean OR described above).
+             if (result) {
+               break;
+             }
+           }
+         }
+         else if (attr->mFunction == NS_ATTR_FUNC_EQUALS) {
+           result =
+             data.mContent->
+-              AttrValueIs(attr->mNameSpace, attr->mAttr, attr->mValue,
+-                          attr->mCaseSensitive ? eCaseMatters : eIgnoreCase);
++              AttrValueIs(attr->mNameSpace, matchAttribute, attr->mValue,
++                        (!isHTML || attr->mCaseSensitive) ? eCaseMatters : eIgnoreCase);
+         }
+-        else if (!data.mContent->HasAttr(attr->mNameSpace, attr->mAttr)) {
++        else if (!data.mContent->HasAttr(attr->mNameSpace, matchAttribute)) {
+           result = PR_FALSE;
+         }
+         else if (attr->mFunction != NS_ATTR_FUNC_SET) {
+           nsAutoString value;
+ #ifdef DEBUG
+           PRBool hasAttr =
+ #endif
+-              data.mContent->GetAttr(attr->mNameSpace, attr->mAttr, value);
++              data.mContent->GetAttr(attr->mNameSpace, matchAttribute, value);
+           NS_ASSERTION(hasAttr, "HasAttr lied");
+-          result = AttrMatchesValue(attr, value);
++          result = AttrMatchesValue(attr, value, isHTML);
+         }
+         
+         attr = attr->mNext;
+       } while (attr && result);
+     }
+   }
+   nsAtomList* IDList = aSelector->mIDList;
+   if (result && IDList) {
+@@ -2321,17 +2318,17 @@ AddRule(RuleValue* aRuleInfo, void* aCas
+       // Build mClassSelectors
+       if (negation->mClassList) {
+         classArray->AppendElement(selector);
+       }
+ 
+       // Build mAttributeSelectors.
+       for (nsAttrSelector *attr = negation->mAttrList; attr;
+            attr = attr->mNext) {
+-        nsTArray<nsCSSSelector*> *array = cascade->AttributeListFor(attr->mAttr);
++        nsTArray<nsCSSSelector*> *array = cascade->AttributeListFor(attr->mCasedAttr);
+         if (!array)
+           return PR_FALSE;
+         array->AppendElement(selector);
+       }
+     }
+   }
+ 
+   return PR_TRUE;
+diff --git a/layout/style/nsCSSStyleRule.cpp b/layout/style/nsCSSStyleRule.cpp
+--- a/layout/style/nsCSSStyleRule.cpp
++++ b/layout/style/nsCSSStyleRule.cpp
+@@ -194,58 +194,70 @@ nsPseudoClassList::~nsPseudoClassList(vo
+   if (u.mMemory)
+     NS_Free(u.mMemory);
+   NS_CSS_DELETE_LIST_MEMBER(nsPseudoClassList, this, mNext);
+ }
+ 
+ nsAttrSelector::nsAttrSelector(PRInt32 aNameSpace, const nsString& aAttr)
+   : mValue(),
+     mNext(nsnull),
+-    mAttr(nsnull),
++    mLowercaseAttr(nsnull),
++    mCasedAttr(nsnull),
+     mNameSpace(aNameSpace),
+     mFunction(NS_ATTR_FUNC_SET),
+     mCaseSensitive(1)
+ {
+   MOZ_COUNT_CTOR(nsAttrSelector);
+ 
+-  mAttr = do_GetAtom(aAttr);
++  nsAutoString lowercase;
++  ToLowerCase(aAttr, lowercase);
++  
++  mCasedAttr = do_GetAtom(aAttr);
++  mLowercaseAttr = do_GetAtom(lowercase);
+ }
+ 
+ nsAttrSelector::nsAttrSelector(PRInt32 aNameSpace, const nsString& aAttr, PRUint8 aFunction, 
+                                const nsString& aValue, PRBool aCaseSensitive)
+   : mValue(aValue),
+     mNext(nsnull),
+-    mAttr(nsnull),
++    mLowercaseAttr(nsnull),
++    mCasedAttr(nsnull),
+     mNameSpace(aNameSpace),
+     mFunction(aFunction),
+     mCaseSensitive(aCaseSensitive)
+ {
+   MOZ_COUNT_CTOR(nsAttrSelector);
+ 
+-  mAttr = do_GetAtom(aAttr);
++  nsAutoString lowercase;
++  ToLowerCase(aAttr, lowercase);
++  
++  mCasedAttr = do_GetAtom(aAttr);
++  mLowercaseAttr = do_GetAtom(lowercase);
+ }
+ 
+-nsAttrSelector::nsAttrSelector(PRInt32 aNameSpace, nsIAtom* aAttr,
+-                               PRUint8 aFunction, const nsString& aValue,
+-                               PRBool aCaseSensitive)
++nsAttrSelector::nsAttrSelector(PRInt32 aNameSpace,  nsIAtom* aLowercaseAttr,
++                               nsIAtom* aCasedAttr, PRUint8 aFunction, 
++                               const nsString& aValue, PRBool aCaseSensitive)
+   : mValue(aValue),
+     mNext(nsnull),
+-    mAttr(aAttr),
++    mLowercaseAttr(aLowercaseAttr),
++    mCasedAttr(aCasedAttr),
+     mNameSpace(aNameSpace),
+     mFunction(aFunction),
+     mCaseSensitive(aCaseSensitive)
+ {
+   MOZ_COUNT_CTOR(nsAttrSelector);
+ }
+ 
+ nsAttrSelector*
+ nsAttrSelector::Clone(PRBool aDeep) const
+ {
+   nsAttrSelector *result =
+-    new nsAttrSelector(mNameSpace, mAttr, mFunction, mValue, mCaseSensitive);
++    new nsAttrSelector(mNameSpace, mLowercaseAttr, mCasedAttr, 
++                       mFunction, mValue, mCaseSensitive);
+ 
+   if (aDeep)
+     NS_CSS_CLONE_LIST_MEMBER(nsAttrSelector, this, mNext, result, (PR_FALSE));
+ 
+   return result;
+ }
+ 
+ nsAttrSelector::~nsAttrSelector(void)
+@@ -332,33 +344,28 @@ void nsCSSSelector::Reset(void)
+   mOperator = PRUnichar(0);
+ }
+ 
+ void nsCSSSelector::SetNameSpace(PRInt32 aNameSpace)
+ {
+   mNameSpace = aNameSpace;
+ }
+ 
+-void nsCSSSelector::SetTag(const nsString& aTag, PRBool aCaseMatters)
++void nsCSSSelector::SetTag(const nsString& aTag)
+ {
+   if (aTag.IsEmpty()) {
+     mLowercaseTag = mCasedTag =  nsnull;
+     return;
+   }
+ 
+   mCasedTag = do_GetAtom(aTag);
+  
+-  if (aCaseMatters) {
+-    mLowercaseTag = mCasedTag;
+-  } 
+-  else {
+-    nsAutoString lowercase(aTag);
+-    ToLowerCase(lowercase);
+-    mLowercaseTag = do_GetAtom(lowercase);
+-  }
++  nsAutoString lowercase;
++  ToLowerCase(aTag, lowercase);
++  mLowercaseTag = do_GetAtom(lowercase);
+ }
+ 
+ void nsCSSSelector::AddID(const nsString& aID)
+ {
+   if (!aID.IsEmpty()) {
+     nsAtomList** list = &mIDList;
+     while (nsnull != *list) {
+       list = &((*list)->mNext);
+@@ -652,17 +659,17 @@ nsCSSSelector::AppendToStringWithoutComb
+             nsAutoString prefix;
+             prefixAtom->ToString(prefix);
+             aString.Append(prefix);
+             aString.Append(PRUnichar('|'));
+           }
+         }
+       }
+       // Append the attribute name
+-      list->mAttr->ToString(temp);
++      list->mCasedAttr->ToString(temp);
+       aString.Append(temp);
+ 
+       if (list->mFunction != NS_ATTR_FUNC_SET) {
+         // Append the function
+         if (list->mFunction == NS_ATTR_FUNC_INCLUDES)
+           aString.Append(PRUnichar('~'));
+         else if (list->mFunction == NS_ATTR_FUNC_DASHMATCH)
+           aString.Append(PRUnichar('|'));
+diff --git a/layout/style/nsICSSLoader.h b/layout/style/nsICSSLoader.h
+--- a/layout/style/nsICSSLoader.h
++++ b/layout/style/nsICSSLoader.h
+@@ -67,17 +67,16 @@ typedef void (*nsCSSLoaderCallbackFunc)(
+ 
+ class nsICSSLoader : public nsISupports {
+ public:
+   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ICSS_LOADER_IID)
+ 
+   NS_IMETHOD Init(nsIDocument* aDocument) = 0;
+   NS_IMETHOD DropDocumentReference(void) = 0; // notification that doc is going away
+ 
+-  NS_IMETHOD SetCaseSensitive(PRBool aCaseSensitive) = 0;
+   NS_IMETHOD SetCompatibilityMode(nsCompatibility aCompatMode) = 0;
+   NS_IMETHOD SetPreferredSheet(const nsAString& aTitle) = 0;
+   NS_IMETHOD GetPreferredSheet(nsAString& aTitle) = 0;
+ 
+   // Get/Recycle a CSS parser for general use
+   NS_IMETHOD GetParserFor(nsICSSStyleSheet* aSheet,
+                           nsICSSParser** aParser) = 0;
+   NS_IMETHOD RecycleParser(nsICSSParser* aParser) = 0;
+diff --git a/layout/style/nsICSSParser.h b/layout/style/nsICSSParser.h
+--- a/layout/style/nsICSSParser.h
++++ b/layout/style/nsICSSParser.h
+@@ -69,19 +69,16 @@ class nsICSSParser : public nsISupports 
+ public:
+   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ICSS_PARSER_IID)
+ 
+   // Set a style sheet for the parser to fill in. The style sheet must
+   // implement the nsICSSStyleSheet interface.  Null can be passed in to clear
+   // out an existing stylesheet reference.
+   NS_IMETHOD SetStyleSheet(nsICSSStyleSheet* aSheet) = 0;
+ 
+-  // Set whether or not tags & classes are case sensitive or uppercased
+-  NS_IMETHOD SetCaseSensitive(PRBool aCaseSensitive) = 0;
+-
+   // Set whether or not to emulate Nav quirks
+   NS_IMETHOD SetQuirkMode(PRBool aQuirkMode) = 0;
+ 
+ #ifdef  MOZ_SVG
+   // Set whether or not we are in an SVG element
+   NS_IMETHOD SetSVGMode(PRBool aSVGMode) = 0;
+ #endif
+ 
+diff --git a/layout/style/nsICSSStyleRule.h b/layout/style/nsICSSStyleRule.h
+--- a/layout/style/nsICSSStyleRule.h
++++ b/layout/style/nsICSSStyleRule.h
+@@ -116,29 +116,32 @@ private:
+ #define NS_ATTR_FUNC_ENDSMATCH  5     // [attr$=value] (ends with)
+ #define NS_ATTR_FUNC_CONTAINSMATCH 6  // [attr*=value] (contains substring)
+ 
+ struct nsAttrSelector {
+ public:
+   nsAttrSelector(PRInt32 aNameSpace, const nsString& aAttr);
+   nsAttrSelector(PRInt32 aNameSpace, const nsString& aAttr, PRUint8 aFunction, 
+                  const nsString& aValue, PRBool aCaseSensitive);
+-  nsAttrSelector(PRInt32 aNameSpace, nsIAtom* aAttr, PRUint8 aFunction, 
++  nsAttrSelector(PRInt32 aNameSpace, nsIAtom* aLowercaseAttr, 
++                 nsIAtom* aCasedAttr, PRUint8 aFunction, 
+                  const nsString& aValue, PRBool aCaseSensitive);
+   ~nsAttrSelector(void);
+ 
+   /** Do a deep clone.  Should be used only on the first in the linked list. */
+   nsAttrSelector* Clone() const { return Clone(PR_TRUE); }
+ 
+   nsString        mValue;
+   nsAttrSelector* mNext;
+-  nsCOMPtr<nsIAtom> mAttr;
++  nsCOMPtr<nsIAtom> mLowercaseAttr;
++  nsCOMPtr<nsIAtom> mCasedAttr;
+   PRInt32         mNameSpace;
+   PRUint8         mFunction;
+-  PRPackedBool    mCaseSensitive;
++  PRPackedBool    mCaseSensitive; // If we are in an HTML document,
++                                  // is the value case sensitive?
+ private: 
+   nsAttrSelector* Clone(PRBool aDeep) const;
+ 
+   // These are not supported and are not implemented! 
+   nsAttrSelector(const nsAttrSelector& aCopy);
+   nsAttrSelector& operator=(const nsAttrSelector& aCopy); 
+ };
+ 
+@@ -147,17 +150,17 @@ public:
+   nsCSSSelector(void);
+   ~nsCSSSelector(void);
+ 
+   /** Do a deep clone.  Should be used only on the first in the linked list. */
+   nsCSSSelector* Clone() const { return Clone(PR_TRUE, PR_TRUE); }
+ 
+   void Reset(void);
+   void SetNameSpace(PRInt32 aNameSpace);
+-  void SetTag(const nsString& aTag, PRBool aCaseSensitive);
++  void SetTag(const nsString& aTag);
+   void AddID(const nsString& aID);
+   void AddClass(const nsString& aClass);
+   void AddPseudoClass(nsIAtom* aPseudoClass);
+   void AddPseudoClass(nsIAtom* aPseudoClass, const PRUnichar* aString);
+   void AddPseudoClass(nsIAtom* aPseudoClass, const PRInt32* aIntPair);
+   void AddAttribute(PRInt32 aNameSpace, const nsString& aAttr);
+   void AddAttribute(PRInt32 aNameSpace, const nsString& aAttr, PRUint8 aFunc, 
+                     const nsString& aValue, PRBool aCaseSensitive);
+diff --git a/layout/xul/base/src/nsSliderFrame.cpp b/layout/xul/base/src/nsSliderFrame.cpp
+--- a/layout/xul/base/src/nsSliderFrame.cpp
++++ b/layout/xul/base/src/nsSliderFrame.cpp
+@@ -376,18 +376,17 @@ nsSliderFrame::DoLayout(nsBoxLayoutState
+       if (mState & NS_STATE_SET_TO_DEBUG)
+           SetDebug(aState, PR_TRUE);
+       else
+           SetDebug(aState, PR_FALSE);
+   }
+ #endif
+ 
+   // get the content area inside our borders
+-  nsRect clientRect;
+-  GetClientRect(clientRect);
++  nsRect clientRect = GetContentRect();
+ 
+   // get the scrollbar
+   nsIBox* scrollbarBox = GetScrollbar();
+   nsCOMPtr<nsIContent> scrollbar;
+   scrollbar = GetContentOfBox(scrollbarBox);
+ 
+   // get the thumb's pref size
+   nsSize thumbSize = thumbBox->GetPrefSize(aState);
+@@ -744,18 +743,17 @@ static void UpdateAttribute(nsIContent* 
+ 
+ // Use this function when you want to set the scroll position via the position
+ // of the scrollbar thumb, e.g. when dragging the slider. This function scrolls
+ // the content in such a way that thumbRect.x/.y becomes aNewThumbPos.
+ void
+ nsSliderFrame::SetCurrentThumbPosition(nsIContent* aScrollbar, nscoord aNewThumbPos,
+                                        PRBool aIsSmooth, PRBool aImmediateRedraw, PRBool aMaySnap)
+ {
+-  nsRect crect;
+-  GetClientRect(crect);
++  nsRect crect = GetContentRect();
+   nscoord offset = IsHorizontal() ? crect.x : crect.y;
+   PRInt32 newPos = NSToIntRound((aNewThumbPos - offset) / mRatio);
+   
+   if (aMaySnap && mContent->AttrValueIs(kNameSpaceID_None, nsGkAtoms::snap,
+                                         nsGkAtoms::_true, eCaseMatters)) {
+     // If snap="true", then the slider may only be set to min + (increment * x).
+     // Otherwise, the slider may be set to any positive integer.
+     PRInt32 increment = GetIncrement(aScrollbar);

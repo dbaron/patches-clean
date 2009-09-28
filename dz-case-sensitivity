@@ -692,7 +692,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
 diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcessor.cpp
 --- a/layout/style/nsCSSRuleProcessor.cpp
 +++ b/layout/style/nsCSSRuleProcessor.cpp
-@@ -1162,35 +1162,36 @@ IsSignificantChild(nsIContent* aChild, P
+@@ -1162,35 +1162,37 @@ IsSignificantChild(nsIContent* aChild, P
    return nsStyleUtil::IsSignificantChild(aChild, aTextIsSignificant,
                                           aWhitespaceIsSignificant);
  }
@@ -719,7 +719,8 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
    const nsDefaultStringComparator defaultComparator;
    const nsCaseInsensitiveStringComparator ciComparator;
 -  const nsStringComparator& comparator = aAttrSelector->mCaseSensitive
-+  const nsStringComparator& comparator = (aAttrSelector->mCaseSensitive || !isHTML)
++  const nsStringComparator& comparator =
++      (aAttrSelector->mCaseSensitive || !isHTML)
                  ? static_cast<const nsStringComparator&>(defaultComparator)
                  : static_cast<const nsStringComparator&>(ciComparator);
 +
@@ -731,7 +732,7 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
      case NS_ATTR_FUNC_DASHMATCH: 
        return nsStyleUtil::DashMatchCompare(aValue, aAttrSelector->mValue, comparator);
      case NS_ATTR_FUNC_ENDSMATCH:
-@@ -1229,28 +1230,23 @@ static PRBool SelectorMatches(RuleProces
+@@ -1229,28 +1231,23 @@ static PRBool SelectorMatches(RuleProces
  
  {
    // namespace/tag match
@@ -767,7 +768,7 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
    // in this function (because they're pseudo-classes, which are
    // generally quick to test, and thus earlier).  If they were later,
    // we'd probably avoid setting those bits in more cases where setting
-@@ -1674,18 +1670,21 @@ static PRBool SelectorMatches(RuleProces
+@@ -1674,18 +1671,21 @@ static PRBool SelectorMatches(RuleProces
        // if no attributes on the content, no match
        result = PR_FALSE;
      } else {
@@ -790,7 +791,7 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
          }
          else if (attr->mNameSpace == kNameSpaceID_Unknown) {
            // Attr selector with a wildcard namespace.  We have to examine all
-@@ -1696,59 +1695,59 @@ static PRBool SelectorMatches(RuleProces
+@@ -1696,59 +1696,60 @@ static PRBool SelectorMatches(RuleProces
            // have a chance at matching, of course, are ones that the element
            // actually has attributes in), short-circuiting if we ever match.
            PRUint32 attrCount = data.mContent->GetAttrCount();
@@ -833,7 +834,8 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
 -              AttrValueIs(attr->mNameSpace, attr->mAttr, attr->mValue,
 -                          attr->mCaseSensitive ? eCaseMatters : eIgnoreCase);
 +              AttrValueIs(attr->mNameSpace, matchAttribute, attr->mValue,
-+                        (!isHTML || attr->mCaseSensitive) ? eCaseMatters : eIgnoreCase);
++                          (!isHTML || attr->mCaseSensitive) ? eCaseMatters
++                                                            : eIgnoreCase);
          }
 -        else if (!data.mContent->HasAttr(attr->mNameSpace, attr->mAttr)) {
 +        else if (!data.mContent->HasAttr(attr->mNameSpace, matchAttribute)) {
@@ -857,7 +859,7 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
    }
    nsAtomList* IDList = aSelector->mIDList;
    if (result && IDList) {
-@@ -2321,17 +2320,17 @@ AddRule(RuleValue* aRuleInfo, void* aCas
+@@ -2321,17 +2322,18 @@ AddRule(RuleValue* aRuleInfo, void* aCas
        // Build mClassSelectors
        if (negation->mClassList) {
          classArray->AppendElement(selector);
@@ -867,7 +869,8 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
        for (nsAttrSelector *attr = negation->mAttrList; attr;
             attr = attr->mNext) {
 -        nsTArray<nsCSSSelector*> *array = cascade->AttributeListFor(attr->mAttr);
-+        nsTArray<nsCSSSelector*> *array = cascade->AttributeListFor(attr->mCasedAttr);
++        nsTArray<nsCSSSelector*> *array =
++          cascade->AttributeListFor(attr->mCasedAttr);
          if (!array)
            return PR_FALSE;
          array->AppendElement(selector);

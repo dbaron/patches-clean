@@ -5,7 +5,7 @@ Bug 507762:  Parse CSS style sheets independently of case-sensitivity, and inste
 diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
 --- a/content/base/src/nsDocument.cpp
 +++ b/content/base/src/nsDocument.cpp
-@@ -1859,18 +1859,17 @@ nsDocument::Init()
+@@ -1860,18 +1860,17 @@ nsDocument::Init()
                   NS_ERROR_OUT_OF_MEMORY);
  
  
@@ -111,7 +111,7 @@ diff --git a/layout/base/nsCSSFrameConstructor.cpp b/layout/base/nsCSSFrameConst
  #include "nsTableOuterFrame.h"
  #include "nsIDOMXULElement.h"
  #include "nsHTMLContainerFrame.h"
-@@ -1711,41 +1712,48 @@ nsCSSFrameConstructor::CreateGeneratedCo
+@@ -1707,41 +1708,48 @@ nsCSSFrameConstructor::CreateGeneratedCo
                                  nsDependentString(data.mContent.mString),
                                  nsnull, nsnull);
  
@@ -298,7 +298,7 @@ new file mode 100644
 diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.list
 --- a/layout/reftests/bugs/reftest.list
 +++ b/layout/reftests/bugs/reftest.list
-@@ -1304,11 +1304,15 @@ fails-if(MOZ_WIDGET_TOOLKIT!="cocoa") ==
+@@ -1304,16 +1304,20 @@ fails-if(MOZ_WIDGET_TOOLKIT!="cocoa") ==
  == 503364-1a.html 503364-1-ref.html
  == 503364-1b.html 503364-1-ref.html
  == 504032-1.html 504032-1-ref.html
@@ -314,6 +314,11 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
  == 508919-1.xhtml 508919-1-ref.xhtml
  == 509155-1.xhtml 509155-1-ref.xhtml
  == 512410.html 512410-ref.html
+ == 512631-1.html 512631-1-ref.html
+ == 513153-1a.html 513153-1-ref.html
+ == 513153-1b.html 513153-1-ref.html
+ == 513153-2a.html 513153-2-ref.html
+ == 513153-2b.html 513153-2-ref.html
 diff --git a/layout/style/nsCSSLoader.cpp b/layout/style/nsCSSLoader.cpp
 --- a/layout/style/nsCSSLoader.cpp
 +++ b/layout/style/nsCSSLoader.cpp
@@ -604,12 +609,15 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
            PRBool isCaseSensitive = PR_TRUE;
  
 -          // If we're parsing a style sheet for an HTML document, and
-+          // For cases when this style sheet is applied to
-+          // an HTML element in an HTML document, and
-           // the attribute selector is for a non-namespaced attribute,
-           // then check to see if it's one of the known attributes whose
-           // VALUE is case-insensitive.
+-          // the attribute selector is for a non-namespaced attribute,
+-          // then check to see if it's one of the known attributes whose
+-          // VALUE is case-insensitive.
 -          if (!mCaseSensitive && nameSpaceID == kNameSpaceID_None) {
++          // For cases when this style sheet is applied to an HTML
++          // element in an HTML document, and the attribute selector is
++          // for a non-namespaced attribute, then check to see if it's
++          // one of the known attributes whose VALUE is
++          // case-insensitive.
 +          if (nameSpaceID == kNameSpaceID_None) {
              static const char* caseInsensitiveHTMLAttribute[] = {
                // list based on http://www.w3.org/TR/html4/
@@ -723,7 +731,7 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
      case NS_ATTR_FUNC_DASHMATCH: 
        return nsStyleUtil::DashMatchCompare(aValue, aAttrSelector->mValue, comparator);
      case NS_ATTR_FUNC_ENDSMATCH:
-@@ -1229,28 +1230,21 @@ static PRBool SelectorMatches(RuleProces
+@@ -1229,28 +1230,23 @@ static PRBool SelectorMatches(RuleProces
  
  {
    // namespace/tag match
@@ -744,10 +752,12 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
 -      if (data.mContentTag != aSelector->mCasedTag)
 -        return PR_FALSE;
 -    }
-+  const PRBool isHTML = data.mIsHTMLContent && data.mContent->GetOwnerDoc()->IsHTML();
++  const PRBool isHTML =
++    data.mIsHTMLContent && data.mContent->GetOwnerDoc()->IsHTML();
 +
 +  if (aSelector->mLowercaseTag && 
-+    (isHTML ? aSelector->mLowercaseTag : aSelector->mCasedTag) != data.mContentTag) {
++      (isHTML ? aSelector->mLowercaseTag : aSelector->mCasedTag) !=
++        data.mContentTag) {
 +    return PR_FALSE;
    }
  
@@ -757,7 +767,7 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
    // in this function (because they're pseudo-classes, which are
    // generally quick to test, and thus earlier).  If they were later,
    // we'd probably avoid setting those bits in more cases where setting
-@@ -1674,18 +1668,21 @@ static PRBool SelectorMatches(RuleProces
+@@ -1674,18 +1670,21 @@ static PRBool SelectorMatches(RuleProces
        // if no attributes on the content, no match
        result = PR_FALSE;
      } else {
@@ -780,7 +790,7 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
          }
          else if (attr->mNameSpace == kNameSpaceID_Unknown) {
            // Attr selector with a wildcard namespace.  We have to examine all
-@@ -1696,59 +1693,59 @@ static PRBool SelectorMatches(RuleProces
+@@ -1696,59 +1695,59 @@ static PRBool SelectorMatches(RuleProces
            // have a chance at matching, of course, are ones that the element
            // actually has attributes in), short-circuiting if we ever match.
            PRUint32 attrCount = data.mContent->GetAttrCount();
@@ -847,7 +857,7 @@ diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcess
    }
    nsAtomList* IDList = aSelector->mIDList;
    if (result && IDList) {
-@@ -2321,17 +2318,17 @@ AddRule(RuleValue* aRuleInfo, void* aCas
+@@ -2321,17 +2320,17 @@ AddRule(RuleValue* aRuleInfo, void* aCas
        // Build mClassSelectors
        if (negation->mClassList) {
          classArray->AppendElement(selector);

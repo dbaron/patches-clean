@@ -35,7 +35,52 @@ diff --git a/configure.in b/configure.in
 diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
 --- a/xpcom/base/nsCycleCollector.cpp
 +++ b/xpcom/base/nsCycleCollector.cpp
-@@ -1117,17 +1117,17 @@ Fault(const char *msg, const void *ptr=n
+@@ -744,20 +744,22 @@ public:
+     void UnmarkRemainingPurple(Block *b)
+     {
+         for (nsPurpleBufferEntry *e = b->mEntries,
+                               *eEnd = e + NS_ARRAY_LENGTH(b->mEntries);
+              e != eEnd; ++e) {
+             if (!(PRUword(e->mObject) & PRUword(1))) {
+                 // This is a real entry (rather than something on the
+                 // free list).
+-                nsXPCOMCycleCollectionParticipant *cp;
+-                ToParticipant(e->mObject, &cp);
++                if (e->mObject) {
++                    nsXPCOMCycleCollectionParticipant *cp;
++                    ToParticipant(e->mObject, &cp);
+ 
+-                cp->UnmarkPurple(e->mObject);
++                    cp->UnmarkPurple(e->mObject);
++                }
+ 
+                 if (--mCount == 0)
+                     break;
+             }
+         }
+     }
+ 
+     void SelectPointers(GCGraphBuilder &builder);
+@@ -888,17 +890,17 @@ nsPurpleBuffer::SelectPointers(GCGraphBu
+     // Walk through all the blocks.
+     for (Block *b = &mFirstBlock; b; b = b->mNext) {
+         for (nsPurpleBufferEntry *e = b->mEntries,
+                               *eEnd = e + NS_ARRAY_LENGTH(b->mEntries);
+             e != eEnd; ++e) {
+             if (!(PRUword(e->mObject) & PRUword(1))) {
+                 // This is a real entry (rather than something on the
+                 // free list).
+-                if (AddPurpleRoot(aBuilder, e->mObject)) {
++                if (!e->mObject || AddPurpleRoot(aBuilder, e->mObject)) {
+ #ifdef DEBUG_CC
+                     mNormalObjects.RemoveEntry(e->mObject);
+ #endif
+                     --mCount;
+                     // Put this entry on the free list in case some
+                     // call to AddPurpleRoot fails and we don't rebuild
+                     // the free list below.
+                     e->mNextInFreeList = (nsPurpleBufferEntry*)
+@@ -1117,17 +1119,17 @@ Fault(const char *msg, const void *ptr=n
      // probably a better user experience than crashing. Besides, we
      // *should* never hit a fault.
  
@@ -54,7 +99,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  {
      printf("Fault in cycle collector: %s\n"
             "  while operating on pointer %p %s\n",
-@@ -1151,17 +1151,41 @@ Fault(const char *msg, PtrInfo *pi)
+@@ -1151,17 +1153,25 @@ Fault(const char *msg, PtrInfo *pi)
  #else
  inline void
  Fault(const char *msg, PtrInfo *pi)
@@ -63,30 +108,15 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  }
  #endif
  
-+static inline void CC_MAINTHREAD_FAULT(const char* msg, void* ptr)
+-
++static inline bool
++CheckMainThreadIfFast(const char* msg, void* ptr)
 +{
-+    NS_ASSERTION(NS_IsMainThread(), "Cycle collection is main-thread only.");
 +#ifdef NS_TLS
-+    // We have a fast inline version of NS_IsMainThread which we can use
-+    // to fault at runtime if extensions do bad threading stuff.
-+    if (!NS_IsMainThread())
-+        Fault(msg, ptr);
-+#endif
-+}
- 
-+static inline bool CC_MAINTHREAD_CHECK(const char* msg, void* ptr)
-+{
-+#ifndef NS_TLS
++    return NS_IsMainThread()
++#else
 +    return true;
 +#endif
-+    if (!NS_IsMainThread()) {
-+        nsPrintfCString str(256, "Fault in cycle collector: %s (ptr: %p)\n",
-+                            msg, ptr);
-+        nsCOMPtr<nsIRunnable> ev = new CCRunnableFaultReport(str);
-+        NS_DispatchToMainThread(ev);
-+        return false;
-+    }
-+    return true;
 +}
  
  static nsISupports *
@@ -96,7 +126,26 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
      in->QueryInterface(NS_GET_IID(nsCycleCollectionISupports),
                         getter_AddRefs(child));
      return child.get();
-@@ -2200,26 +2224,28 @@ nsCycleCollector_isScanSafe(nsISupports 
+@@ -1570,17 +1580,17 @@ void
+ nsPurpleBuffer::NoteAll(GCGraphBuilder &builder)
+ {
+     mCompatObjects.EnumerateEntries(noteAllCallback, &builder);
+ 
+     for (Block *b = &mFirstBlock; b; b = b->mNext) {
+         for (nsPurpleBufferEntry *e = b->mEntries,
+                               *eEnd = e + NS_ARRAY_LENGTH(b->mEntries);
+             e != eEnd; ++e) {
+-            if (!(PRUword(e->mObject) & PRUword(1))) {
++            if (!(PRUword(e->mObject) & PRUword(1)) && e->mObject) {
+                 builder.NoteXPCOMRoot(e->mObject);
+             }
+         }
+     }
+ }
+ #endif
+ 
+ void 
+@@ -2200,26 +2210,28 @@ nsCycleCollector_isScanSafe(nsISupports 
  
      return cp != nsnull;
  }
@@ -105,7 +154,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  PRBool
  nsCycleCollector::Suspect(nsISupports *n)
  {
-+    if (!CC_MAINTHREAD_CHECK("nsCycleCollector::Suspect called on non-main thread", n))
++    if (!CheckMainThreadIfFast())
 +        return PR_FALSE;
 +
      // Re-entering ::Suspect during collection used to be a fault, but
@@ -126,7 +175,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
      mStats.mSuspectNode++;
  
      if (nsCycleCollector_shouldSuppress(n))
-@@ -2239,25 +2265,25 @@ nsCycleCollector::Suspect(nsISupports *n
+@@ -2239,25 +2251,30 @@ nsCycleCollector::Suspect(nsISupports *n
  
      return mPurpleBuf.PutCompatObject(n);
  }
@@ -135,7 +184,12 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  PRBool
  nsCycleCollector::Forget(nsISupports *n)
  {
-+    CC_MAINTHREAD_FAULT("nsCycleCollector::Forget called on non-main thread", n);
++    if (!CheckMainThreadIfFast()) {
++        if (!mParams.mDoNothing) {
++            Fault("Forget called off main thread");
++        }
++        return PR_TRUE; // it's as good as forgotten
++    }
 +
      // Re-entering ::Forget during collection used to be a fault, but
      // we are canonicalizing nsISupports pointers using QI, so we will
@@ -154,7 +208,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  
  #ifndef __MINGW32__
      if (mParams.mHookMalloc)
-@@ -2273,26 +2299,28 @@ nsCycleCollector::Forget(nsISupports *n)
+@@ -2273,26 +2290,28 @@ nsCycleCollector::Forget(nsISupports *n)
  
      mPurpleBuf.RemoveCompatObject(n);
      return PR_TRUE;
@@ -163,7 +217,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  nsPurpleBufferEntry*
  nsCycleCollector::Suspect2(nsISupports *n)
  {
-+    if (!CC_MAINTHREAD_CHECK("nsCycleCollector::Suspect2 called on non-main thread", n))
++    if (!CheckMainThreadIfFast())
 +        return nsnull;
 +
      // Re-entering ::Suspect during collection used to be a fault, but
@@ -184,7 +238,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
      mStats.mSuspectNode++;
  
      if (nsCycleCollector_shouldSuppress(n))
-@@ -2313,25 +2341,28 @@ nsCycleCollector::Suspect2(nsISupports *
+@@ -2313,25 +2332,26 @@ nsCycleCollector::Suspect2(nsISupports *
      // Caller is responsible for filling in result's mRefCnt.
      return mPurpleBuf.Put(n);
  }
@@ -193,10 +247,8 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  PRBool
  nsCycleCollector::Forget2(nsPurpleBufferEntry *e)
  {
-+    if (!CC_MAINTHREAD_CHECK("nsCycleCollector::Forget2 called on non-main thread", e->mObject)) {
-+        e->mObject = nsnull;
++    if (!CheckMainThreadIfFast())
 +        return PR_FALSE;
-+    }
 +
      // Re-entering ::Forget during collection used to be a fault, but
      // we are canonicalizing nsISupports pointers using QI, so we will
@@ -241,6 +293,28 @@ diff --git a/xpcom/base/nscore.h b/xpcom/base/nscore.h
   *
   * NS_MUST_OVERRIDE:
   *   a method which every immediate subclass of this class must
+diff --git a/xpcom/glue/nsISupportsImpl.h b/xpcom/glue/nsISupportsImpl.h
+--- a/xpcom/glue/nsISupportsImpl.h
++++ b/xpcom/glue/nsISupportsImpl.h
+@@ -178,16 +178,18 @@ public:
+       nsPurpleBufferEntry *e = NS_CCAR_TAGGED_TO_PURPLE_ENTRY(mTagged);
+       NS_ASSERTION(e->mObject == owner, "wrong entry");
+       refcount = e->mRefCnt;
+       --refcount;
+       
+       if (NS_UNLIKELY(refcount == 0)) {
+         if (NS_UNLIKELY(!NS_CycleCollectorForget2(e))) {
+           NS_NOTREACHED("forget should not fail when reference count hits 0");
++          // Clear the entry's pointer to us.
++          e->mObject = nsnull;
+         }
+         mTagged = NS_CCAR_REFCNT_TO_TAGGED(refcount);
+       } else {
+         e->mRefCnt = refcount;
+       }
+     } else {
+       refcount = NS_CCAR_TAGGED_TO_REFCNT(mTagged);
+       --refcount;
 diff --git a/xpcom/glue/nsThreadUtils.cpp b/xpcom/glue/nsThreadUtils.cpp
 --- a/xpcom/glue/nsThreadUtils.cpp
 +++ b/xpcom/glue/nsThreadUtils.cpp

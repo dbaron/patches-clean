@@ -2,36 +2,6 @@ From: Benjamin Smedberg <benjamin@smedbergs.us>, L. David Baron <dbaron@dbaron.o
 
 Add runtime NS_IsMainThread checks to protect the cycle collector's purple buffer, and make NS_IsMainThread faster on our major platforms.  (Bug 521750)
 
-diff --git a/configure.in b/configure.in
---- a/configure.in
-+++ b/configure.in
-@@ -4152,17 +4152,25 @@ AC_CACHE_CHECK(for trouble comparing to 
-                                 template <class T> int operator!=(const T2*, const T&) { return 0; }],
-                                [Foo<int> f; return (0 != f);],
-                                ac_cv_trouble_comparing_to_zero=no,
-                                ac_cv_trouble_comparing_to_zero=yes)])
- if test "$ac_cv_trouble_comparing_to_zero" = yes ; then
-   AC_DEFINE(HAVE_CPP_TROUBLE_COMPARING_TO_ZERO)
- fi
- 
--
-+AC_CACHE_CHECK(for __thread keyword for TLS variables,
-+               ac_cv_thread_keyword,
-+               [AC_TRY_COMPILE([__thread bool tlsIsMainThread = false;],
-+                               [return tlsIsMainThread;],
-+                               ac_cv_thread_keyword=yes,
-+                               ac_cv_thread_keyword=no)])
-+if test "$ac_cv_thread_keyword" = yes; then
-+  AC_DEFINE(HAVE_THREAD_TLS_KEYWORD)
-+fi
- 
- dnl End of C++ language/feature checks
- AC_LANG_C
- 
- dnl ========================================================
- dnl =  Internationalization checks
- dnl ========================================================
- dnl
 diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
 --- a/xpcom/base/nsCycleCollector.cpp
 +++ b/xpcom/base/nsCycleCollector.cpp
@@ -99,7 +69,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  {
      printf("Fault in cycle collector: %s\n"
             "  while operating on pointer %p %s\n",
-@@ -1151,17 +1153,25 @@ Fault(const char *msg, PtrInfo *pi)
+@@ -1151,17 +1153,21 @@ Fault(const char *msg, PtrInfo *pi)
  #else
  inline void
  Fault(const char *msg, PtrInfo *pi)
@@ -112,11 +82,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
 +static inline bool
 +CheckMainThreadIfFast(const char* msg, void* ptr)
 +{
-+#ifdef NS_TLS
 +    return NS_IsMainThread()
-+#else
-+    return true;
-+#endif
 +}
  
  static nsISupports *
@@ -126,7 +92,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
      in->QueryInterface(NS_GET_IID(nsCycleCollectionISupports),
                         getter_AddRefs(child));
      return child.get();
-@@ -1570,17 +1580,17 @@ void
+@@ -1570,17 +1576,17 @@ void
  nsPurpleBuffer::NoteAll(GCGraphBuilder &builder)
  {
      mCompatObjects.EnumerateEntries(noteAllCallback, &builder);
@@ -145,7 +111,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  #endif
  
  void 
-@@ -2200,26 +2210,28 @@ nsCycleCollector_isScanSafe(nsISupports 
+@@ -2200,26 +2206,28 @@ nsCycleCollector_isScanSafe(nsISupports 
  
      return cp != nsnull;
  }
@@ -175,7 +141,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
      mStats.mSuspectNode++;
  
      if (nsCycleCollector_shouldSuppress(n))
-@@ -2239,25 +2251,30 @@ nsCycleCollector::Suspect(nsISupports *n
+@@ -2239,25 +2247,30 @@ nsCycleCollector::Suspect(nsISupports *n
  
      return mPurpleBuf.PutCompatObject(n);
  }
@@ -208,7 +174,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  
  #ifndef __MINGW32__
      if (mParams.mHookMalloc)
-@@ -2273,26 +2290,28 @@ nsCycleCollector::Forget(nsISupports *n)
+@@ -2273,26 +2286,28 @@ nsCycleCollector::Forget(nsISupports *n)
  
      mPurpleBuf.RemoveCompatObject(n);
      return PR_TRUE;
@@ -238,7 +204,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
      mStats.mSuspectNode++;
  
      if (nsCycleCollector_shouldSuppress(n))
-@@ -2313,25 +2332,26 @@ nsCycleCollector::Suspect2(nsISupports *
+@@ -2313,25 +2328,26 @@ nsCycleCollector::Suspect2(nsISupports *
      // Caller is responsible for filling in result's mRefCnt.
      return mPurpleBuf.Put(n);
  }
@@ -267,32 +233,6 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
          InitMemHook();
  #endif
  
-diff --git a/xpcom/base/nscore.h b/xpcom/base/nscore.h
---- a/xpcom/base/nscore.h
-+++ b/xpcom/base/nscore.h
-@@ -461,16 +461,22 @@ typedef PRUint32 nsrefcnt;
-   * If we're being linked as standalone glue, we don't want a dynamic
-   * dependency on NSPR libs, so we skip the debug thread-safety
-   * checks, and we cannot use the THREADSAFE_ISUPPORTS macros.
-   */
- #if defined(XPCOM_GLUE) && !defined(XPCOM_GLUE_USE_NSPR)
- #define XPCOM_GLUE_AVOID_NSPR
- #endif
- 
-+#if defined(_MSC_VER) && !defined(WINCE)
-+#define NS_TLS __declspec(thread)
-+#elif defined(HAVE_THREAD_TLS_KEYWORD)
-+#define NS_TLS __thread
-+#endif
-+
- /**
-  * Static type annotations, enforced when static-checking is enabled:
-  *
-  * NS_STACK_CLASS: a class which must only be instantiated on the stack
-  * NS_FINAL_CLASS: a class which may not be subclassed
-  *
-  * NS_MUST_OVERRIDE:
-  *   a method which every immediate subclass of this class must
 diff --git a/xpcom/glue/nsISupportsImpl.h b/xpcom/glue/nsISupportsImpl.h
 --- a/xpcom/glue/nsISupportsImpl.h
 +++ b/xpcom/glue/nsISupportsImpl.h
@@ -315,141 +255,3 @@ diff --git a/xpcom/glue/nsISupportsImpl.h b/xpcom/glue/nsISupportsImpl.h
      } else {
        refcount = NS_CCAR_TAGGED_TO_REFCNT(mTagged);
        --refcount;
-diff --git a/xpcom/glue/nsThreadUtils.cpp b/xpcom/glue/nsThreadUtils.cpp
---- a/xpcom/glue/nsThreadUtils.cpp
-+++ b/xpcom/glue/nsThreadUtils.cpp
-@@ -111,30 +111,35 @@ NS_GetMainThread(nsIThread **result)
-   nsresult rv;
-   nsCOMPtr<nsIThreadManager> mgr =
-       do_GetService(NS_THREADMANAGER_CONTRACTID, &rv);
-   NS_ENSURE_SUCCESS(rv, rv);
-   return mgr->GetMainThread(result);
- #endif
- }
- 
--NS_METHOD_(PRBool)
--NS_IsMainThread()
-+
-+#ifndef MOZILLA_INTERNAL_API
-+bool NS_IsMainThread()
- {
-   PRBool result = PR_FALSE;
--#ifdef MOZILLA_INTERNAL_API
--  nsThreadManager::get()->nsThreadManager::GetIsMainThread(&result);
--#else
-   nsCOMPtr<nsIThreadManager> mgr =
--      do_GetService(NS_THREADMANAGER_CONTRACTID);
-+    do_GetService(NS_THREADMANAGER_CONTRACTID);
-   if (mgr)
-     mgr->GetIsMainThread(&result);
-+  return bool(result);
-+}
-+#elif !defined(NS_TLS)
-+bool NS_IsMainThread()
-+{
-+  PRBool result = PR_FALSE;
-+  nsThreadManager::get()->nsThreadManager::GetIsMainThread(&result);
-+  return bool(result);
-+}
- #endif
--  return result;
--}
- 
- NS_METHOD
- NS_DispatchToCurrentThread(nsIRunnable *event)
- {
- #ifdef MOZILLA_INTERNAL_API
-   nsIThread *thread = NS_GetCurrentThread();
-   if (!thread) { return NS_ERROR_UNEXPECTED; }
- #else
-diff --git a/xpcom/glue/nsThreadUtils.h b/xpcom/glue/nsThreadUtils.h
---- a/xpcom/glue/nsThreadUtils.h
-+++ b/xpcom/glue/nsThreadUtils.h
-@@ -93,24 +93,34 @@ NS_GetCurrentThread(nsIThread **result);
-  * Get a reference to the main thread.
-  *
-  * @param result
-  *   The resulting nsIThread object.
-  */
- extern NS_COM_GLUE NS_METHOD
- NS_GetMainThread(nsIThread **result);
- 
-+#if defined(MOZILLA_INTERNAL_API) && defined(NS_TLS)
-+// This is defined in nsThreadManager.cpp and initialized to `true` for the
-+// main thread by nsThreadManager::Init.
-+extern NS_COM NS_TLS bool gTLSIsMainThread;
-+
-+inline bool NS_IsMainThread()
-+{
-+  return gTLSIsMainThread;
-+}
-+#else
- /**
-  * Test to see if the current thread is the main thread.
-  *
-  * @returns PR_TRUE if the current thread is the main thread, and PR_FALSE
-  * otherwise.
-  */
--extern NS_COM_GLUE NS_METHOD_(PRBool)
--NS_IsMainThread();
-+extern NS_COM_GLUE bool NS_IsMainThread();
-+#endif
- 
- /**
-  * Dispatch the given event to the current thread.
-  *
-  * @param event
-  *   The event to dispatch.
-  *
-  * @returns NS_ERROR_INVALID_ARG
-diff --git a/xpcom/threads/nsThreadManager.cpp b/xpcom/threads/nsThreadManager.cpp
---- a/xpcom/threads/nsThreadManager.cpp
-+++ b/xpcom/threads/nsThreadManager.cpp
-@@ -33,21 +33,26 @@
-  * and other provisions required by the GPL or the LGPL. If you do not delete
-  * the provisions above, a recipient may use your version of this file under
-  * the terms of any one of the MPL, the GPL or the LGPL.
-  *
-  * ***** END LICENSE BLOCK ***** */
- 
- #include "nsThreadManager.h"
- #include "nsThread.h"
-+#include "nsThreadUtils.h"
- #include "nsIClassInfoImpl.h"
- #include "nsTArray.h"
- #include "nsAutoPtr.h"
- #include "nsAutoLock.h"
- 
-+#ifdef NS_TLS
-+NS_COM NS_TLS bool gTLSIsMainThread = false;
-+#endif
-+
- typedef nsTArray< nsRefPtr<nsThread> > nsThreadArray;
- 
- //-----------------------------------------------------------------------------
- 
- static void
- ReleaseObject(void *data)
- {
-   static_cast<nsISupports *>(data)->Release();
-@@ -96,16 +101,20 @@ nsThreadManager::Init()
-     mMainThread = nsnull;
-     return rv;
-   }
- 
-   // We need to keep a pointer to the current thread, so we can satisfy
-   // GetIsMainThread calls that occur post-Shutdown.
-   mMainThread->GetPRThread(&mMainPRThread);
- 
-+#ifdef NS_TLS
-+  gTLSIsMainThread = true;
-+#endif
-+
-   mInitialized = PR_TRUE;
-   return NS_OK;
- }
- 
- void
- nsThreadManager::Shutdown()
- {
-   NS_ASSERTION(NS_IsMainThread(), "shutdown not called from main thread");

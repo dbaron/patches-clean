@@ -41,11 +41,11 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  }
  #endif
  
- static inline bool
- CheckMainThreadIfFast(const char* msg, void* ptr)
+ static inline PRBool
+ CheckMainThreadIfFast()
  {
 +#ifdef NS_TLS
-     return NS_IsMainThread()
+     return NS_IsMainThread();
 +#else
 +    return true;
 +#endif

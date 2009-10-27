@@ -69,7 +69,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  {
      printf("Fault in cycle collector: %s\n"
             "  while operating on pointer %p %s\n",
-@@ -1151,18 +1153,16 @@ Fault(const char *msg, PtrInfo *pi)
+@@ -1151,17 +1153,25 @@ Fault(const char *msg, PtrInfo *pi)
  #else
  inline void
  Fault(const char *msg, PtrInfo *pi)
@@ -79,7 +79,16 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  #endif
  
 -
--
++static inline bool
++CheckMainThreadIfFast()
++{
++#ifdef NS_TLS
++    return NS_IsMainThread();
++#else
++    return true;
++#endif
++}
+ 
  static nsISupports *
  canonicalize(nsISupports *in)
  {
@@ -87,8 +96,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
      in->QueryInterface(NS_GET_IID(nsCycleCollectionISupports),
                         getter_AddRefs(child));
      return child.get();
- }
-@@ -1570,17 +1570,17 @@ void
+@@ -1570,17 +1580,17 @@ void
  nsPurpleBuffer::NoteAll(GCGraphBuilder &builder)
  {
      mCompatObjects.EnumerateEntries(noteAllCallback, &builder);
@@ -107,7 +115,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  #endif
  
  void 
-@@ -2200,26 +2200,28 @@ nsCycleCollector_isScanSafe(nsISupports 
+@@ -2200,26 +2210,28 @@ nsCycleCollector_isScanSafe(nsISupports 
  
      return cp != nsnull;
  }
@@ -116,7 +124,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  PRBool
  nsCycleCollector::Suspect(nsISupports *n)
  {
-+    if (!NS_IsMainThread())
++    if (!CheckMainThreadIfFast())
 +        return PR_FALSE;
 +
      // Re-entering ::Suspect during collection used to be a fault, but
@@ -137,7 +145,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
      mStats.mSuspectNode++;
  
      if (nsCycleCollector_shouldSuppress(n))
-@@ -2239,25 +2241,30 @@ nsCycleCollector::Suspect(nsISupports *n
+@@ -2239,25 +2251,30 @@ nsCycleCollector::Suspect(nsISupports *n
  
      return mPurpleBuf.PutCompatObject(n);
  }
@@ -146,7 +154,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  PRBool
  nsCycleCollector::Forget(nsISupports *n)
  {
-+    if (!NS_IsMainThread()) {
++    if (!CheckMainThreadIfFast()) {
 +        if (!mParams.mDoNothing) {
 +            Fault("Forget called off main thread");
 +        }
@@ -170,7 +178,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  
  #ifndef __MINGW32__
      if (mParams.mHookMalloc)
-@@ -2273,26 +2280,28 @@ nsCycleCollector::Forget(nsISupports *n)
+@@ -2273,26 +2290,28 @@ nsCycleCollector::Forget(nsISupports *n)
  
      mPurpleBuf.RemoveCompatObject(n);
      return PR_TRUE;
@@ -179,7 +187,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  nsPurpleBufferEntry*
  nsCycleCollector::Suspect2(nsISupports *n)
  {
-+    if (!NS_IsMainThread())
++    if (!CheckMainThreadIfFast())
 +        return nsnull;
 +
      // Re-entering ::Suspect during collection used to be a fault, but
@@ -200,7 +208,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
      mStats.mSuspectNode++;
  
      if (nsCycleCollector_shouldSuppress(n))
-@@ -2313,25 +2322,26 @@ nsCycleCollector::Suspect2(nsISupports *
+@@ -2313,25 +2332,26 @@ nsCycleCollector::Suspect2(nsISupports *
      // Caller is responsible for filling in result's mRefCnt.
      return mPurpleBuf.Put(n);
  }
@@ -209,7 +217,7 @@ diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
  PRBool
  nsCycleCollector::Forget2(nsPurpleBufferEntry *e)
  {
-+    if (!NS_IsMainThread())
++    if (!CheckMainThreadIfFast())
 +        return PR_FALSE;
 +
      // Re-entering ::Forget during collection used to be a fault, but

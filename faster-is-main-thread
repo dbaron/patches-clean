@@ -1,11 +1,11 @@
 From: Benjamin Smedberg <benjamin@smedbergs.us>
 
-Make NS_IsMainThread faster on our major platforms.  (Bug 521750)
+Make NS_IsMainThread faster on our major platforms.  (Bug 521750)  r=dbaron
 
 diff --git a/configure.in b/configure.in
 --- a/configure.in
 +++ b/configure.in
-@@ -4152,17 +4152,25 @@ AC_CACHE_CHECK(for trouble comparing to 
+@@ -4155,17 +4155,25 @@ AC_CACHE_CHECK(for trouble comparing to 
                                  template <class T> int operator!=(const T2*, const T&) { return 0; }],
                                 [Foo<int> f; return (0 != f);],
                                 ac_cv_trouble_comparing_to_zero=no,
@@ -32,31 +32,6 @@ diff --git a/configure.in b/configure.in
  dnl =  Internationalization checks
  dnl ========================================================
  dnl
-diff --git a/xpcom/base/nsCycleCollector.cpp b/xpcom/base/nsCycleCollector.cpp
---- a/xpcom/base/nsCycleCollector.cpp
-+++ b/xpcom/base/nsCycleCollector.cpp
-@@ -1156,17 +1156,21 @@ Fault(const char *msg, PtrInfo *pi)
- {
-     Fault(msg, pi->mPointer);
- }
- #endif
- 
- static inline PRBool
- CheckMainThreadIfFast()
- {
-+#ifdef NS_TLS
-     return NS_IsMainThread();
-+#else
-+    return true;
-+#endif
- }
- 
- static nsISupports *
- canonicalize(nsISupports *in)
- {
-     nsCOMPtr<nsISupports> child;
-     in->QueryInterface(NS_GET_IID(nsCycleCollectionISupports),
-                        getter_AddRefs(child));
 diff --git a/xpcom/base/nscore.h b/xpcom/base/nscore.h
 --- a/xpcom/base/nscore.h
 +++ b/xpcom/base/nscore.h
@@ -86,7 +61,7 @@ diff --git a/xpcom/base/nscore.h b/xpcom/base/nscore.h
 diff --git a/xpcom/glue/nsThreadUtils.cpp b/xpcom/glue/nsThreadUtils.cpp
 --- a/xpcom/glue/nsThreadUtils.cpp
 +++ b/xpcom/glue/nsThreadUtils.cpp
-@@ -111,30 +111,35 @@ NS_GetMainThread(nsIThread **result)
+@@ -111,30 +111,39 @@ NS_GetMainThread(nsIThread **result)
    nsresult rv;
    nsCOMPtr<nsIThreadManager> mgr =
        do_GetService(NS_THREADMANAGER_CONTRACTID, &rv);
@@ -97,7 +72,6 @@ diff --git a/xpcom/glue/nsThreadUtils.cpp b/xpcom/glue/nsThreadUtils.cpp
  
 -NS_METHOD_(PRBool)
 -NS_IsMainThread()
-+
 +#ifndef MOZILLA_INTERNAL_API
 +bool NS_IsMainThread()
  {
@@ -119,6 +93,11 @@ diff --git a/xpcom/glue/nsThreadUtils.cpp b/xpcom/glue/nsThreadUtils.cpp
 +  nsThreadManager::get()->nsThreadManager::GetIsMainThread(&result);
 +  return bool(result);
 +}
++#elif !defined(MOZ_ENABLE_LIBXUL)
++bool NS_IsMainThread()
++{
++  return gTLSIsMainThread;
++}
  #endif
 -  return result;
 -}
@@ -133,7 +112,7 @@ diff --git a/xpcom/glue/nsThreadUtils.cpp b/xpcom/glue/nsThreadUtils.cpp
 diff --git a/xpcom/glue/nsThreadUtils.h b/xpcom/glue/nsThreadUtils.h
 --- a/xpcom/glue/nsThreadUtils.h
 +++ b/xpcom/glue/nsThreadUtils.h
-@@ -93,24 +93,34 @@ NS_GetCurrentThread(nsIThread **result);
+@@ -93,24 +93,38 @@ NS_GetCurrentThread(nsIThread **result);
   * Get a reference to the main thread.
   *
   * @param result
@@ -145,12 +124,16 @@ diff --git a/xpcom/glue/nsThreadUtils.h b/xpcom/glue/nsThreadUtils.h
 +#if defined(MOZILLA_INTERNAL_API) && defined(NS_TLS)
 +// This is defined in nsThreadManager.cpp and initialized to `true` for the
 +// main thread by nsThreadManager::Init.
-+extern NS_COM NS_TLS bool gTLSIsMainThread;
++extern NS_TLS bool gTLSIsMainThread;
 +
++#ifdef MOZ_ENABLE_LIBXUL
 +inline bool NS_IsMainThread()
 +{
 +  return gTLSIsMainThread;
 +}
++#else
++NS_COM bool NS_IsMainThread();
++#endif
 +#else
  /**
   * Test to see if the current thread is the main thread.
@@ -189,7 +172,7 @@ diff --git a/xpcom/threads/nsThreadManager.cpp b/xpcom/threads/nsThreadManager.c
  #include "nsAutoLock.h"
  
 +#ifdef NS_TLS
-+NS_COM NS_TLS bool gTLSIsMainThread = false;
++NS_TLS bool gTLSIsMainThread = false;
 +#endif
 +
  typedef nsTArray< nsRefPtr<nsThread> > nsThreadArray;

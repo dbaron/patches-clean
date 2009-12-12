@@ -1,0 +1,70 @@
+From: Robert O'Callahan <roc@ocallahan.org>
+
+Bug 532404: If SW_SCROLLCHILDREN was used, invalidate the region in all descendant windows as well.  r=jmathies
+
+diff --git a/widget/src/windows/nsWindow.cpp b/widget/src/windows/nsWindow.cpp
+--- a/widget/src/windows/nsWindow.cpp
++++ b/widget/src/windows/nsWindow.cpp
+@@ -2222,16 +2222,39 @@ HasDescendantWindowOutsideRect(DWORD aTh
+     if (HasDescendantWindowOutsideRect(aThisThreadID, child, aScreenRect)) {
+       return PR_TRUE;
+     }
+   }
+ 
+   return PR_FALSE;
+ }
+ 
++static void
++InvalidateRgnInWindowSubtree(HWND aWnd, HRGN aRgn, HRGN aTmpRgn)
++{
++  RECT clientRect;
++  ::GetClientRect(aWnd, &clientRect);
++  ::SetRectRgn(aTmpRgn, clientRect.left, clientRect.top,
++               clientRect.right, clientRect.bottom);
++  if (::CombineRgn(aTmpRgn, aTmpRgn, aRgn, RGN_AND) == NULLREGION) {
++    return;
++  }
++
++  ::InvalidateRgn(aWnd, aTmpRgn, FALSE);
++
++  for (HWND child = ::GetWindow(aWnd, GW_CHILD); child;
++       child = ::GetWindow(child, GW_HWNDNEXT)) {
++    POINT pt = { 0, 0 };
++    ::MapWindowPoints(child, aWnd, &pt, 1);
++    ::OffsetRgn(aRgn, -pt.x, -pt.y);
++    InvalidateRgnInWindowSubtree(child, aRgn, aTmpRgn);
++    ::OffsetRgn(aRgn, pt.x, pt.y);
++  }
++}
++
+ void
+ nsWindow::Scroll(const nsIntPoint& aDelta,
+                  const nsTArray<nsIntRect>& aDestRects,
+                  const nsTArray<Configuration>& aConfigurations)
+ {
+   // We use SW_SCROLLCHILDREN if all the windows that intersect the
+   // affected area are moving by the scroll amount.
+   // First, build the set of widgets that are to be moved by the scroll
+@@ -2357,17 +2380,21 @@ nsWindow::Scroll(const nsIntPoint& aDelt
+     // area of A, and then the ScrollWindowEx for B will refuse to fully
+     // blit into B's destination. This produces nasty temporary glitches.
+     // We combat this by having ScrollWindowEx not invalidate directly,
+     // but give us back the region that needs to be invalidated,
+     // and restricting that region to the destination before invalidating
+     // it.
+     ::SetRectRgn(destRgn, destRect.x, destRect.y, destRect.XMost(), destRect.YMost());
+     ::CombineRgn(updateRgn, updateRgn, destRgn, RGN_AND);
+-    ::InvalidateRgn(mWnd, updateRgn, FALSE);
++    if (flags & SW_SCROLLCHILDREN) {
++      InvalidateRgnInWindowSubtree(mWnd, updateRgn, destRgn);
++    } else {
++      ::InvalidateRgn(mWnd, updateRgn, FALSE);
++    }
+   }
+ 
+   ::DeleteObject((HGDIOBJ)updateRgn);
+   ::DeleteObject((HGDIOBJ)destRgn);
+ 
+   // Now make sure all children actually get positioned, sized and clipped
+   // correctly. If SW_SCROLLCHILDREN already moved widgets to their correct
+   // locations, then the SetWindowPos calls this triggers will just be

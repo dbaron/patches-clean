@@ -1,0 +1,253 @@
+From: Robert O'Callahan <roc@ocallahan.org>
+
+Bug 530686: only create an nsDisplayTableBorderBackground when it's going to have something to paint, since having one can disable some scrolling optimizations.  r=dbaron
+
+diff --git a/layout/base/tests/scrolling_helper.html b/layout/base/tests/scrolling_helper.html
+--- a/layout/base/tests/scrolling_helper.html
++++ b/layout/base/tests/scrolling_helper.html
+@@ -116,16 +116,23 @@ iframe {
+ 
+ <div id="testHiddenTable" class="testcase">
+   <table style="position:fixed; visibility:hidden; width:200px; height:200px; background:blue;">
+     <tr><td>Hidden stuff</td></tr>
+   </table>
+   <div style="height:300px; background:-moz-linear-gradient(top, red, black);"></div>
+ </div>
+ 
++<div id="testTableNoBackground" class="testcase">
++  <table style="position:fixed; width:200px; height:200px;">
++    <tr><td></td></tr>
++  </table>
++  <div style="height:300px; background:-moz-linear-gradient(top, red, black);"></div>
++</div>
++
+ <script>
+ var testcases = document.querySelectorAll("div.testcase");
+ var tests = [];
+ var iframes = document.querySelectorAll("iframe.testcase");
+ 
+ var currentTest = -1;
+ 
+ function ok(a, msg) {
+@@ -290,16 +297,23 @@ function testClipIFRAME2(blitRegion, pai
+ 
+ function testHiddenTable(blitRegion, paintRegion) {
+   ok(blitRegion.equalsRegion(new Region([[0,0,200,180]])),
+      "Should blit everything that was already visible: " + blitRegion.toString());
+   ok(paintRegion.equalsRegion(new Region([[0,180,200,200]])),
+      "Should repaint area that was scrolled into view: " + paintRegion.toString());
+ }
+ 
++function testTableNoBackground(blitRegion, paintRegion) {
++  ok(blitRegion.equalsRegion(new Region([[0,0,200,180]])),
++     "Should blit everything that was already visible: " + blitRegion.toString());
++  ok(paintRegion.equalsRegion(new Region([[0,180,200,200]])),
++     "Should repaint area that was scrolled into view: " + paintRegion.toString());
++}
++
+ function clientRectToRect(cr)
+ {
+   return [cr.left, cr.top, cr.right, cr.bottom];
+ }
+ 
+ function regionForReason(requests, reason)
+ {
+   var rects = [];
+diff --git a/layout/generic/nsFrame.cpp b/layout/generic/nsFrame.cpp
+--- a/layout/generic/nsFrame.cpp
++++ b/layout/generic/nsFrame.cpp
+@@ -922,25 +922,16 @@ nsIFrame::DisplayCaret(nsDisplayListBuil
+ {
+   if (!IsVisibleForPainting(aBuilder))
+     return NS_OK;
+ 
+   return aLists.Content()->AppendNewToTop(
+       new (aBuilder) nsDisplayCaret(this, aBuilder->GetCaret()));
+ }
+ 
+-PRBool
+-nsFrame::HasBorder() const
+-{
+-  // Border images contribute to the background of the content area
+-  // even if there's no border proper.
+-  return (GetUsedBorder() != nsMargin(0,0,0,0) ||
+-          GetStyleBorder()->IsBorderImageLoaded());
+-}
+-
+ nsresult
+ nsFrame::DisplayBackgroundUnconditional(nsDisplayListBuilder*   aBuilder,
+                                         const nsDisplayListSet& aLists,
+                                         PRBool                  aForceBackground)
+ {
+   // Here we don't try to detect background propagation. Frames that might
+   // receive a propagated background should just set aForceBackground to
+   // PR_TRUE.
+diff --git a/layout/generic/nsFrame.h b/layout/generic/nsFrame.h
+--- a/layout/generic/nsFrame.h
++++ b/layout/generic/nsFrame.h
+@@ -536,21 +536,16 @@ public:
+   CorrectStyleParentFrame(nsIFrame* aProspectiveParent, nsIAtom* aChildPseudo);
+ 
+ protected:
+   // Protected constructor and destructor
+   nsFrame(nsStyleContext* aContext);
+   virtual ~nsFrame();
+ 
+   /**
+-   * @return PR_FALSE if this frame definitely has no borders at all
+-   */                 
+-  PRBool HasBorder() const;
+-
+-  /**
+    * To be called by |BuildDisplayLists| of this class or derived classes to add
+    * a translucent overlay if this frame's content is selected.
+    * @param aContentType an nsISelectionDisplay DISPLAY_ constant identifying
+    * which kind of content this is for
+    */
+   nsresult DisplaySelectionOverlay(nsDisplayListBuilder* aBuilder,
+       const nsDisplayListSet& aLists, PRUint16 aContentType = nsISelectionDisplay::DISPLAY_FRAMES);
+ 
+diff --git a/layout/generic/nsIFrame.h b/layout/generic/nsIFrame.h
+--- a/layout/generic/nsIFrame.h
++++ b/layout/generic/nsIFrame.h
+@@ -721,16 +721,27 @@ public:
+   virtual void SetAdditionalStyleContext(PRInt32 aIndex,
+                                          nsStyleContext* aStyleContext) = 0;
+ 
+   // returns GetStyleBorder()->mBoxShadow unless this frame is using
+   // -moz-appearance and is not chrome
+   nsCSSShadowArray* GetEffectiveBoxShadows();
+ 
+   /**
++   * @return PR_FALSE if this frame definitely has no borders at all
++   */                 
++  PRBool HasBorder() const
++  {
++    // Border images contribute to the background of the content area
++    // even if there's no border proper.
++    return (GetUsedBorder() != nsMargin(0,0,0,0) ||
++            GetStyleBorder()->IsBorderImageLoaded());
++  }
++
++  /**
+    * Accessor functions for geometric parent
+    */
+   nsIFrame* GetParent() const { return mParent; }
+   NS_IMETHOD SetParent(const nsIFrame* aParent) { mParent = (nsIFrame*)aParent; return NS_OK; }
+ 
+   /**
+    * Bounding rect of the frame. The values are in app units, and the origin is
+    * relative to the upper-left of the geometric parent. The size includes the
+diff --git a/layout/tables/nsTableCellFrame.cpp b/layout/tables/nsTableCellFrame.cpp
+--- a/layout/tables/nsTableCellFrame.cpp
++++ b/layout/tables/nsTableCellFrame.cpp
+@@ -443,18 +443,19 @@ nsTableCellFrame::BuildDisplayList(nsDis
+   // take account of 'empty-cells'
+   if (GetStyleVisibility()->IsVisible() &&
+       (NS_STYLE_TABLE_EMPTY_CELLS_HIDE != emptyCellStyle)) {
+     
+ 
+     PRBool isRoot = aBuilder->IsAtRootOfPseudoStackingContext();
+     if (!isRoot) {
+       nsDisplayTableItem* currentItem = aBuilder->GetCurrentTableItem();
+-      NS_ASSERTION(currentItem, "No current table item???");
+-      currentItem->UpdateForFrameBackground(this);
++      if (currentItem) {
++        currentItem->UpdateForFrameBackground(this);
++      }
+     }
+ 
+     // display outset box-shadows if we need to.
+     PRBool hasBoxShadow = !!(GetStyleBorder()->mBoxShadow);
+     if (hasBoxShadow) {
+       nsDisplayItem* item = new (aBuilder) nsDisplayBoxShadowOuter(this);
+       nsresult rv = aLists.BorderBackground()->AppendNewToTop(item);
+       NS_ENSURE_SUCCESS(rv, rv);
+diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
+--- a/layout/tables/nsTableFrame.cpp
++++ b/layout/tables/nsTableFrame.cpp
+@@ -1266,19 +1266,22 @@ nsTableFrame::DisplayGenericTablePart(ns
+   
+   nsAutoPushCurrentTableItem pushTableItem;
+   if (aDisplayItem) {
+     pushTableItem.Push(aBuilder, aDisplayItem);
+   }
+ 
+   if (aFrame->IsVisibleForPainting(aBuilder)) {
+     nsDisplayTableItem* currentItem = aBuilder->GetCurrentTableItem();
+-    NS_ASSERTION(currentItem, "No current table item!");
+-    currentItem->UpdateForFrameBackground(aFrame);
+-  
++    // currentItem may be null, when none of the table parts have a
++    // background or border
++    if (currentItem) {
++      currentItem->UpdateForFrameBackground(aFrame);
++    }
++
+     // Paint the outset box-shadows for the table frames
+     PRBool hasBoxShadow = aFrame->GetStyleBorder()->mBoxShadow != nsnull;
+     if (hasBoxShadow) {
+       nsDisplayItem* item = new (aBuilder) nsDisplayBoxShadowOuter(aFrame);
+       nsresult rv = lists->BorderBackground()->AppendNewToTop(item);
+       NS_ENSURE_SUCCESS(rv, rv);
+     }
+ 
+@@ -1323,29 +1326,36 @@ IsFrameAllowedInTable(nsIAtom* aType)
+          nsGkAtoms::scrollFrame == aType ||
+          nsGkAtoms::tableFrame == aType ||
+          nsGkAtoms::tableColFrame == aType ||
+          nsGkAtoms::tableColGroupFrame == aType;
+ }
+ #endif
+ 
+ static PRBool
+-AnyTablePartVisible(nsIFrame* aFrame)
++AnyTablePartHasBorderOrBackground(nsIFrame* aFrame)
+ {
+   NS_ASSERTION(IsFrameAllowedInTable(aFrame->GetType()), "unexpected frame type");
+-  if (aFrame->GetStyleVisibility()->IsVisible())
++
++  if (aFrame->GetStyleVisibility()->IsVisible() &&
++      (!aFrame->GetStyleBackground()->IsTransparent() ||
++       aFrame->GetStyleDisplay()->mAppearance ||
++       aFrame->HasBorder()))
+     return PR_TRUE;
++
+   nsTableCellFrame *cellFrame = do_QueryFrame(aFrame);
+   if (cellFrame)
+     return PR_FALSE;
++
+   nsFrameList children = aFrame->GetChildList(nsnull);
+   for (nsIFrame* f = children.FirstChild(); f; f = f->GetNextSibling()) {
+-    if (AnyTablePartVisible(f))
++    if (AnyTablePartHasBorderOrBackground(f))
+       return PR_TRUE;
+   }
++
+   return PR_FALSE;
+ }
+ 
+ // table paint code is concerned primarily with borders and bg color
+ // SEC: TODO: adjust the rect for captions 
+ NS_IMETHODIMP
+ nsTableFrame::BuildDisplayList(nsDisplayListBuilder*   aBuilder,
+                                const nsRect&           aDirtyRect,
+@@ -1366,17 +1376,17 @@ nsTableFrame::BuildDisplayList(nsDisplay
+       NS_ENSURE_SUCCESS(rv, rv);
+     }
+   }
+ 
+   nsDisplayTableItem* item = nsnull;
+   // This background is created if any of the table parts are visible.
+   // Specific visibility decisions are delegated to the table background
+   // painter, which handles borders and backgrounds for the table.
+-  if (AnyTablePartVisible(this)) {
++  if (AnyTablePartHasBorderOrBackground(this)) {
+     item = new (aBuilder) nsDisplayTableBorderBackground(this);
+     nsresult rv = aLists.BorderBackground()->AppendNewToTop(item);
+     NS_ENSURE_SUCCESS(rv, rv);
+   }
+ 
+   return DisplayGenericTablePart(aBuilder, this, aDirtyRect, aLists, item);
+ }
+ 

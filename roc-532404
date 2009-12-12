@@ -1,6 +1,6 @@
 From: Robert O'Callahan <roc@ocallahan.org>
 
-Bug 532404: If SW_SCROLLCHILDREN was used, invalidate the region in all descendant windows as well.  r=jmathies
+Bug 532404. If SW_SCROLLCHILDREN was used, invalidate the region in all descendant windows as well. r=jmathies
 
 diff --git a/widget/src/windows/nsWindow.cpp b/widget/src/windows/nsWindow.cpp
 --- a/widget/src/windows/nsWindow.cpp

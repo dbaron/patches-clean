@@ -1,6 +1,6 @@
 From: Robert O'Callahan <roc@ocallahan.org>
 
-Bug 530686: only create an nsDisplayTableBorderBackground when it's going to have something to paint, since having one can disable some scrolling optimizations.  r=dbaron
+Bug 530686. Only create an nsDisplayTableBorderBackground when it's going to have something to paint, since having one can disable some scrolling optimizations. r=dbaron
 
 diff --git a/layout/base/tests/scrolling_helper.html b/layout/base/tests/scrolling_helper.html
 --- a/layout/base/tests/scrolling_helper.html

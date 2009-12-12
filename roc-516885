@@ -1,0 +1,26 @@
+From: Robert O'Callahan <roc@ocallahan.org>
+
+Bug 516885 / Bug 525375: Fix (harmless) assertions due to nsDisplayTransform passing non-null aVisibleRegionBeforeMove. r=dbaron
+
+diff --git a/layout/base/nsDisplayList.cpp b/layout/base/nsDisplayList.cpp
+--- a/layout/base/nsDisplayList.cpp
++++ b/layout/base/nsDisplayList.cpp
+@@ -1386,17 +1386,17 @@ PRBool nsDisplayTransform::ComputeVisibi
+ 
+   nsRegion untransformedVisibleBeforeMove;
+   if (aVisibleRegionBeforeMove) {
+     // mVisibleRect contains areas visible before and after the move, so it's
+     // OK (although conservative) to just use the same regions here.
+     untransformedVisibleBeforeMove = untransformedVisible;
+   }
+   mStoredList.ComputeVisibility(aBuilder, &untransformedVisible,
+-                                &untransformedVisibleBeforeMove);
++                                aVisibleRegionBeforeMove ? &untransformedVisibleBeforeMove : nsnull);
+   return PR_TRUE;
+ }
+ 
+ #ifdef DEBUG_HIT
+ #include <time.h>
+ #endif
+ 
+ /* HitTest does some fun stuff with matrix transforms to obtain the answer. */

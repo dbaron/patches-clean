@@ -5,7 +5,7 @@ Bug 516885 / Bug 525375: Fix (harmless) assertions due to nsDisplayTransform pas
 diff --git a/layout/base/nsDisplayList.cpp b/layout/base/nsDisplayList.cpp
 --- a/layout/base/nsDisplayList.cpp
 +++ b/layout/base/nsDisplayList.cpp
-@@ -1386,17 +1386,17 @@ PRBool nsDisplayTransform::ComputeVisibi
+@@ -1461,17 +1461,19 @@ PRBool nsDisplayTransform::ComputeVisibi
  
    nsRegion untransformedVisibleBeforeMove;
    if (aVisibleRegionBeforeMove) {
@@ -15,7 +15,9 @@ diff --git a/layout/base/nsDisplayList.cpp b/layout/base/nsDisplayList.cpp
    }
    mStoredList.ComputeVisibility(aBuilder, &untransformedVisible,
 -                                &untransformedVisibleBeforeMove);
-+                                aVisibleRegionBeforeMove ? &untransformedVisibleBeforeMove : nsnull);
++                                aVisibleRegionBeforeMove
++                                  ? &untransformedVisibleBeforeMove
++                                  : nsnull);
    return PR_TRUE;
  }
  

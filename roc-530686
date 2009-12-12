@@ -166,7 +166,7 @@ diff --git a/layout/tables/nsTableCellFrame.cpp b/layout/tables/nsTableCellFrame
 diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
 --- a/layout/tables/nsTableFrame.cpp
 +++ b/layout/tables/nsTableFrame.cpp
-@@ -1266,19 +1266,22 @@ nsTableFrame::DisplayGenericTablePart(ns
+@@ -1264,19 +1264,22 @@ nsTableFrame::DisplayGenericTablePart(ns
    
    nsAutoPushCurrentTableItem pushTableItem;
    if (aDisplayItem) {
@@ -192,7 +192,7 @@ diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
        NS_ENSURE_SUCCESS(rv, rv);
      }
  
-@@ -1323,29 +1326,36 @@ IsFrameAllowedInTable(nsIAtom* aType)
+@@ -1321,29 +1324,36 @@ IsFrameAllowedInTable(nsIAtom* aType)
           nsGkAtoms::scrollFrame == aType ||
           nsGkAtoms::tableFrame == aType ||
           nsGkAtoms::tableColFrame == aType ||
@@ -232,7 +232,7 @@ diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
  NS_IMETHODIMP
  nsTableFrame::BuildDisplayList(nsDisplayListBuilder*   aBuilder,
                                 const nsRect&           aDirtyRect,
-@@ -1366,17 +1376,17 @@ nsTableFrame::BuildDisplayList(nsDisplay
+@@ -1364,17 +1374,17 @@ nsTableFrame::BuildDisplayList(nsDisplay
        NS_ENSURE_SUCCESS(rv, rv);
      }
    }

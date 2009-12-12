@@ -81,7 +81,7 @@ diff --git a/layout/tables/nsTableCellFrame.cpp b/layout/tables/nsTableCellFrame
 diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
 --- a/layout/tables/nsTableFrame.cpp
 +++ b/layout/tables/nsTableFrame.cpp
-@@ -1263,60 +1263,92 @@ nsTableFrame::DisplayGenericTablePart(ns
+@@ -1261,60 +1261,92 @@ nsTableFrame::DisplayGenericTablePart(ns
    PRBool sortEventBackgrounds = aDisplayItem && aBuilder->IsForEventDelivery();
    nsDisplayListCollection separatedCollection;
    const nsDisplayListSet* lists = sortEventBackgrounds ? &separatedCollection : &aLists;
@@ -93,7 +93,12 @@ diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
 -  nsDisplayTableItem* currentItem = aBuilder->GetCurrentTableItem();
 -  NS_ASSERTION(currentItem, "No current table item!");
 -  currentItem->UpdateForFrameBackground(aFrame);
--  
++
++  if (aFrame->IsVisibleForPainting(aBuilder)) {
++    nsDisplayTableItem* currentItem = aBuilder->GetCurrentTableItem();
++    NS_ASSERTION(currentItem, "No current table item!");
++    currentItem->UpdateForFrameBackground(aFrame);
+   
 -  // Paint the outset box-shadows for the table frames
 -  PRBool hasBoxShadow = aFrame->IsVisibleForPainting(aBuilder) &&
 -                        aFrame->GetStyleBorder()->mBoxShadow;
@@ -118,12 +123,6 @@ diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
 -    nsDisplayItem* item = new (aBuilder) nsDisplayBoxShadowInner(aFrame);
 -    nsresult rv = lists->BorderBackground()->AppendNewToTop(item);
 -    NS_ENSURE_SUCCESS(rv, rv);
-+
-+  if (aFrame->IsVisibleForPainting(aBuilder)) {
-+    nsDisplayTableItem* currentItem = aBuilder->GetCurrentTableItem();
-+    NS_ASSERTION(currentItem, "No current table item!");
-+    currentItem->UpdateForFrameBackground(aFrame);
-+  
 +    // Paint the outset box-shadows for the table frames
 +    PRBool hasBoxShadow = aFrame->GetStyleBorder()->mBoxShadow != nsnull;
 +    if (hasBoxShadow) {
@@ -202,7 +201,7 @@ diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
                                 const nsDisplayListSet& aLists)
  {
    if (!IsVisibleInSelection(aBuilder))
-@@ -1330,24 +1362,26 @@ nsTableFrame::BuildDisplayList(nsDisplay
+@@ -1328,24 +1360,26 @@ nsTableFrame::BuildDisplayList(nsDisplay
      // in its own display item, so do that to take advantage of
      // opacity and visibility optimizations
      if (deflate.IsZero()) {
@@ -237,7 +236,7 @@ diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
  {
    if (eCompatibility_NavQuirks != aPresContext->CompatibilityMode() ||
        !IsBorderCollapse())
-@@ -1641,22 +1675,17 @@ nsTableFrame::CheckRequestSpecialHeightR
+@@ -1639,22 +1673,17 @@ nsTableFrame::CheckRequestSpecialHeightR
  // change the height of row groups, rows, cells in DistributeHeightToRows after. 
  // And the row group can change the height of rows, cells in CalculateRowHeights.
  void

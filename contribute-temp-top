@@ -21,7 +21,7 @@ diff --git a/layout/reftests/css-charset/reftest.list b/layout/reftests/css-char
 diff --git a/layout/reftests/first-letter/reftest.list b/layout/reftests/first-letter/reftest.list
 --- a/layout/reftests/first-letter/reftest.list
 +++ b/layout/reftests/first-letter/reftest.list
-@@ -9,47 +9,20 @@
+@@ -9,48 +9,20 @@
  == nested-1a.html nested-1-ref.html
  == nested-1b.html nested-1-ref.html
  == nested-1c.html nested-1-ref.html
@@ -75,11 +75,12 @@ diff --git a/layout/reftests/first-letter/reftest.list b/layout/reftests/first-l
 -== 429968-2c.html 429968-2-ref.html
 -== 441418-1.html 441418-1-ref.html
 -== 469227-1.html 469227-1-ref.html
+-== 484400-1.html 484400-1-ref.html
 +== dynamic-3b.html dynamic-3-ref.html
 diff --git a/layout/reftests/first-line/reftest.list b/layout/reftests/first-line/reftest.list
 --- a/layout/reftests/first-line/reftest.list
 +++ b/layout/reftests/first-line/reftest.list
-@@ -1,31 +1,13 @@
+@@ -1,33 +1,13 @@
  # basic functionality
  == basic-1.html basic-ref.html
  
@@ -109,6 +110,8 @@ diff --git a/layout/reftests/first-line/reftest.list b/layout/reftests/first-lin
 -== stress-11.xhtml stress-11-ref.xhtml
 -
 -== border-not-apply.html border-not-apply-ref.html
+-== 287088-1.html 287088-1-ref.html
+-== 287088-2.html 287088-2-ref.html
 -== 403177-1.html 403177-1-ref.html
 -== 469227-2.html 469227-2-ref.html
 -== 469227-3.html 469227-3-ref.html
@@ -273,7 +276,7 @@ diff --git a/layout/reftests/ib-split/reftest.list b/layout/reftests/ib-split/re
 diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
 --- a/layout/reftests/reftest.list
 +++ b/layout/reftests/reftest.list
-@@ -1,200 +1,11 @@
+@@ -1,206 +1,11 @@
 -# If you mark a test as failing or random, you MUST file a bug report in
 -# bugzilla and note the bug number as a comment on the line with the
 -# failing test.
@@ -328,6 +331,9 @@ diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
 -
 -# css namespaces
 -include css-namespace/reftest.list
+-
+-# css transitions
+-include css-transitions/reftest.list
 -
 -# css values and units
 -include css-valuesandunits/reftest.list
@@ -423,6 +429,9 @@ diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
 -# svg-integration/
 -include svg-integration/reftest.list
 -
+-# tab-size/
+-include tab-size/reftest.list
+-
 -# table-anonymous-boxes/
 -include table-anonymous-boxes/reftest.list
 -
@@ -480,7 +489,7 @@ diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
 diff --git a/layout/reftests/table-background/reftest.list b/layout/reftests/table-background/reftest.list
 --- a/layout/reftests/table-background/reftest.list
 +++ b/layout/reftests/table-background/reftest.list
-@@ -1,53 +1,27 @@
+@@ -1,57 +1,27 @@
 -# these could be moved to crashtests
 -!= backgr_border-table-cell.html empty.html
 -!= backgr_border-table-column-group.html empty.html
@@ -538,6 +547,10 @@ diff --git a/layout/reftests/table-background/reftest.list b/layout/reftests/tab
  == border-separate-opacity-table-row-group.html border-separate-opacity-table-row-group-ref.html
  == border-separate-opacity-table-row.html border-separate-opacity-table-row-ref.html
  == border-separate-opacity-table.html border-separate-opacity-table-ref.html
+-!= scrollable-rowgroup-collapse-background.html scrollable-rowgroup-collapse-notref.html
+-!= scrollable-rowgroup-collapse-border.html scrollable-rowgroup-collapse-notref.html
+-!= scrollable-rowgroup-separate-background.html scrollable-rowgroup-separate-notref.html
+-!= scrollable-rowgroup-separate-border.html scrollable-rowgroup-separate-notref.html
 diff --git a/layout/reftests/table-bordercollapse/reftest.list b/layout/reftests/table-bordercollapse/reftest.list
 --- a/layout/reftests/table-bordercollapse/reftest.list
 +++ b/layout/reftests/table-bordercollapse/reftest.list

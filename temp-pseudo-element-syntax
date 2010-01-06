@@ -961,10 +961,10 @@ diff --git a/layout/reftests/ib-split/insert-into-split-inline-14.html b/layout/
      <script>
        function doTest() {
          var i = document.getElementById("i");
-         dump('a');
          i.insertBefore(document.createTextNode("Two"), i.firstChild);
        }
      </script>
+   </head>
 diff --git a/layout/reftests/ib-split/insert-into-split-inline-15.html b/layout/reftests/ib-split/insert-into-split-inline-15.html
 --- a/layout/reftests/ib-split/insert-into-split-inline-15.html
 +++ b/layout/reftests/ib-split/insert-into-split-inline-15.html

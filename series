@@ -14,5 +14,6 @@ css21-test-text-zindex
 bordercollapse-line-endings
 bordercollapse-titles
 css21-test-bordercollapse
+css21-test-bug-25888
 temp-pseudo-element-syntax
 contribute-temp-top

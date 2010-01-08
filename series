@@ -15,5 +15,6 @@ bordercollapse-line-endings
 bordercollapse-titles
 css21-test-bordercollapse
 css21-test-bug-25888
+css21-test-inline-block-inline-table
 temp-pseudo-element-syntax
 contribute-temp-top

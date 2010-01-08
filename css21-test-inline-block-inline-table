@@ -2,6 +2,22 @@ From: L. David Baron <dbaron@dbaron.org>
 
 Add test suite metadata for basic inline-block and inline-table tests.
 
+diff --git a/layout/reftests/bugs/18217-basic-1-ref.html b/layout/reftests/bugs/18217-basic-1-ref.html
+--- a/layout/reftests/bugs/18217-basic-1-ref.html
++++ b/layout/reftests/bugs/18217-basic-1-ref.html
+@@ -1,9 +1,11 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ </head>
+ <body>
+ <p>abc</p>
+ </body>
+ </html>
 diff --git a/layout/reftests/bugs/18217-basic-1.html b/layout/reftests/bugs/18217-basic-1.html
 --- a/layout/reftests/bugs/18217-basic-1.html
 +++ b/layout/reftests/bugs/18217-basic-1.html
@@ -24,6 +40,22 @@ diff --git a/layout/reftests/bugs/18217-basic-1.html b/layout/reftests/bugs/1821
  </head>
  <body>
  <p>a<span>b</span>c</p>
+ </body>
+ </html>
+diff --git a/layout/reftests/bugs/18217-basic-2-ref.html b/layout/reftests/bugs/18217-basic-2-ref.html
+--- a/layout/reftests/bugs/18217-basic-2-ref.html
++++ b/layout/reftests/bugs/18217-basic-2-ref.html
+@@ -1,9 +1,11 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ </head>
+ <body>
+ <p>abcde</p>
  </body>
  </html>
 diff --git a/layout/reftests/bugs/18217-basic-2a.html b/layout/reftests/bugs/18217-basic-2a.html
@@ -74,6 +106,25 @@ diff --git a/layout/reftests/bugs/18217-basic-2b.html b/layout/reftests/bugs/182
  <body>
  <p><span>a<span>bcd<span>x</span></span>e</span></p>
  </body>
+diff --git a/layout/reftests/bugs/18217-height-1-ref.html b/layout/reftests/bugs/18217-height-1-ref.html
+--- a/layout/reftests/bugs/18217-height-1-ref.html
++++ b/layout/reftests/bugs/18217-height-1-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ div { display: table; width: 10em; background: green; color: white; }
+ </style>
+ </head>
+ <body>
+ <div>Test<br>Test</div>
+ </body>
+ </html>
 diff --git a/layout/reftests/bugs/18217-height-1.html b/layout/reftests/bugs/18217-height-1.html
 --- a/layout/reftests/bugs/18217-height-1.html
 +++ b/layout/reftests/bugs/18217-height-1.html
@@ -94,6 +145,25 @@ diff --git a/layout/reftests/bugs/18217-height-1.html b/layout/reftests/bugs/182
  </head>
  <body>
  <div>Test<br>Test</div>
+ </body>
+ </html>
+diff --git a/layout/reftests/bugs/18217-height-2-ref.html b/layout/reftests/bugs/18217-height-2-ref.html
+--- a/layout/reftests/bugs/18217-height-2-ref.html
++++ b/layout/reftests/bugs/18217-height-2-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ div { display: table; height: 5em; background: green; color: white; }
+ </style>
+ </head>
+ <body>
+ <div>test</div>
  </body>
  </html>
 diff --git a/layout/reftests/bugs/18217-height-2.html b/layout/reftests/bugs/18217-height-2.html
@@ -118,6 +188,25 @@ diff --git a/layout/reftests/bugs/18217-height-2.html b/layout/reftests/bugs/182
  <div>test</div>
  </body>
  </html>
+diff --git a/layout/reftests/bugs/18217-valign-1-ref.html b/layout/reftests/bugs/18217-valign-1-ref.html
+--- a/layout/reftests/bugs/18217-valign-1-ref.html
++++ b/layout/reftests/bugs/18217-valign-1-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ span#table { display: inline-table; }
+ span#rowgroup { display: table-row-group; }
+ span#row { display: table-row; }
+ span#cell { display: table-cell; }
+ span#table, span#rowgroup, span#row, span#cell {
+   border: 4px solid white;
+   margin: 3px 0;
 diff --git a/layout/reftests/bugs/18217-valign-1.html b/layout/reftests/bugs/18217-valign-1.html
 --- a/layout/reftests/bugs/18217-valign-1.html
 +++ b/layout/reftests/bugs/18217-valign-1.html
@@ -142,6 +231,25 @@ diff --git a/layout/reftests/bugs/18217-valign-1.html b/layout/reftests/bugs/182
  span#table, span#rowgroup, span#row, span#cell {
    border: 4px solid white;
    margin: 3px 0;
+diff --git a/layout/reftests/bugs/18217-width-1-ref.html b/layout/reftests/bugs/18217-width-1-ref.html
+--- a/layout/reftests/bugs/18217-width-1-ref.html
++++ b/layout/reftests/bugs/18217-width-1-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ body > div { width: 10em; }
+ body > div > div { display: table; background: green; color: white; }
+ </style>
+ </head>
+ <body>
+ <div>x<div>This is some text that is wider than 10em but has no words wider than 10em.</div>z</div>
+ </body>
 diff --git a/layout/reftests/bugs/18217-width-1a.html b/layout/reftests/bugs/18217-width-1a.html
 --- a/layout/reftests/bugs/18217-width-1a.html
 +++ b/layout/reftests/bugs/18217-width-1a.html
@@ -183,6 +291,25 @@ diff --git a/layout/reftests/bugs/18217-width-1b.html b/layout/reftests/bugs/182
  </head>
  <body>
  <div>x <div>This is some text that is wider than 10em but has no words wider than 10em.</div> z</div>
+ </body>
+diff --git a/layout/reftests/bugs/18217-width-2-ref.html b/layout/reftests/bugs/18217-width-2-ref.html
+--- a/layout/reftests/bugs/18217-width-2-ref.html
++++ b/layout/reftests/bugs/18217-width-2-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ body > div { width: 10em; }
+ body > div > div { display: table; background: green; color: white; width: 20em; }
+ </style>
+ </head>
+ <body>
+ <div>x<div>y</div>z</div>
  </body>
 diff --git a/layout/reftests/bugs/18217-width-2a.html b/layout/reftests/bugs/18217-width-2a.html
 --- a/layout/reftests/bugs/18217-width-2a.html
@@ -331,6 +458,79 @@ diff --git a/layout/reftests/bugs/18217-zorder-5.html b/layout/reftests/bugs/182
  </style>
  </head>
  <body>
+diff --git a/layout/reftests/bugs/18217-zorder-ref-inline-table.html b/layout/reftests/bugs/18217-zorder-ref-inline-table.html
+--- a/layout/reftests/bugs/18217-zorder-ref-inline-table.html
++++ b/layout/reftests/bugs/18217-zorder-ref-inline-table.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ span { display: inline-table; vertical-align: top; background: green; color: green; border-bottom: 0.25em solid green; border-top: 0.25em solid green; }
+ </style>
+ </head>
+ <body>
+ <div><span>&nbsp;x&nbsp;</span></div>
+ </body>
+ </html>
+diff --git a/layout/reftests/bugs/18217-zorder-ref-inline.html b/layout/reftests/bugs/18217-zorder-ref-inline.html
+--- a/layout/reftests/bugs/18217-zorder-ref-inline.html
++++ b/layout/reftests/bugs/18217-zorder-ref-inline.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ span { vertical-align: top; background: green; color: green; border-bottom: 0.25em solid green; border-top: 0.25em solid green; }
+ </style>
+ </head>
+ <body>
+ <div><span>&nbsp;x&nbsp;</span></div>
+ </body>
+ </html>
+diff --git a/layout/reftests/bugs/18217-zorder-ref.html b/layout/reftests/bugs/18217-zorder-ref.html
+--- a/layout/reftests/bugs/18217-zorder-ref.html
++++ b/layout/reftests/bugs/18217-zorder-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-table (bug 18217)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-table test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ div { display:table; width: 2em; height: 2em; background: green; }
+ </style>
+ </head>
+ <body>
+ <div>&nbsp;</div>
+ </body>
+ </html>
+diff --git a/layout/reftests/bugs/9458-basic-1-ref.html b/layout/reftests/bugs/9458-basic-1-ref.html
+--- a/layout/reftests/bugs/9458-basic-1-ref.html
++++ b/layout/reftests/bugs/9458-basic-1-ref.html
+@@ -1,9 +1,11 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ </head>
+ <body>
+ <p>abc</p>
+ </body>
+ </html>
 diff --git a/layout/reftests/bugs/9458-basic-1.html b/layout/reftests/bugs/9458-basic-1.html
 --- a/layout/reftests/bugs/9458-basic-1.html
 +++ b/layout/reftests/bugs/9458-basic-1.html
@@ -355,6 +555,25 @@ diff --git a/layout/reftests/bugs/9458-basic-1.html b/layout/reftests/bugs/9458-
  <p>a<span>b</span>c</p>
  </body>
  </html>
+diff --git a/layout/reftests/bugs/9458-height-1-ref.html b/layout/reftests/bugs/9458-height-1-ref.html
+--- a/layout/reftests/bugs/9458-height-1-ref.html
++++ b/layout/reftests/bugs/9458-height-1-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ div { width: 10em; background: green; color: white; }
+ </style>
+ </head>
+ <body>
+ <div>Test<br>Test</div>
+ </body>
+ </html>
 diff --git a/layout/reftests/bugs/9458-height-1.html b/layout/reftests/bugs/9458-height-1.html
 --- a/layout/reftests/bugs/9458-height-1.html
 +++ b/layout/reftests/bugs/9458-height-1.html
@@ -376,6 +595,25 @@ diff --git a/layout/reftests/bugs/9458-height-1.html b/layout/reftests/bugs/9458
  <div>Test<br>Test</div>
  </body>
  </html>
+diff --git a/layout/reftests/bugs/9458-height-2-ref.html b/layout/reftests/bugs/9458-height-2-ref.html
+--- a/layout/reftests/bugs/9458-height-2-ref.html
++++ b/layout/reftests/bugs/9458-height-2-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ div { height: 5em; width:10em; background: green; color: white; }
+ </style>
+ </head>
+ <body>
+ <div>test</div>
+ </body>
+ </html>
 diff --git a/layout/reftests/bugs/9458-height-2.html b/layout/reftests/bugs/9458-height-2.html
 --- a/layout/reftests/bugs/9458-height-2.html
 +++ b/layout/reftests/bugs/9458-height-2.html
@@ -395,6 +633,24 @@ diff --git a/layout/reftests/bugs/9458-height-2.html b/layout/reftests/bugs/9458
  </head>
  <body>
  <div>test</div>
+ </body>
+ </html>
+diff --git a/layout/reftests/bugs/9458-valign-1-ref.html b/layout/reftests/bugs/9458-valign-1-ref.html
+--- a/layout/reftests/bugs/9458-valign-1-ref.html
++++ b/layout/reftests/bugs/9458-valign-1-ref.html
+@@ -1,11 +1,13 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ </head>
+ <body>
+ <table border height="200"><tr><td valign="bottom">
+ <p>abcde</p>
+ </td></tr></table>
  </body>
  </html>
 diff --git a/layout/reftests/bugs/9458-valign-1.html b/layout/reftests/bugs/9458-valign-1.html
@@ -421,6 +677,25 @@ diff --git a/layout/reftests/bugs/9458-valign-1.html b/layout/reftests/bugs/9458
  <body>
  <table border height="200"><tr><td valign="bottom">
  <p>a<span><span>x</span>bcd</span>e</p>
+diff --git a/layout/reftests/bugs/9458-valign-2-ref.html b/layout/reftests/bugs/9458-valign-2-ref.html
+--- a/layout/reftests/bugs/9458-valign-2-ref.html
++++ b/layout/reftests/bugs/9458-valign-2-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ body { background: white; color: black; }
+ span { display: inline-block; margin: 3px 0; border: 4px solid white; border-width: 4px 0; padding: 9px 0; }
+ span > span { display: block; visibility: hidden; }
+ </style>
+ </head>
+ <body>
+ <table border><tr><td>
 diff --git a/layout/reftests/bugs/9458-valign-2.html b/layout/reftests/bugs/9458-valign-2.html
 --- a/layout/reftests/bugs/9458-valign-2.html
 +++ b/layout/reftests/bugs/9458-valign-2.html
@@ -445,6 +720,25 @@ diff --git a/layout/reftests/bugs/9458-valign-2.html b/layout/reftests/bugs/9458
  </head>
  <body>
  <table border><tr><td>
+diff --git a/layout/reftests/bugs/9458-width-1-ref.html b/layout/reftests/bugs/9458-width-1-ref.html
+--- a/layout/reftests/bugs/9458-width-1-ref.html
++++ b/layout/reftests/bugs/9458-width-1-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ body > div { width: 10em; }
+ body > div > div { background: green; color: white; }
+ </style>
+ </head>
+ <body>
+ <div>x<div>This is some text that is wider than 10em but has no words wider than 10em.</div>z</div>
+ </body>
 diff --git a/layout/reftests/bugs/9458-width-1a.html b/layout/reftests/bugs/9458-width-1a.html
 --- a/layout/reftests/bugs/9458-width-1a.html
 +++ b/layout/reftests/bugs/9458-width-1a.html
@@ -486,6 +780,25 @@ diff --git a/layout/reftests/bugs/9458-width-1b.html b/layout/reftests/bugs/9458
  </head>
  <body>
  <div>x <div>This is some text that is wider than 10em but has no words wider than 10em.</div> z</div>
+ </body>
+diff --git a/layout/reftests/bugs/9458-width-2-ref.html b/layout/reftests/bugs/9458-width-2-ref.html
+--- a/layout/reftests/bugs/9458-width-2-ref.html
++++ b/layout/reftests/bugs/9458-width-2-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ body > div { width: 10em; }
+ body > div > div { background: green; color: white; width: 20em; }
+ </style>
+ </head>
+ <body>
+ <div>x<div>y</div>z</div>
  </body>
 diff --git a/layout/reftests/bugs/9458-width-2a.html b/layout/reftests/bugs/9458-width-2a.html
 --- a/layout/reftests/bugs/9458-width-2a.html
@@ -629,3 +942,60 @@ diff --git a/layout/reftests/bugs/9458-zorder-5.html b/layout/reftests/bugs/9458
  </style>
  </head>
  <body>
+diff --git a/layout/reftests/bugs/9458-zorder-ref-inline-block.html b/layout/reftests/bugs/9458-zorder-ref-inline-block.html
+--- a/layout/reftests/bugs/9458-zorder-ref-inline-block.html
++++ b/layout/reftests/bugs/9458-zorder-ref-inline-block.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ span { display: inline-block; vertical-align: top; background: green; color: green; border-bottom: 0.25em solid green; border-top: 0.25em solid green; }
+ </style>
+ </head>
+ <body>
+ <div><span>&nbsp;x&nbsp;</span></div>
+ </body>
+ </html>
+diff --git a/layout/reftests/bugs/9458-zorder-ref-inline.html b/layout/reftests/bugs/9458-zorder-ref-inline.html
+--- a/layout/reftests/bugs/9458-zorder-ref-inline.html
++++ b/layout/reftests/bugs/9458-zorder-ref-inline.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ span { vertical-align: top; background: green; color: green; border-bottom: 0.25em solid green; border-top: 0.25em solid green; }
+ </style>
+ </head>
+ <body>
+ <div><span>&nbsp;x&nbsp;</span></div>
+ </body>
+ </html>
+diff --git a/layout/reftests/bugs/9458-zorder-ref.html b/layout/reftests/bugs/9458-zorder-ref.html
+--- a/layout/reftests/bugs/9458-zorder-ref.html
++++ b/layout/reftests/bugs/9458-zorder-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
+-<title>Testcase for inline-block (bug 9458)</title>
++<title>CSS 2.1 Test Suite: Reference for inline-block test</title>
++<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ <style type="text/css">
+ div { display:block; width: 2em; height: 1em; background: green; }
+ </style>
+ </head>
+ <body>
+ <div>&nbsp;</div>
+ </body>
+ </html>

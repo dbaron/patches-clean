@@ -326,7 +326,7 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -== 315920-3d.html 315920-3-ref.html
 -!= 315920-3e.html 315920-3-ref.html
 -== 315920-4.html 315920-4-ref.html
--fails == 315920-5.html 315920-5-ref.html # bug 229915 ???
+-== 315920-5.html 315920-5-ref.html
 -== 315920-6.html 315920-6-ref.html
 -== 315920-7a.html 315920-7-ref.html
 -== 315920-7b.html 315920-7-ref.html
@@ -560,7 +560,7 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -== 367612-1f.html 367612-1-ref.html
 -!= 367612-1g.html 367612-1-ref.html
 -== 368020-1.html 368020-1-ref.html
--random == 368020-2.html 368020-2-ref.html # bug 368157 (gtk), bug 403181
+-random == 368020-2.html 368020-2-ref.html # bug 403181 comment 52 explains why this test is disabled.
 -fails == 368020-3.html 368020-3-ref.html # bug 368085
 -fails == 368020-4.html 368020-4-ref.html # bug 368085
 -random-if(MOZ_WIDGET_TOOLKIT=="gtk2") == 368020-5.html 368020-5-ref.html # bug 388591
@@ -843,7 +843,7 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -== 404301-1.html 404301-1-ref.html
 -== 404309-1a.html 404309-1-ref.html
 -== 404309-1b.html 404309-1-ref.html
--!= data:application/xml,<foo/> data:text/plain, # bug 404419
+-!= data:application/xml,<foo/> data:text/plain, # ensure we pretty-print this XML instead of letting it appear blank (test for bug 404419)
 -== 404553-1.html 404553-1-ref.html  # assertion test, also tests that marquee binding is applied correctly
 -== 404666-1.html 404666-1-ref.html
 -== 404666-2.html 404666-2-ref.html
@@ -1939,7 +1939,7 @@ diff --git a/layout/reftests/table-background/reftest.list b/layout/reftests/tab
 diff --git a/layout/reftests/table-bordercollapse/reftest.list b/layout/reftests/table-bordercollapse/reftest.list
 --- a/layout/reftests/table-bordercollapse/reftest.list
 +++ b/layout/reftests/table-bordercollapse/reftest.list
-@@ -14,55 +14,9 @@
+@@ -14,64 +14,9 @@
  == bc_dyn_col3.html bc_dyn_cg3_ref.html
  == bc_dyn_cg1.html bc_dyn_cg1_ref.html
  == bc_dyn_cg2.html bc_dyn_cg2_ref.html
@@ -1994,7 +1994,16 @@ diff --git a/layout/reftests/table-bordercollapse/reftest.list b/layout/reftests
 -== frame_vsides_rules_groups.html frame_vsides_rules_groups_ref.html
 -== frame_vsides_rules_none.html frame_vsides_rules_none_ref.html
 -== frame_vsides_rules_rows.html frame_vsides_rules_rows_ref.html
--
+-== borderhandling-1.html borderhandling-ref.html
+-== borderhandling-2.html borderhandling-ref.html
+-== borderhandling-3.html borderhandling-ref.html
+-== borderhandling-4.html borderhandling-ref.html
+-== borderhandling-5.xhtml borderhandling-ref.html
+-== borderhandling-6.xhtml borderhandling-ref.html
+-== borderhandling-7.xhtml borderhandling-ref.html
+-== borderhandling-8.html borderhandling-ref.html
+-== borderhandling-frame-border.html borderhandling-frame-border-ref.html
+-== borderhandling-rules-border.html borderhandling-rules-border-ref.html
 +== bc_borderoffset2.html bc_borderoffset2_ref.html
 diff --git a/layout/reftests/text-indent/reftest.list b/layout/reftests/text-indent/reftest.list
 --- a/layout/reftests/text-indent/reftest.list

@@ -540,7 +540,7 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
  == 234686-6.html 234686-ref.html
  == 234686-7.html 234686-ref.html
  == 234686-8.html 234686-ref.html
-@@ -191,1187 +81,24 @@ random == 99850-1b.html 99850-1-ref.html
+@@ -191,1187 +81,31 @@ random == 99850-1b.html 99850-1-ref.html
  == 234686-12.html 234686-ref.html
  == 234686-13.html 234686-ref.html
  == 234686-14.html 234686-ref.html
@@ -885,13 +885,13 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -!= 367247-l-visible.html 367247-l-hidden.html
 -!= 367247-l-hidden.html 367247-l-scroll.html
 -== 367247-l-scroll.html 367247-l-auto.html
--== 367332-1a.html 367332-1-ref.html
--== 367332-1b.html 367332-1-ref.html
--== 367332-1c.html 367332-1-ref.html
--== 367332-1d.html 367332-1-ref.html
--== 367332-1e.html 367332-1-ref.html
--== 367332-1f.html 367332-1-ref.html
--== 367332-1g.html 367332-1-ref.html
+ == 367332-1a.html 367332-1-ref.html
+ == 367332-1b.html 367332-1-ref.html
+ == 367332-1c.html 367332-1-ref.html
+ == 367332-1d.html 367332-1-ref.html
+ == 367332-1e.html 367332-1-ref.html
+ == 367332-1f.html 367332-1-ref.html
+ == 367332-1g.html 367332-1-ref.html
 -== 367375-1.html 367375-1-ref.html
 -== 367375-2.html 367375-2-ref.html
 -== 367489-1.html 367489-1-ref.html
@@ -2373,7 +2373,7 @@ diff --git a/layout/reftests/zip-list b/layout/reftests/zip-list
 new file mode 100644
 --- /dev/null
 +++ b/layout/reftests/zip-list
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,38 @@
 +bugs/reftest.list
 +bugs/9458-*
 +bugs/18217-*
@@ -2392,6 +2392,7 @@ new file mode 100644
 +bugs/243519-9b.html
 +bugs/243519-9e.html
 +bugs/243519-9f.html
++bugs/367332*
 +css-charset/
 +first-letter/[a-z]*
 +first-line/basic*

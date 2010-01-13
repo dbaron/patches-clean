@@ -2,6 +2,25 @@ From: L. David Baron <dbaron@dbaron.org>
 
 Add test suite metadata for bug 134706 tests.
 
+diff --git a/layout/reftests/bugs/134706-1-left-scrollframe-ref.html b/layout/reftests/bugs/134706-1-left-scrollframe-ref.html
+--- a/layout/reftests/bugs/134706-1-left-scrollframe-ref.html
++++ b/layout/reftests/bugs/134706-1-left-scrollframe-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 100px; background: aqua">
+   <div style="float:left; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; background:yellow; width: 200px; height: 50px">
 diff --git a/layout/reftests/bugs/134706-1-left-scrollframe.html b/layout/reftests/bugs/134706-1-left-scrollframe.html
 --- a/layout/reftests/bugs/134706-1-left-scrollframe.html
 +++ b/layout/reftests/bugs/134706-1-left-scrollframe.html
@@ -24,6 +43,25 @@ diff --git a/layout/reftests/bugs/134706-1-left-scrollframe.html b/layout/reftes
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-1-left-table-ref.html b/layout/reftests/bugs/134706-1-left-table-ref.html
+--- a/layout/reftests/bugs/134706-1-left-table-ref.html
++++ b/layout/reftests/bugs/134706-1-left-table-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 100px; background: aqua">
+   <div style="float:left; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; background:purple; width: 150px; height: 50px"></div>
 diff --git a/layout/reftests/bugs/134706-1-left-table.html b/layout/reftests/bugs/134706-1-left-table.html
 --- a/layout/reftests/bugs/134706-1-left-table.html
 +++ b/layout/reftests/bugs/134706-1-left-table.html
@@ -46,6 +84,25 @@ diff --git a/layout/reftests/bugs/134706-1-left-table.html b/layout/reftests/bug
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-1-right-scrollframe-ref.html b/layout/reftests/bugs/134706-1-right-scrollframe-ref.html
+--- a/layout/reftests/bugs/134706-1-right-scrollframe-ref.html
++++ b/layout/reftests/bugs/134706-1-right-scrollframe-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 100px; background: aqua">
+   <div style="float:right; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; background:yellow; width: 200px; height: 50px">
 diff --git a/layout/reftests/bugs/134706-1-right-scrollframe.html b/layout/reftests/bugs/134706-1-right-scrollframe.html
 --- a/layout/reftests/bugs/134706-1-right-scrollframe.html
 +++ b/layout/reftests/bugs/134706-1-right-scrollframe.html
@@ -68,6 +125,25 @@ diff --git a/layout/reftests/bugs/134706-1-right-scrollframe.html b/layout/refte
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-1-right-table-ref.html b/layout/reftests/bugs/134706-1-right-table-ref.html
+--- a/layout/reftests/bugs/134706-1-right-table-ref.html
++++ b/layout/reftests/bugs/134706-1-right-table-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 100px; background: aqua">
+   <div style="float:right; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; background:purple; width: 150px; height: 50px"></div>
 diff --git a/layout/reftests/bugs/134706-1-right-table.html b/layout/reftests/bugs/134706-1-right-table.html
 --- a/layout/reftests/bugs/134706-1-right-table.html
 +++ b/layout/reftests/bugs/134706-1-right-table.html
@@ -90,6 +166,25 @@ diff --git a/layout/reftests/bugs/134706-1-right-table.html b/layout/reftests/bu
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-2-left-ref.html b/layout/reftests/bugs/134706-2-left-ref.html
+--- a/layout/reftests/bugs/134706-2-left-ref.html
++++ b/layout/reftests/bugs/134706-2-left-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 100px; background: aqua">
+   <div style="float:left; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; background:yellow; width: 200px; height: 100px">
 diff --git a/layout/reftests/bugs/134706-2-left-scrollframe.html b/layout/reftests/bugs/134706-2-left-scrollframe.html
 --- a/layout/reftests/bugs/134706-2-left-scrollframe.html
 +++ b/layout/reftests/bugs/134706-2-left-scrollframe.html
@@ -134,6 +229,25 @@ diff --git a/layout/reftests/bugs/134706-2-left-table.html b/layout/reftests/bug
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-2-right-ref.html b/layout/reftests/bugs/134706-2-right-ref.html
+--- a/layout/reftests/bugs/134706-2-right-ref.html
++++ b/layout/reftests/bugs/134706-2-right-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 100px; background: aqua">
+   <div style="float:right; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; background:yellow; width: 200px; height: 100px">
 diff --git a/layout/reftests/bugs/134706-2-right-scrollframe.html b/layout/reftests/bugs/134706-2-right-scrollframe.html
 --- a/layout/reftests/bugs/134706-2-right-scrollframe.html
 +++ b/layout/reftests/bugs/134706-2-right-scrollframe.html
@@ -178,6 +292,25 @@ diff --git a/layout/reftests/bugs/134706-2-right-table.html b/layout/reftests/bu
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-3-left-scrollframe-ref.html b/layout/reftests/bugs/134706-3-left-scrollframe-ref.html
+--- a/layout/reftests/bugs/134706-3-left-scrollframe-ref.html
++++ b/layout/reftests/bugs/134706-3-left-scrollframe-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 100px; background: aqua">
+   <div style="float:left; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; background:purple; width: 200px; height: 50px"></div>
 diff --git a/layout/reftests/bugs/134706-3-left-scrollframe.html b/layout/reftests/bugs/134706-3-left-scrollframe.html
 --- a/layout/reftests/bugs/134706-3-left-scrollframe.html
 +++ b/layout/reftests/bugs/134706-3-left-scrollframe.html
@@ -200,6 +333,25 @@ diff --git a/layout/reftests/bugs/134706-3-left-scrollframe.html b/layout/reftes
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-3-left-table-ref.html b/layout/reftests/bugs/134706-3-left-table-ref.html
+--- a/layout/reftests/bugs/134706-3-left-table-ref.html
++++ b/layout/reftests/bugs/134706-3-left-table-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 150px; background: aqua">
+   <div style="float:left; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; clear:left; background:purple; width: 250px; height: 50px"></div>
 diff --git a/layout/reftests/bugs/134706-3-left-table.html b/layout/reftests/bugs/134706-3-left-table.html
 --- a/layout/reftests/bugs/134706-3-left-table.html
 +++ b/layout/reftests/bugs/134706-3-left-table.html
@@ -222,6 +374,25 @@ diff --git a/layout/reftests/bugs/134706-3-left-table.html b/layout/reftests/bug
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-3-right-scrollframe-ref.html b/layout/reftests/bugs/134706-3-right-scrollframe-ref.html
+--- a/layout/reftests/bugs/134706-3-right-scrollframe-ref.html
++++ b/layout/reftests/bugs/134706-3-right-scrollframe-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 100px; background: aqua">
+   <div style="float:right; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; background:purple; width: 200px; height: 50px"></div>
 diff --git a/layout/reftests/bugs/134706-3-right-scrollframe.html b/layout/reftests/bugs/134706-3-right-scrollframe.html
 --- a/layout/reftests/bugs/134706-3-right-scrollframe.html
 +++ b/layout/reftests/bugs/134706-3-right-scrollframe.html
@@ -244,6 +415,25 @@ diff --git a/layout/reftests/bugs/134706-3-right-scrollframe.html b/layout/refte
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-3-right-table-ref.html b/layout/reftests/bugs/134706-3-right-table-ref.html
+--- a/layout/reftests/bugs/134706-3-right-table-ref.html
++++ b/layout/reftests/bugs/134706-3-right-table-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 150px; background: aqua">
+   <div style="float:right; background:blue; width: 100px; height: 100px"></div>
+   <div style="float:left; clear:right; background:purple; width: 250px; height: 50px"></div>
 diff --git a/layout/reftests/bugs/134706-3-right-table.html b/layout/reftests/bugs/134706-3-right-table.html
 --- a/layout/reftests/bugs/134706-3-right-table.html
 +++ b/layout/reftests/bugs/134706-3-right-table.html
@@ -266,6 +456,25 @@ diff --git a/layout/reftests/bugs/134706-3-right-table.html b/layout/reftests/bu
  	td, th { padding: 0; }
  
  	span { display: inline-block; vertical-align: bottom; }
+diff --git a/layout/reftests/bugs/134706-4-ref.html b/layout/reftests/bugs/134706-4-ref.html
+--- a/layout/reftests/bugs/134706-4-ref.html
++++ b/layout/reftests/bugs/134706-4-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ </head>
+ <body>
+ 
+ <div style="width: 300px; height: 20px; background: aqua"><tr><td>
+   <div style="float:left; background:blue; width: 100px; height: 20px"></div>
+   <div style="float:left; background:silver; width: 100px; height: 6px"></div>
 diff --git a/layout/reftests/bugs/134706-4.html b/layout/reftests/bugs/134706-4.html
 --- a/layout/reftests/bugs/134706-4.html
 +++ b/layout/reftests/bugs/134706-4.html
@@ -288,6 +497,25 @@ diff --git a/layout/reftests/bugs/134706-4.html b/layout/reftests/bugs/134706-4.
  	td, th { padding: 0; }
  
  	</style>
+diff --git a/layout/reftests/bugs/134706-5-ref.html b/layout/reftests/bugs/134706-5-ref.html
+--- a/layout/reftests/bugs/134706-5-ref.html
++++ b/layout/reftests/bugs/134706-5-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ 	<style type="text/css">
+ 
+ 	body { font-size: 10px; }
+ 
+ 	</style>
+ </head>
 diff --git a/layout/reftests/bugs/134706-5.html b/layout/reftests/bugs/134706-5.html
 --- a/layout/reftests/bugs/134706-5.html
 +++ b/layout/reftests/bugs/134706-5.html
@@ -310,6 +538,25 @@ diff --git a/layout/reftests/bugs/134706-5.html b/layout/reftests/bugs/134706-5.
  
  	table { margin: 0; border-spacing: 0; }
  	td, th { padding: 0; vertical-align: top; }
+diff --git a/layout/reftests/bugs/134706-6-ref.html b/layout/reftests/bugs/134706-6-ref.html
+--- a/layout/reftests/bugs/134706-6-ref.html
++++ b/layout/reftests/bugs/134706-6-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ 	<style type="text/css">
+ 
+ 	body { font-size: 16px; }
+ 
+ 	table { margin: 0; border-spacing: 0; }
+ 	caption, td, th { padding: 0; vertical-align: top; text-align: left; }
 diff --git a/layout/reftests/bugs/134706-6.html b/layout/reftests/bugs/134706-6.html
 --- a/layout/reftests/bugs/134706-6.html
 +++ b/layout/reftests/bugs/134706-6.html
@@ -324,6 +571,25 @@ diff --git a/layout/reftests/bugs/134706-6.html b/layout/reftests/bugs/134706-6.
 +	<link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats" />
 +	<meta name="assert" content="The border box of a table, a block-level replaced element, or an element in the normal flow that establishes a new block formatting context (such as an element with 'overflow' other than 'visible') must not overlap any floats in the same block formatting context as the element itself." />
 +	<meta name="flags" content="" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ 	<style type="text/css">
+ 
+ 	body { font-size: 16px; }
+ 
+ 	table { margin: 0; border-spacing: 0; }
+ 	caption, td, th { padding: 0; vertical-align: top; text-align: left; }
+diff --git a/layout/reftests/bugs/134706-6b-ref.html b/layout/reftests/bugs/134706-6b-ref.html
+--- a/layout/reftests/bugs/134706-6b-ref.html
++++ b/layout/reftests/bugs/134706-6b-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  	<meta http-equiv="Content-Style-Type" content="text/css">
  	<style type="text/css">
@@ -354,6 +620,25 @@ diff --git a/layout/reftests/bugs/134706-6b.html b/layout/reftests/bugs/134706-6
  
  	table { margin: 0; border-spacing: 0; }
  	caption, td, th { padding: 0; vertical-align: top; text-align: left; }
+diff --git a/layout/reftests/bugs/134706-6c-ref.html b/layout/reftests/bugs/134706-6c-ref.html
+--- a/layout/reftests/bugs/134706-6c-ref.html
++++ b/layout/reftests/bugs/134706-6c-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ 	<style type="text/css">
+ 
+ 	body { font-size: 16px; }
+ 
+ 	table { margin: 0; border-spacing: 0; }
+ 	caption, td, th { padding: 0; vertical-align: top; text-align: left; }
 diff --git a/layout/reftests/bugs/134706-6c.html b/layout/reftests/bugs/134706-6c.html
 --- a/layout/reftests/bugs/134706-6c.html
 +++ b/layout/reftests/bugs/134706-6c.html
@@ -376,6 +661,25 @@ diff --git a/layout/reftests/bugs/134706-6c.html b/layout/reftests/bugs/134706-6
  
  	table { margin: 0; border-spacing: 0; }
  	caption, td, th { padding: 0; vertical-align: top; text-align: left; }
+diff --git a/layout/reftests/bugs/134706-7-ref.html b/layout/reftests/bugs/134706-7-ref.html
+--- a/layout/reftests/bugs/134706-7-ref.html
++++ b/layout/reftests/bugs/134706-7-ref.html
+@@ -1,12 +1,14 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+ <html lang="en-US">
+ <head>
+-	<title>Testcase, bug 134706</title>
++	<title>CSS 2.1 Test Suite: Test for flow around floats (reference)</title>
++	<link rel="author" title="L. David Baron" href="http://dbaron.org/" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ 	<style type="text/css">
+ 
+ 	table { margin: 0; border-spacing: 0; }
+ 	td, th { padding: 0; vertical-align: top; }
+ 
+ 	</style>
 diff --git a/layout/reftests/bugs/134706-7.html b/layout/reftests/bugs/134706-7.html
 --- a/layout/reftests/bugs/134706-7.html
 +++ b/layout/reftests/bugs/134706-7.html

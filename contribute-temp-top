@@ -5,7 +5,7 @@ TEMPORARY patch to exclude files from reftest.lists that I don't want, and add z
 diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.list
 --- a/layout/reftests/bugs/reftest.list
 +++ b/layout/reftests/bugs/reftest.list
-@@ -1,1373 +1,45 @@
+@@ -1,1377 +1,45 @@
 -# Please keep this list sorted by bug number (but feel free to use a
 -# logical order for the tests for each bug).
 -
@@ -1296,6 +1296,8 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -== 494667-1.html 494667-1-ref.html
 -== 494667-2.html 494667-2-ref.html
 -== 495274-1.html 495274-1-ref.html
+-== 495354-1a.xhtml 495354-1-ref.xhtml
+-== 495354-1b.xhtml 495354-1-ref.xhtml
 -== 495385-1a.html 495385-1-ref.html
 -== 495385-1b.html 495385-1-ref.html
 -== 495385-1c.html 495385-1-ref.html
@@ -1378,6 +1380,8 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -== 534808-1.html 534808-1-ref.html
 -== 534808-2.html 534808-2-ref.html
 -== 534919-1.html 534919-1-ref.html
+-== 537507-1.xul 537507-1-ref.xul
+-== 537507-2.html 537507-2-ref.html
 -== 537471-1.html 537471-1-ref.html
 +== 25888-1l-block.html 25888-1l-ref.html
 +!= 25888-1l-block.html 25888-1l-notref.html

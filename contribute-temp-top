@@ -5,7 +5,7 @@ TEMPORARY patch to exclude files from reftest.lists that I don't want, and add z
 diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.list
 --- a/layout/reftests/bugs/reftest.list
 +++ b/layout/reftests/bugs/reftest.list
-@@ -1,1377 +1,45 @@
+@@ -1,117 +1,59 @@
 -# Please keep this list sorted by bug number (but feel free to use a
 -# logical order for the tests for each bug).
 -
@@ -74,13 +74,21 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -!= 40596-1h.html 40596-1-ref.html
 -== 40596-1i.html 40596-1-ref.html
 -!= 40596-1j.html 40596-1-ref.html
--== 50630-1a.html 50630-1-ref.html
--== 50630-1b.html 50630-1-ref.html
--== 50630-1c.html 50630-1-ref.html
++== 25888-1l-block.html 25888-1l-ref.html
++!= 25888-1l-block.html 25888-1l-notref.html
++== 25888-1r-block.html 25888-1r-ref.html
++!= 25888-1r-block.html 25888-1r-notref.html
++== 25888-2l-block.html 25888-2l-ref.html
++== 25888-2r-block.html 25888-2r-ref.html
++== 25888-3l-block.html 25888-3l-ref.html
++== 25888-3r-block.html 25888-3r-ref.html
+ == 50630-1a.html 50630-1-ref.html
+ == 50630-1b.html 50630-1-ref.html
+ == 50630-1c.html 50630-1-ref.html
 -== 50630-2.html 50630-2-ref.html
--== 50630-3.html 50630-3-ref.html
--== 50630-4.html 50630-4-ref.html
--== 50630-4.html 50630-4-ref2.html
+ == 50630-3.html 50630-3-ref.html
+ == 50630-4.html 50630-4-ref.html
+ == 50630-4.html 50630-4-ref2.html
 -== 50630-5.html 50630-5-ref.html
 -== 67752-1.html 67752-1-ref.html
 -== 67752-2.html 67752-2-ref.html
@@ -115,24 +123,23 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -== 124903-1.html 124903-1-ref.html
 -== 128896.html 128896-ref.html
 -== 130767-1.html 130767-1-ref.html
--== 134706-1-left-scrollframe.html 134706-1-left-scrollframe-ref.html
--== 134706-1-left-table.html 134706-1-left-table-ref.html
--== 134706-1-right-scrollframe.html 134706-1-right-scrollframe-ref.html
--== 134706-1-right-table.html 134706-1-right-table-ref.html
--== 134706-2-left-scrollframe.html 134706-2-left-ref.html
--== 134706-2-left-table.html 134706-2-left-ref.html
--== 134706-2-right-scrollframe.html 134706-2-right-ref.html
--== 134706-2-right-table.html 134706-2-right-ref.html
--== 134706-3-left-scrollframe.html 134706-3-left-scrollframe-ref.html
--== 134706-3-left-table.html 134706-3-left-table-ref.html
--== 134706-3-right-scrollframe.html 134706-3-right-scrollframe-ref.html
--== 134706-3-right-table.html 134706-3-right-table-ref.html
--== 134706-4.html 134706-4-ref.html
--== 134706-5.html 134706-5-ref.html
--== 134706-6.html 134706-6-ref.html
--== 134706-6b.html 134706-6b-ref.html
--== 134706-6c.html 134706-6c-ref.html
--== 134706-7.html 134706-7-ref.html
+ == 134706-1-left-scrollframe.html 134706-1-left-scrollframe-ref.html
+ == 134706-1-left-table.html 134706-1-left-table-ref.html
+ == 134706-1-right-scrollframe.html 134706-1-right-scrollframe-ref.html
+ == 134706-1-right-table.html 134706-1-right-table-ref.html
+ == 134706-2-left-scrollframe.html 134706-2-left-ref.html
+ == 134706-2-left-table.html 134706-2-left-ref.html
+ == 134706-2-right-scrollframe.html 134706-2-right-ref.html
+ == 134706-2-right-table.html 134706-2-right-ref.html
+@@ -120,1258 +62,8 @@ random == 99850-1b.html 99850-1-ref.html
+ == 134706-3-right-scrollframe.html 134706-3-right-scrollframe-ref.html
+ == 134706-3-right-table.html 134706-3-right-table-ref.html
+ == 134706-4.html 134706-4-ref.html
+ == 134706-5.html 134706-5-ref.html
+ == 134706-6.html 134706-6-ref.html
+ == 134706-6b.html 134706-6b-ref.html
+ == 134706-6c.html 134706-6c-ref.html
+ == 134706-7.html 134706-7-ref.html
 -== 139550-1a.html 139550-1-ref.html
 -== 139550-1b.html 139550-1-ref.html
 -== 142233-1.html 142233-1-ref.html
@@ -1383,14 +1390,6 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -== 537507-1.xul 537507-1-ref.xul
 -== 537507-2.html 537507-2-ref.html
 -== 537471-1.html 537471-1-ref.html
-+== 25888-1l-block.html 25888-1l-ref.html
-+!= 25888-1l-block.html 25888-1l-notref.html
-+== 25888-1r-block.html 25888-1r-ref.html
-+!= 25888-1r-block.html 25888-1r-notref.html
-+== 25888-2l-block.html 25888-2l-ref.html
-+== 25888-2r-block.html 25888-2r-ref.html
-+== 25888-3l-block.html 25888-3l-ref.html
-+== 25888-3r-block.html 25888-3r-ref.html
 diff --git a/layout/reftests/css-charset/reftest.list b/layout/reftests/css-charset/reftest.list
 --- a/layout/reftests/css-charset/reftest.list
 +++ b/layout/reftests/css-charset/reftest.list
@@ -2036,11 +2035,15 @@ diff --git a/layout/reftests/zip-list b/layout/reftests/zip-list
 new file mode 100644
 --- /dev/null
 +++ b/layout/reftests/zip-list
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,27 @@
 +bugs/reftest.list
 +bugs/9458-*
 +bugs/18217-*
 +bugs/25888-*
++bugs/50630-1*
++bugs/50630-3*
++bugs/50630-4*
++bugs/134706-*
 +css-charset/
 +first-letter/[a-z]*
 +first-line/basic*

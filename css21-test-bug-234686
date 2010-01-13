@@ -1,0 +1,502 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Add test suite metadata for bug 234686 tests.
+
+diff --git a/layout/reftests/bugs/234686-1.html b/layout/reftests/bugs/234686-1.html
+--- a/layout/reftests/bugs/234686-1.html
++++ b/layout/reftests/bugs/234686-1.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* none
+      *
+      *                  wmin     w       wmax
+diff --git a/layout/reftests/bugs/234686-10.html b/layout/reftests/bugs/234686-10.html
+--- a/layout/reftests/bugs/234686-10.html
++++ b/layout/reftests/bugs/234686-10.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w > max-width) and (h > max-height)
+      * (wmin/w > hmax/h) and (wmin/w > hmax/h)
+      *
+diff --git a/layout/reftests/bugs/234686-11.html b/layout/reftests/bugs/234686-11.html
+--- a/layout/reftests/bugs/234686-11.html
++++ b/layout/reftests/bugs/234686-11.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w > max-width) and (h > max-height)
+      * (wmax/w > hmax/h) and (wmin/w < hmax/h)
+      *
+diff --git a/layout/reftests/bugs/234686-12.html b/layout/reftests/bugs/234686-12.html
+--- a/layout/reftests/bugs/234686-12.html
++++ b/layout/reftests/bugs/234686-12.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w > max-width) and (h > max-height)
+      * (wmax/w < hmax/h) and (wmax/w < hmin/h)
+      *
+diff --git a/layout/reftests/bugs/234686-13.html b/layout/reftests/bugs/234686-13.html
+--- a/layout/reftests/bugs/234686-13.html
++++ b/layout/reftests/bugs/234686-13.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w > max-width) and (h > max-width)
+      * (wmax/w < hmax/h) and (wmax/w > hmin/h)
+      *
+diff --git a/layout/reftests/bugs/234686-14.html b/layout/reftests/bugs/234686-14.html
+--- a/layout/reftests/bugs/234686-14.html
++++ b/layout/reftests/bugs/234686-14.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w < min-width) and (h < min-height)
+      * (wmin/w < hmin/h) and (wmax/w > hmin/h)
+      *
+diff --git a/layout/reftests/bugs/234686-15.html b/layout/reftests/bugs/234686-15.html
+--- a/layout/reftests/bugs/234686-15.html
++++ b/layout/reftests/bugs/234686-15.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w < min-width) and (h < min-height)
+      * (wmin/w < hmin/h) and (wmax/w < hmin/h)
+      *
+diff --git a/layout/reftests/bugs/234686-16.html b/layout/reftests/bugs/234686-16.html
+--- a/layout/reftests/bugs/234686-16.html
++++ b/layout/reftests/bugs/234686-16.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w < min-width) and (h < min-height)
+      * (wmin/w > hmin/h) and (wmin/w < hmax/h)
+      *
+diff --git a/layout/reftests/bugs/234686-17.html b/layout/reftests/bugs/234686-17.html
+--- a/layout/reftests/bugs/234686-17.html
++++ b/layout/reftests/bugs/234686-17.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w < min-width) and (h < min-height)
+      * (wmin/w > hmin/h) and (wmin/w > hmax/h)
+      *            w                      wmin
+diff --git a/layout/reftests/bugs/234686-18.html b/layout/reftests/bugs/234686-18.html
+--- a/layout/reftests/bugs/234686-18.html
++++ b/layout/reftests/bugs/234686-18.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w < min-width) and (h > max-height)
+      *
+      *                           w   wmin
+diff --git a/layout/reftests/bugs/234686-19.html b/layout/reftests/bugs/234686-19.html
+--- a/layout/reftests/bugs/234686-19.html
++++ b/layout/reftests/bugs/234686-19.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* (w > max-width) and (h < min-height)
+      *
+      *                  wmax     w
+diff --git a/layout/reftests/bugs/234686-2.html b/layout/reftests/bugs/234686-2.html
+--- a/layout/reftests/bugs/234686-2.html
++++ b/layout/reftests/bugs/234686-2.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* w > max-width
+      * wmax/w > hmin/h
+      *                  wmax     w
+diff --git a/layout/reftests/bugs/234686-3.html b/layout/reftests/bugs/234686-3.html
+--- a/layout/reftests/bugs/234686-3.html
++++ b/layout/reftests/bugs/234686-3.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* w > max-width
+      * wmax/w < hmin/h
+      *
+diff --git a/layout/reftests/bugs/234686-4.html b/layout/reftests/bugs/234686-4.html
+--- a/layout/reftests/bugs/234686-4.html
++++ b/layout/reftests/bugs/234686-4.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* w < min-width
+      * wmin/w < hmax/h
+      *
+diff --git a/layout/reftests/bugs/234686-5.html b/layout/reftests/bugs/234686-5.html
+--- a/layout/reftests/bugs/234686-5.html
++++ b/layout/reftests/bugs/234686-5.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* w < min-width
+      * wmin/w > hmax/h
+      *
+diff --git a/layout/reftests/bugs/234686-6.html b/layout/reftests/bugs/234686-6.html
+--- a/layout/reftests/bugs/234686-6.html
++++ b/layout/reftests/bugs/234686-6.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* h > max-height
+      * wmin/w < hmax/h
+      *
+diff --git a/layout/reftests/bugs/234686-7.html b/layout/reftests/bugs/234686-7.html
+--- a/layout/reftests/bugs/234686-7.html
++++ b/layout/reftests/bugs/234686-7.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* h > max-height
+      * wmin/w > hmax/h
+      *
+diff --git a/layout/reftests/bugs/234686-8.html b/layout/reftests/bugs/234686-8.html
+--- a/layout/reftests/bugs/234686-8.html
++++ b/layout/reftests/bugs/234686-8.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* h < min-height
+      * wmax/w > hmin/h
+      *
+diff --git a/layout/reftests/bugs/234686-9.html b/layout/reftests/bugs/234686-9.html
+--- a/layout/reftests/bugs/234686-9.html
++++ b/layout/reftests/bugs/234686-9.html
+@@ -1,17 +1,20 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
++  <link rel="help" href="http://www.w3.org/TR/CSS21/visudet.html#min-max-widths" />
++  <meta name="assert" content="However, for replaced elements with an intrinsic ratio and both 'width' and 'height' specified as 'auto', the algorithm is as follows:" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+     /* w < min-width
+      * wmax/w < hmin/h
+      *
+diff --git a/layout/reftests/bugs/234686-ref.html b/layout/reftests/bugs/234686-ref.html
+--- a/layout/reftests/bugs/234686-ref.html
++++ b/layout/reftests/bugs/234686-ref.html
+@@ -1,17 +1,18 @@
+ <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+ <!--
+ From http://fantasai.inkedblade.net/style/specs/css2.1/tests/min-max-replaced
+ with permission in
+ https://bugzilla.mozilla.org/show_bug.cgi?id=413361#c11
+ -->
+ <html lang="en">
+  <head>
+-  <title>CSS Box Model: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <title>CSS 2.1 Test Suite: Min/Max Height and Width Constraints on Replaced Elements</title>
++  <link rel="author" title="fantasai" href="http://fantasai.inkedblade.net/" />
+   <style type="text/css">
+ 
+     /* Diagrams are scaled so that w and h line up.
+        Image is 75px x 75px; target dimensions will thus be 75px. */
+ 
+   </style>
+  </head>
+  <body>

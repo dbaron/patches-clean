@@ -1,0 +1,166 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Fix <html> to </html> in css-charset reftests.
+
+diff --git a/layout/reftests/css-charset/pass.html b/layout/reftests/css-charset/pass.html
+--- a/layout/reftests/css-charset/pass.html
++++ b/layout/reftests/css-charset/pass.html
+@@ -1,7 +1,7 @@
+ <!DOCTYPE html>
+ <html>
+   <body style="color: green">
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-attribute.html b/layout/reftests/css-charset/test-attribute.html
+--- a/layout/reftests/css-charset/test-attribute.html
++++ b/layout/reftests/css-charset/test-attribute.html
+@@ -10,10 +10,10 @@
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="UTF-16BE"
+           href="test-attribute.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-leading-space.html b/layout/reftests/css-charset/test-charset-leading-space.html
+--- a/layout/reftests/css-charset/test-charset-leading-space.html
++++ b/layout/reftests/css-charset/test-charset-leading-space.html
+@@ -10,10 +10,10 @@
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+           href="test-charset-leading-space.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-quotes.html b/layout/reftests/css-charset/test-charset-quotes.html
+--- a/layout/reftests/css-charset/test-charset-quotes.html
++++ b/layout/reftests/css-charset/test-charset-quotes.html
+@@ -10,10 +10,10 @@
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+           href="test-charset-quotes.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-trailing-space.html b/layout/reftests/css-charset/test-charset-trailing-space.html
+--- a/layout/reftests/css-charset/test-charset-trailing-space.html
++++ b/layout/reftests/css-charset/test-charset-trailing-space.html
+@@ -10,10 +10,10 @@
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+           href="test-charset-trailing-space.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-be-bom.html b/layout/reftests/css-charset/test-charset-utf-16-be-bom.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-be-bom.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-be-bom.html
+@@ -10,10 +10,10 @@
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+           href="test-charset-utf-16-be-bom.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-be-no-bom.html b/layout/reftests/css-charset/test-charset-utf-16-be-no-bom.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-be-no-bom.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-be-no-bom.html
+@@ -10,10 +10,10 @@
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+           href="test-charset-utf-16-be-no-bom.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-bom-be.html b/layout/reftests/css-charset/test-charset-utf-16-bom-be.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-bom-be.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-bom-be.html
+@@ -10,10 +10,10 @@
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+           href="test-charset-utf-16-bom-be.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-bom-le.html b/layout/reftests/css-charset/test-charset-utf-16-bom-le.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-bom-le.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-bom-le.html
+@@ -10,10 +10,10 @@
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+           href="test-charset-utf-16-bom-le.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-le-bom.html b/layout/reftests/css-charset/test-charset-utf-16-le-bom.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-le-bom.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-le-bom.html
+@@ -10,10 +10,10 @@
+       body { color: green; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+           href="test-charset-utf-16-le-bom.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   
+diff --git a/layout/reftests/css-charset/test-charset-utf-16-le-no-bom.html b/layout/reftests/css-charset/test-charset-utf-16-le-no-bom.html
+--- a/layout/reftests/css-charset/test-charset-utf-16-le-no-bom.html
++++ b/layout/reftests/css-charset/test-charset-utf-16-le-no-bom.html
+@@ -10,10 +10,10 @@
+       body { color: red; }
+     </style>
+     <link rel="stylesheet" type="text/css" charset="us-ascii"
+           href="test-charset-utf-16-le-no-bom.css" />
+   </head>
+   <body>
+     This should be green
+   </body>
+-<html>
++</html>
+   

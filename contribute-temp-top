@@ -540,7 +540,7 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
  == 234686-6.html 234686-ref.html
  == 234686-7.html 234686-ref.html
  == 234686-8.html 234686-ref.html
-@@ -191,1187 +81,8 @@ random == 99850-1b.html 99850-1-ref.html
+@@ -191,1187 +81,24 @@ random == 99850-1b.html 99850-1-ref.html
  == 234686-12.html 234686-ref.html
  == 234686-13.html 234686-ref.html
  == 234686-14.html 234686-ref.html
@@ -558,28 +558,28 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -skip-if(MOZ_WIDGET_TOOLKIT=="cocoa") != 240536-resizer-ltr.xul 240536-resizer-rtl.xul
 -== 243266-1.html 243266-1-ref.html
 -== 243302-1.html 243302-1-ref.html
--== 243519-1.html 243519-1-ref.html
+ == 243519-1.html 243519-1-ref.html
 -== 243519-2.html 243519-2-ref.html
 -== 243519-3.html 243519-3-ref.html
--== 243519-4a.html 243519-4-ref.html
--== 243519-4b.html 243519-4-ref.html
--== 243519-4c.html 243519-4-ref.html
--== 243519-4d.html 243519-4-ref.html
--== 243519-4e.html 243519-4-ref.html
--== 243519-4f.html 243519-4-ref.html
--== 243519-5a.html 243519-5-ref.html
--== 243519-5b.html 243519-5-ref.html
--== 243519-5c.html 243519-5-ref.html
--== 243519-5d.html 243519-5-ref.html
+ == 243519-4a.html 243519-4-ref.html
+ == 243519-4b.html 243519-4-ref.html
+ == 243519-4c.html 243519-4-ref.html
+ == 243519-4d.html 243519-4-ref.html
+ == 243519-4e.html 243519-4-ref.html
+ == 243519-4f.html 243519-4-ref.html
+ == 243519-5a.html 243519-5-ref.html
+ == 243519-5b.html 243519-5-ref.html
+ == 243519-5c.html 243519-5-ref.html
+ == 243519-5d.html 243519-5-ref.html
 -== 243519-6.html 243519-6-ref.html
--== 243519-7.html 243519-7-ref.html
+ == 243519-7.html 243519-7-ref.html
 -== 243519-8.svg 243519-8-ref.svg
--== 243519-9a.html 243519-9-ref.html
--== 243519-9b.html 243519-9-ref.html
+ == 243519-9a.html 243519-9-ref.html
+ == 243519-9b.html 243519-9-ref.html
 -== 243519-9c.html 243519-9-ref.html
 -== 243519-9d.html 243519-9-ref.html
--== 243519-9e.html 243519-9-ref.html
--== 243519-9f.html 243519-9-ref.html
+ == 243519-9e.html 243519-9-ref.html
+ == 243519-9f.html 243519-9-ref.html
 -== 244135-1.html 244135-1-ref.html
 -== 244135-2.html 244135-2-ref.html
 -== 244932-1.html 244932-1-ref.html
@@ -2373,7 +2373,7 @@ diff --git a/layout/reftests/zip-list b/layout/reftests/zip-list
 new file mode 100644
 --- /dev/null
 +++ b/layout/reftests/zip-list
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,37 @@
 +bugs/reftest.list
 +bugs/9458-*
 +bugs/18217-*
@@ -2383,6 +2383,15 @@ new file mode 100644
 +bugs/50630-4*
 +bugs/134706-*
 +bugs/234686-*
++bugs/243519-1*
++bugs/243519-4*
++bugs/243519-5*
++bugs/243519-7*
++bugs/243519-9-ref.html
++bugs/243519-9a.html
++bugs/243519-9b.html
++bugs/243519-9e.html
++bugs/243519-9f.html
 +css-charset/
 +first-letter/[a-z]*
 +first-line/basic*

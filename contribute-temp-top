@@ -2359,6 +2359,23 @@ diff --git a/layout/reftests/text-indent/reftest.list b/layout/reftests/text-ind
  == text-indent-single-line-indent-inline.html text-indent-single-line-indent-inline-ref-block-margin.html
  == text-indent-single-line-indent-inline.html text-indent-single-line-indent-inline-ref-inline-margin.html
  == text-indent-multiple-line.html text-indent-multiple-line-ref-inline-margin.html
+diff --git a/layout/reftests/text-transform/reftest.list b/layout/reftests/text-transform/reftest.list
+--- a/layout/reftests/text-transform/reftest.list
++++ b/layout/reftests/text-transform/reftest.list
+@@ -1,13 +1,7 @@
+ == capitalize-1.html capitalize-ref.html
+ == capitalize-2.html capitalize-ref.html
+ == capitalize-3.html capitalize-3-ref.html
+ == lowercase-1.html lowercase-ref.html
+ == small-caps-1.html small-caps-1-ref.html
+ == uppercase-1.html uppercase-ref.html
+ == uppercase-szlig-1.html uppercase-szlig-ref.html
+-== all-upper.html all-upper-ref.html
+-== all-lower.html all-lower-ref.html
+-== all-title.html all-title-ref.html
+-!= smtp-upper.html smtp-upper-ref.html # bug 210501
+-!= smtp-lower.html smtp-lower-ref.html # bug 210501
+-!= smtp-title.html smtp-title-ref.html # bug 210501
 diff --git a/layout/reftests/z-index/reftest.list b/layout/reftests/z-index/reftest.list
 --- a/layout/reftests/z-index/reftest.list
 +++ b/layout/reftests/z-index/reftest.list
@@ -2369,7 +2386,7 @@ diff --git a/layout/reftests/zip-list b/layout/reftests/zip-list
 new file mode 100644
 --- /dev/null
 +++ b/layout/reftests/zip-list
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,43 @@
 +bugs/reftest.list
 +bugs/9458-*
 +bugs/18217-*
@@ -2405,7 +2422,11 @@ new file mode 100644
 +table-bordercollapse/reftest.list
 +table-bordercollapse/bc_*
 +text-indent/*
-+text-transform/*
++text-transform/reftest*
++text-transform/cap*
++text-transform/low*
++text-transform/sma*
++text-transform/up*
 +z-index/reftest.list
 +z-index/z-index*
 +reftest.list

@@ -2,6 +2,110 @@ From: L. David Baron <dbaron@dbaron.org>
 
 Add test suite metadata for ib-split tests.
 
+diff --git a/layout/reftests/ib-split/append-to-empty-trailing-inline-1.html b/layout/reftests/ib-split/append-to-empty-trailing-inline-1.html
+--- a/layout/reftests/ib-split/append-to-empty-trailing-inline-1.html
++++ b/layout/reftests/ib-split/append-to-empty-trailing-inline-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+ <head>
++	<title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++	<link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++	<link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++	<link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++	<meta name="flags" content="dom" />
+ 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ 	<meta http-equiv="Content-Style-Type" content="text/css">
+ 	<style type="text/css">
+ 
+ 	body > span { outline: 1px dotted black; }
+ 	body > span > span { display: block; width: 10em; }
+ 
+ 	</style>
+diff --git a/layout/reftests/ib-split/append-to-nested-split-inline-1.html b/layout/reftests/ib-split/append-to-nested-split-inline-1.html
+--- a/layout/reftests/ib-split/append-to-nested-split-inline-1.html
++++ b/layout/reftests/ib-split/append-to-nested-split-inline-1.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+   <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+     <style>
+       #outermost { border: 2px solid; }
+       #outer { border: 4px solid yellow; }
+       #inner { border: 6px sold green; }
+     </style>
+     <script>
+       function doTest() {
+         var i = document.getElementById("inner");
+diff --git a/layout/reftests/ib-split/emptyspan-1.html b/layout/reftests/ib-split/emptyspan-1.html
+--- a/layout/reftests/ib-split/emptyspan-1.html
++++ b/layout/reftests/ib-split/emptyspan-1.html
+@@ -1,7 +1,12 @@
+ <!DOCTYPE html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+ <body style="direction: ltr">
+   <span style="border: 5px solid blue; border-left: none; border-right: none;
+                padding-right: 10px">
+     <span style="display: block">x</span>
+   </span>
+ </body>
+diff --git a/layout/reftests/ib-split/emptyspan-2.html b/layout/reftests/ib-split/emptyspan-2.html
+--- a/layout/reftests/ib-split/emptyspan-2.html
++++ b/layout/reftests/ib-split/emptyspan-2.html
+@@ -1,7 +1,12 @@
+ <!DOCTYPE html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+ <body style="direction: rtl">
+   <span style="border: 5px solid blue; border-left: none; border-right: none;
+                padding-right: 10px">
+     <span style="display: block">x</span>
+   </span>
+ </body>
+diff --git a/layout/reftests/ib-split/emptyspan-3.html b/layout/reftests/ib-split/emptyspan-3.html
+--- a/layout/reftests/ib-split/emptyspan-3.html
++++ b/layout/reftests/ib-split/emptyspan-3.html
+@@ -1,7 +1,12 @@
+ <!DOCTYPE html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+ <body style="direction: ltr">
+   <span style="border: 5px solid blue; border-left: none; border-right: none;
+                padding-left: 10px">
+     <span style="display: block">x</span>
+   </span>
+ </body>
+diff --git a/layout/reftests/ib-split/emptyspan-4.html b/layout/reftests/ib-split/emptyspan-4.html
+--- a/layout/reftests/ib-split/emptyspan-4.html
++++ b/layout/reftests/ib-split/emptyspan-4.html
+@@ -1,7 +1,12 @@
+ <!DOCTYPE html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+ <body style="direction: rtl">
+   <span style="border: 5px solid blue; border-left: none; border-right: none;
+                padding-left: 10px">
+     <span style="display: block">x</span>
+   </span>
+ </body>
 diff --git a/layout/reftests/ib-split/float-inside-inline-between-blocks-1.html b/layout/reftests/ib-split/float-inside-inline-between-blocks-1.html
 --- a/layout/reftests/ib-split/float-inside-inline-between-blocks-1.html
 +++ b/layout/reftests/ib-split/float-inside-inline-between-blocks-1.html
@@ -21,6 +125,82 @@ diff --git a/layout/reftests/ib-split/float-inside-inline-between-blocks-1.html 
        <span style="float: left">bbb</span>
        <span style="display: block">
          aaa
+diff --git a/layout/reftests/ib-split/ignored-margins-1a.html b/layout/reftests/ib-split/ignored-margins-1a.html
+--- a/layout/reftests/ib-split/ignored-margins-1a.html
++++ b/layout/reftests/ib-split/ignored-margins-1a.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <body>
+     <div style="direction: ltr; width: 100px; border: 1px solid green;">
+       <span>
+         <span style="display: block; height: 20px; width: 80px; margin: 10px; border: 5px solid black">
+         </span>
+       </span>
+     </div>
+   </body>
+diff --git a/layout/reftests/ib-split/ignored-margins-1b.html b/layout/reftests/ib-split/ignored-margins-1b.html
+--- a/layout/reftests/ib-split/ignored-margins-1b.html
++++ b/layout/reftests/ib-split/ignored-margins-1b.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <body>
+     <div style="direction: ltr; width: 100px; border: 1px solid green;">
+       <span style="direction: rtl">
+         <span style="display: block; height: 20px; width: 80px; margin: 10px; border: 5px solid black">
+         </span>
+       </span>
+     </div>
+   </body>
+diff --git a/layout/reftests/ib-split/ignored-margins-2a.html b/layout/reftests/ib-split/ignored-margins-2a.html
+--- a/layout/reftests/ib-split/ignored-margins-2a.html
++++ b/layout/reftests/ib-split/ignored-margins-2a.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <body>
+     <div style="direction: rtl; width: 100px; border: 1px solid green;">
+       <span>
+         <span style="display: block; height: 20px; width: 80px; margin: 10px; border: 5px solid black">
+         </span>
+       </span>
+     </div>
+   </body>
+diff --git a/layout/reftests/ib-split/ignored-margins-2b.html b/layout/reftests/ib-split/ignored-margins-2b.html
+--- a/layout/reftests/ib-split/ignored-margins-2b.html
++++ b/layout/reftests/ib-split/ignored-margins-2b.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <body>
+     <div style="direction: rtl; width: 100px; border: 1px solid green;">
+       <span style="direction: ltr">
+         <span style="display: block; height: 20px; width: 80px; margin: 10px; border: 5px solid black">
+         </span>
+       </span>
+     </div>
+   </body>
 diff --git a/layout/reftests/ib-split/insert-into-split-inline-10.html b/layout/reftests/ib-split/insert-into-split-inline-10.html
 --- a/layout/reftests/ib-split/insert-into-split-inline-10.html
 +++ b/layout/reftests/ib-split/insert-into-split-inline-10.html
@@ -761,6 +941,24 @@ diff --git a/layout/reftests/ib-split/insert-into-split-inline-9.html b/layout/r
     }
    </script>
    <style>
+diff --git a/layout/reftests/ib-split/percent-height-1.html b/layout/reftests/ib-split/percent-height-1.html
+--- a/layout/reftests/ib-split/percent-height-1.html
++++ b/layout/reftests/ib-split/percent-height-1.html
+@@ -1,9 +1,14 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <body style="height: 200px">
+     <span>
+       <span style="display: block; height: 50%; border: 10px solid black">
+       </span>
+     </span>
+   </body>
+ </html>
 diff --git a/layout/reftests/ib-split/remove-from-split-inline-1.html b/layout/reftests/ib-split/remove-from-split-inline-1.html
 --- a/layout/reftests/ib-split/remove-from-split-inline-1.html
 +++ b/layout/reftests/ib-split/remove-from-split-inline-1.html
@@ -920,6 +1118,25 @@ diff --git a/layout/reftests/ib-split/split-inner-inline-1.html b/layout/reftest
          <span style="display: block">
            Second line
          </span>
+diff --git a/layout/reftests/ib-split/split-inner-inline-2.html b/layout/reftests/ib-split/split-inner-inline-2.html
+--- a/layout/reftests/ib-split/split-inner-inline-2.html
++++ b/layout/reftests/ib-split/split-inner-inline-2.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <body>
+     <span>
+       First line
+       <span style="border: 5px solid blue">
+         <span style="display: block">
+           Second line
+         </span>
+       </span>
 diff --git a/layout/reftests/ib-split/table-pseudo-in-part3-1.html b/layout/reftests/ib-split/table-pseudo-in-part3-1.html
 --- a/layout/reftests/ib-split/table-pseudo-in-part3-1.html
 +++ b/layout/reftests/ib-split/table-pseudo-in-part3-1.html
@@ -940,6 +1157,65 @@ diff --git a/layout/reftests/ib-split/table-pseudo-in-part3-1.html b/layout/reft
          <span style="display: block"></span>
          <span style="display: table-cell">bbb</span>
        </span>
+diff --git a/layout/reftests/ib-split/trailing-inline-with-continuations-1.html b/layout/reftests/ib-split/trailing-inline-with-continuations-1.html
+--- a/layout/reftests/ib-split/trailing-inline-with-continuations-1.html
++++ b/layout/reftests/ib-split/trailing-inline-with-continuations-1.html
+@@ -1,10 +1,15 @@
+ <!DOCTYPE html>
+ <html>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <body style="width: 0">
+     <span style="border: 2px solid blue;">
+       <span style="display: block"></span>
+       a b
+       <script>document.body.offsetWidth</script>
+       <span style="display: block"></span>
+       c
+     </span>
+diff --git a/layout/reftests/ib-split/whitespace-present-1a.html b/layout/reftests/ib-split/whitespace-present-1a.html
+--- a/layout/reftests/ib-split/whitespace-present-1a.html
++++ b/layout/reftests/ib-split/whitespace-present-1a.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="" />
+   <style>
+     body > span { border: 3px solid blue }
+   </style>
+  </head>
+  <body>
+    <span>
+      <div>One</div>
+      <div>Two</div>
+diff --git a/layout/reftests/ib-split/whitespace-present-1b.html b/layout/reftests/ib-split/whitespace-present-1b.html
+--- a/layout/reftests/ib-split/whitespace-present-1b.html
++++ b/layout/reftests/ib-split/whitespace-present-1b.html
+@@ -1,11 +1,16 @@
+ <!DOCTYPE html>
+ <html>
+  <head>
++    <title>CSS 2.1 Test Suite: handling of blocks inside inlines</title>
++    <link rel="author" title="Boris Zbarsky" href="mailto:bzbarsky@mit.edu" />
++    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
++    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#anonymous-block-level"/>
++    <meta name="flags" content="dom" />
+   <style>
+     body > span { border: 3px solid blue }
+   </style>
+   <script>
+     function doIt() {
+       var t = document.createTextNode("   ");
+       var d = document.getElementById("d");
+       d.parentNode.insertBefore(t, d);
 diff --git a/layout/reftests/inline-borderpadding/ltr-basic.html b/layout/reftests/inline-borderpadding/ltr-basic.html
 --- a/layout/reftests/inline-borderpadding/ltr-basic.html
 +++ b/layout/reftests/inline-borderpadding/ltr-basic.html

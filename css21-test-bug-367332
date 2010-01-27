@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add CSS 2.1 test suite metadata for bug 367332 tests.
+Add CSS 2.1 test suite metadata for bug 367332 reftests.
 
 diff --git a/layout/reftests/bugs/367332-1-ref.html b/layout/reftests/bugs/367332-1-ref.html
 --- a/layout/reftests/bugs/367332-1-ref.html

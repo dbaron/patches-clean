@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add CSS 2.1 test suite metadata for bordercollapse tests.
+Add CSS 2.1 test suite metadata for bordercollapse reftests.
 
 diff --git a/layout/reftests/table-bordercollapse/bc_borderoffset1.html b/layout/reftests/table-bordercollapse/bc_borderoffset1.html
 --- a/layout/reftests/table-bordercollapse/bc_borderoffset1.html

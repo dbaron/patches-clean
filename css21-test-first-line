@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add CSS 2.1 test suite metadata for :first-line tests.
+Add CSS 2.1 test suite metadata for :first-line reftests.
 
 diff --git a/layout/reftests/first-line/basic-1.html b/layout/reftests/first-line/basic-1.html
 --- a/layout/reftests/first-line/basic-1.html

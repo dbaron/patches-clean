@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add CSS 2.1 test suite metadata for float tests.
+Add CSS 2.1 test suite metadata for float reftests.
 
 diff --git a/layout/reftests/floats/float-outside-block-push.html b/layout/reftests/floats/float-outside-block-push.html
 --- a/layout/reftests/floats/float-outside-block-push.html

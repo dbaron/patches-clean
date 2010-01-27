@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add CSS 2.1 test suite metadata to charset tests.
+Add CSS 2.1 test suite metadata to css-charset reftests.
 
 diff --git a/layout/reftests/css-charset/test-attribute.html b/layout/reftests/css-charset/test-attribute.html
 --- a/layout/reftests/css-charset/test-attribute.html

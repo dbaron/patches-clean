@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add CSS 2.1 test suite metadata for ib-split tests.
+Add CSS 2.1 test suite metadata for ib-split reftests.
 
 diff --git a/layout/reftests/ib-split/append-to-empty-trailing-inline-1.html b/layout/reftests/ib-split/append-to-empty-trailing-inline-1.html
 --- a/layout/reftests/ib-split/append-to-empty-trailing-inline-1.html

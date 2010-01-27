@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add CSS 2.1 test suite metadata for text-transform.
+Add CSS 2.1 test suite metadata for text-transform reftests.
 
 diff --git a/layout/reftests/text-transform/capitalize-1.html b/layout/reftests/text-transform/capitalize-1.html
 --- a/layout/reftests/text-transform/capitalize-1.html

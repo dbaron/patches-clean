@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Fix CSS 2.1 test suite metadata for box-properties tests.
+Fix CSS 2.1 test suite metadata for box-properties reftests.
 
 diff --git a/layout/reftests/box-properties/CSS21-t100301-ref.xhtml b/layout/reftests/box-properties/CSS21-t100301-ref.xhtml
 --- a/layout/reftests/box-properties/CSS21-t100301-ref.xhtml

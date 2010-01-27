@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add CSS 2.1 test suite metadata for generated content tests.
+Add CSS 2.1 test suite metadata for generated content reftests.
 
 diff --git a/layout/reftests/generated-content/display-types-01.html b/layout/reftests/generated-content/display-types-01.html
 --- a/layout/reftests/generated-content/display-types-01.html

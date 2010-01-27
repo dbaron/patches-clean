@@ -29,7 +29,7 @@ diff --git a/layout/reftests/floats/other-float-outside-rule-3-left-2.html b/lay
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
 -<title>Test for float placement around other float in BFC but outside containing block</title>
-+    <title>CSS 2.1 Test Suite: float</title>
++    <title>CSS 2.1 Test Suite: float placement around other float in BFC but outside containing block</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
@@ -49,7 +49,7 @@ diff --git a/layout/reftests/floats/other-float-outside-rule-3-left.html b/layou
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
 -<title>Test for float placement around other float in BFC but outside containing block</title>
-+    <title>CSS 2.1 Test Suite: float</title>
++    <title>CSS 2.1 Test Suite: float placement around other float in BFC but outside containing block</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
@@ -69,7 +69,7 @@ diff --git a/layout/reftests/floats/other-float-outside-rule-3-right-2.html b/la
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
 -<title>Test for float placement around other float in BFC but outside containing block</title>
-+    <title>CSS 2.1 Test Suite: float</title>
++    <title>CSS 2.1 Test Suite: float placement around other float in BFC but outside containing block</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
@@ -89,7 +89,7 @@ diff --git a/layout/reftests/floats/other-float-outside-rule-3-right.html b/layo
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
 -<title>Test for float placement around other float in BFC but outside containing block</title>
-+    <title>CSS 2.1 Test Suite: float</title>
++    <title>CSS 2.1 Test Suite: float placement around other float in BFC but outside containing block</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
@@ -109,7 +109,7 @@ diff --git a/layout/reftests/floats/other-float-outside-rule-7-left.html b/layou
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
 -<title>Test for float placement around other float in BFC but outside containing block</title>
-+    <title>CSS 2.1 Test Suite: float</title>
++    <title>CSS 2.1 Test Suite: float placement around other float in BFC but outside containing block</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
@@ -129,7 +129,7 @@ diff --git a/layout/reftests/floats/other-float-outside-rule-7-right.html b/layo
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
 -<title>Test for float placement around other float in BFC but outside containing block</title>
-+    <title>CSS 2.1 Test Suite: float</title>
++    <title>CSS 2.1 Test Suite: float placement around other float in BFC but outside containing block</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
@@ -149,7 +149,7 @@ diff --git a/layout/reftests/floats/zero-height-float-base.html b/layout/reftest
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
 -<title>Test for wrapping around zero-height floats</title>
-+    <title>CSS 2.1 Test Suite: float</title>
++    <title>CSS 2.1 Test Suite: wrapping around zero-height floats</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>
@@ -169,7 +169,7 @@ diff --git a/layout/reftests/floats/zero-height-float.html b/layout/reftests/flo
 @@ -1,10 +1,15 @@
  <!DOCTYPE HTML>
 -<title>Test for wrapping around zero-height floats</title>
-+    <title>CSS 2.1 Test Suite: float</title>
++    <title>CSS 2.1 Test Suite: wrapping around zero-height floats</title>
 +    <link rel="author" title="L. David Baron" href="http://dbaron.org/" />
 +    <link rel="author" title="Mozilla Corporation" href="http://mozilla.com/" />
 +    <link rel="help" href="http://www.w3.org/TR/CSS21/visuren.html#floats"/>

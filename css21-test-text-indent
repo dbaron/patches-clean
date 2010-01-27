@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add test suite metadata for text-indent.
+Add CSS 2.1 test suite metadata for text-indent.
 
 diff --git a/layout/reftests/text-indent/text-indent-intrinsic-min.html b/layout/reftests/text-indent/text-indent-intrinsic-min.html
 --- a/layout/reftests/text-indent/text-indent-intrinsic-min.html

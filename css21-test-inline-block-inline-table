@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add test suite metadata for basic inline-block and inline-table tests.
+Add CSS 2.1 test suite metadata for basic inline-block and inline-table tests.
 
 diff --git a/layout/reftests/bugs/18217-basic-1-ref.html b/layout/reftests/bugs/18217-basic-1-ref.html
 --- a/layout/reftests/bugs/18217-basic-1-ref.html

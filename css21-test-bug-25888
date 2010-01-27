@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add test suite metadata for bug 25888 tests.
+Add CSS 2.1 test suite metadata for bug 25888 tests.
 
 diff --git a/layout/reftests/bugs/25888-1l-block.html b/layout/reftests/bugs/25888-1l-block.html
 --- a/layout/reftests/bugs/25888-1l-block.html

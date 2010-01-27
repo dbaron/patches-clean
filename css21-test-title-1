@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Use CSS Test instead of CSS 2.1 in page titles.
+Fix CSS 2.1 test suite metadata for box-properties tests.
 
 diff --git a/layout/reftests/box-properties/CSS21-t100301-ref.xhtml b/layout/reftests/box-properties/CSS21-t100301-ref.xhtml
 --- a/layout/reftests/box-properties/CSS21-t100301-ref.xhtml

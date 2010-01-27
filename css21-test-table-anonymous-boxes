@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add test suite metadata for table-anonymous-boxes.
+Add CSS 2.1 test suite metadata for table-anonymous-boxes.
 
 diff --git a/layout/reftests/table-anonymous-boxes/blocks-divide-tables-1.html b/layout/reftests/table-anonymous-boxes/blocks-divide-tables-1.html
 --- a/layout/reftests/table-anonymous-boxes/blocks-divide-tables-1.html

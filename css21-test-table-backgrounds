@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add test suite metadata for table-backgrounds.
+Add CSS 2.1 test suite metadata for table-backgrounds.
 
 diff --git a/layout/reftests/table-background/border-collapse-table-cell.html b/layout/reftests/table-background/border-collapse-table-cell.html
 --- a/layout/reftests/table-background/border-collapse-table-cell.html

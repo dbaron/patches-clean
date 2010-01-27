@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Add test suite metadata for z-index.
+Add CSS 2.1 test suite metadata for z-index.
 
 diff --git a/layout/reftests/z-index/z-index-1.html b/layout/reftests/z-index/z-index-1.html
 --- a/layout/reftests/z-index/z-index-1.html

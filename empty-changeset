@@ -1,0 +1,17 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Empty changeset to allow try server builds of old changesets.
+
+diff --git a/allmakefiles.sh b/allmakefiles.sh
+--- a/allmakefiles.sh
++++ b/allmakefiles.sh
+@@ -107,8 +107,9 @@ for extension in $MOZ_EXTENSIONS; do
+ done
+ 
+ #
+ # Toolkit makefiles
+ #
+ if test -z "$LIBXUL_SDK"; then
+   . "${srcdir}/toolkit/toolkit-makefiles.sh"
+ fi
++

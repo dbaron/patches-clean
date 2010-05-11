@@ -1,0 +1,215 @@
+From: Craig Topper <craig.topper@gmail.com>
+
+Inline a few methods in nsCSSStyleSheet.  (Bug 239008)  r=dbaron
+
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -82,16 +82,17 @@
+ #include "nsIPrincipal.h"
+ #include "prprf.h"
+ #include "math.h"
+ #include "nsContentUtils.h"
+ #include "nsDOMError.h"
+ #include "nsAutoPtr.h"
+ #include "nsTArray.h"
+ #include "prlog.h"
++#include "nsMediaFeatures.h"
+ 
+ // Flags for ParseVariant method
+ #define VARIANT_KEYWORD         0x000001  // K
+ #define VARIANT_LENGTH          0x000002  // L
+ #define VARIANT_PERCENT         0x000004  // P
+ #define VARIANT_COLOR           0x000008  // C eCSSUnit_Color, eCSSUnit_Ident (e.g.  "red")
+ #define VARIANT_URL             0x000010  // U
+ #define VARIANT_NUMBER          0x000020  // N
+diff --git a/layout/style/nsCSSStyleSheet.cpp b/layout/style/nsCSSStyleSheet.cpp
+--- a/layout/style/nsCSSStyleSheet.cpp
++++ b/layout/style/nsCSSStyleSheet.cpp
+@@ -67,16 +67,17 @@
+ #include "nsINameSpaceManager.h"
+ #include "nsXMLNameSpaceMap.h"
+ #include "nsCOMPtr.h"
+ #include "nsContentUtils.h"
+ #include "nsIScriptSecurityManager.h"
+ #include "mozAutoDocUpdate.h"
+ #include "nsCSSDeclaration.h"
+ #include "nsRuleNode.h"
++#include "nsMediaFeatures.h"
+ 
+ namespace css = mozilla::css;
+ 
+ // -------------------------------
+ // Style Rule List for the DOM
+ //
+ class CSSRuleListImpl : public nsICSSRuleList
+ {
+@@ -1139,22 +1140,16 @@ nsCSSStyleSheet::GetSheetURI(nsIURI** aS
+ 
+ NS_IMETHODIMP
+ nsCSSStyleSheet::GetBaseURI(nsIURI** aBaseURI) const
+ {
+   NS_IF_ADDREF(*aBaseURI = mInner->mBaseURI.get());
+   return NS_OK;
+ }
+ 
+-void
+-nsCSSStyleSheet::SetTitle(const nsAString& aTitle)
+-{
+-  mTitle = aTitle;
+-}
+-
+ NS_IMETHODIMP
+ nsCSSStyleSheet::GetType(nsString& aType) const
+ {
+   aType.AssignLiteral("text/css");
+   return NS_OK;
+ }
+ 
+ PRBool
+@@ -1253,28 +1248,16 @@ nsCSSStyleSheet::SetOwningDocument(nsIDo
+        child; child = child->mNext) {
+     if (child->mParent == this) {
+       child->SetOwningDocument(aDocument);
+     }
+   }
+   return NS_OK;
+ }
+ 
+-void
+-nsCSSStyleSheet::SetOwningNode(nsIDOMNode* aOwningNode)
+-{ // not ref counted
+-  mOwningNode = aOwningNode;
+-}
+-
+-void
+-nsCSSStyleSheet::SetOwnerRule(nsICSSImportRule* aOwnerRule)
+-{ // not ref counted
+-  mOwnerRule = aOwnerRule;
+-}
+-
+ already_AddRefed<nsICSSImportRule>
+ nsCSSStyleSheet::GetOwnerRule()
+ {
+   NS_IF_ADDREF(mOwnerRule);
+   return mOwnerRule;
+ }
+ 
+ void
+@@ -1621,28 +1604,16 @@ nsCSSStyleSheet::RegisterNamespaceRule(n
+     nsresult rv = mInner->CreateNamespaceMap();
+     NS_ENSURE_SUCCESS(rv, rv);
+   }
+ 
+   AddNamespaceRuleToMap(aRule, mInner->mNameSpaceMap);
+   return NS_OK;
+ }
+ 
+-PRBool
+-nsCSSStyleSheet::IsModified() const
+-{
+-  return mDirty;
+-}
+-
+-void
+-nsCSSStyleSheet::SetModified(PRBool aModified)
+-{
+-  mDirty = aModified;
+-}
+-
+   // nsIDOMStyleSheet interface
+ NS_IMETHODIMP    
+ nsCSSStyleSheet::GetType(nsAString& aType)
+ {
+   aType.AssignLiteral("text/css");
+   return NS_OK;
+ }
+ 
+diff --git a/layout/style/nsCSSStyleSheet.h b/layout/style/nsCSSStyleSheet.h
+--- a/layout/style/nsCSSStyleSheet.h
++++ b/layout/style/nsCSSStyleSheet.h
+@@ -163,28 +163,28 @@ public:
+   virtual nsresult DeleteRuleFromGroup(nsICSSGroupRule* aGroup, PRUint32 aIndex);
+   virtual nsresult InsertRuleIntoGroup(const nsAString& aRule, nsICSSGroupRule* aGroup, PRUint32 aIndex, PRUint32* _retval);
+   virtual nsresult ReplaceRuleInGroup(nsICSSGroupRule* aGroup, nsICSSRule* aOld, nsICSSRule* aNew);
+   virtual PRInt32 StyleSheetCount() const;
+   virtual already_AddRefed<nsCSSStyleSheet> GetStyleSheetAt(PRInt32 aIndex) const;
+   virtual void SetURIs(nsIURI* aSheetURI, nsIURI* aOriginalSheetURI, nsIURI* aBaseURI);
+   virtual void SetPrincipal(nsIPrincipal* aPrincipal);
+   virtual nsIPrincipal* Principal() const;
+-  virtual void SetTitle(const nsAString& aTitle);
++  void SetTitle(const nsAString& aTitle) { mTitle = aTitle; }
+   virtual void SetMedia(nsMediaList* aMedia);
+-  virtual void SetOwningNode(nsIDOMNode* aOwningNode);
+-  virtual void SetOwnerRule(nsICSSImportRule* aOwnerRule);
++  void SetOwningNode(nsIDOMNode* aOwningNode) { mOwningNode = aOwningNode; /* Not ref counted */ }
++  void SetOwnerRule(nsICSSImportRule* aOwnerRule) { mOwnerRule = aOwnerRule; /* Not ref counted */ }
+   virtual already_AddRefed<nsICSSImportRule> GetOwnerRule();
+   virtual nsXMLNameSpaceMap* GetNameSpaceMap() const;
+   virtual already_AddRefed<nsCSSStyleSheet> Clone(nsCSSStyleSheet* aCloneParent,
+                                                   nsICSSImportRule* aCloneOwnerRule,
+                                                   nsIDocument* aCloneDocument,
+                                                   nsIDOMNode* aCloneOwningNode) const;
+-  virtual PRBool IsModified() const;
+-  virtual void SetModified(PRBool aModified);
++  PRBool IsModified() const { return mDirty; }
++  void SetModified(PRBool aModified) { mDirty = aModified; }
+   virtual nsresult AddRuleProcessor(nsCSSRuleProcessor* aProcessor);
+   virtual nsresult DropRuleProcessor(nsCSSRuleProcessor* aProcessor);
+   virtual nsresult InsertRuleInternal(const nsAString& aRule,
+                                 PRUint32 aIndex, PRUint32* aReturn);
+   virtual nsIURI* GetOriginalURI() const;
+ 
+   // nsICSSLoaderObserver interface
+   NS_IMETHOD StyleSheetLoaded(nsCSSStyleSheet* aSheet, PRBool aWasAlternate,
+@@ -242,17 +242,17 @@ protected:
+   // UniversalBrowserWrite.
+   nsresult SubjectSubsumesInnerPrincipal() const;
+ 
+   // Add the namespace mapping from this @namespace rule to our namespace map
+   nsresult RegisterNamespaceRule(nsICSSRule* aRule);
+ 
+ protected:
+   nsString              mTitle;
+-  nsCOMPtr<nsMediaList> mMedia;
++  nsRefPtr<nsMediaList> mMedia;
+   nsRefPtr<nsCSSStyleSheet> mNext;
+   nsCSSStyleSheet*      mParent;    // weak ref
+   nsICSSImportRule*     mOwnerRule; // weak ref
+ 
+   CSSRuleListImpl*      mRuleCollection;
+   nsIDocument*          mDocument; // weak ref; parents maintain this for their children
+   nsIDOMNode*           mOwningNode; // weak ref
+   PRPackedBool          mDisabled;
+diff --git a/layout/style/nsIMediaList.h b/layout/style/nsIMediaList.h
+--- a/layout/style/nsIMediaList.h
++++ b/layout/style/nsIMediaList.h
+@@ -41,26 +41,24 @@
+  * representation of media lists used when linking to style sheets or by
+  * @media rules
+  */
+ 
+ #ifndef nsIMediaList_h_
+ #define nsIMediaList_h_
+ 
+ #include "nsIDOMMediaList.h"
+-#include "nsAString.h"
+ #include "nsTArray.h"
+-#include "nsTPtrArray.h"
+ #include "nsIAtom.h"
+-#include "nsMediaFeatures.h"
+ #include "nsCSSValue.h"
+ 
+ class nsPresContext;
+ class nsCSSStyleSheet;
+-class nsCSSStyleSheet;
++class nsAString;
++struct nsMediaFeature;
+ 
+ struct nsMediaExpression {
+   enum Range { eMin, eMax, eEqual };
+ 
+   const nsMediaFeature *mFeature;
+   Range mRange;
+   nsCSSValue mValue;
+ 

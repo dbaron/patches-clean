@@ -5,8 +5,7 @@ Inline a few methods in nsCSSStyleSheet.  (Bug 239008)  r=dbaron
 diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
 --- a/layout/style/nsCSSParser.cpp
 +++ b/layout/style/nsCSSParser.cpp
-@@ -82,16 +82,17 @@
- #include "nsIPrincipal.h"
+@@ -83,16 +83,17 @@
  #include "prprf.h"
  #include "math.h"
  #include "nsContentUtils.h"
@@ -14,6 +13,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  #include "nsAutoPtr.h"
  #include "nsTArray.h"
  #include "prlog.h"
+ #include "CSSCalc.h"
 +#include "nsMediaFeatures.h"
  
  // Flags for ParseVariant method

@@ -177,7 +177,7 @@ diff --git a/content/base/src/nsContentSink.h b/content/base/src/nsContentSink.h
 diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
 --- a/content/base/src/nsDocument.cpp
 +++ b/content/base/src/nsDocument.cpp
-@@ -3547,17 +3547,17 @@ nsDocument::EnsureCatalogStyleSheet(cons
+@@ -3553,17 +3553,17 @@ nsDocument::EnsureCatalogStyleSheet(cons
          if (uriStr.Equals(aStyleSheetURI))
            return;
        }
@@ -196,7 +196,7 @@ diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
        }
      }
    }
-@@ -7576,17 +7576,17 @@ namespace {
+@@ -7625,17 +7625,17 @@ namespace {
  
  /**
   * Stub for LoadSheet(), since all we want is to get the sheet into
@@ -215,7 +215,7 @@ diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
  NS_IMPL_ISUPPORTS1(StubCSSLoaderObserver, nsICSSLoaderObserver)
  
  }
-@@ -7600,17 +7600,17 @@ nsDocument::PreloadStyle(nsIURI* uri, co
+@@ -7649,17 +7649,17 @@ nsDocument::PreloadStyle(nsIURI* uri, co
    // Charset names are always ASCII.
    CSSLoader()->LoadSheet(uri, NodePrincipal(),
                           NS_LossyConvertUTF16toASCII(charset),
@@ -234,7 +234,7 @@ diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
  {
  public:
    nsDelayedEventDispatcher(nsTArray<nsCOMPtr<nsIDocument> >& aDocuments)
-@@ -7736,41 +7736,40 @@ nsIDocument::CreateStaticClone(nsISuppor
+@@ -7785,41 +7785,40 @@ nsIDocument::CreateStaticClone(nsISuppor
    nsCOMPtr<nsIDocument> clonedDoc;
    if (NS_SUCCEEDED(rv)) {
      clonedDoc = do_QueryInterface(clonedNode);
@@ -284,7 +284,7 @@ diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
 diff --git a/content/base/src/nsDocument.h b/content/base/src/nsDocument.h
 --- a/content/base/src/nsDocument.h
 +++ b/content/base/src/nsDocument.h
-@@ -914,17 +914,17 @@ public:
+@@ -911,17 +911,17 @@ public:
  
    void MaybeEndOutermostXBLUpdate();
  
@@ -844,7 +844,7 @@ diff --git a/content/xul/document/src/nsXULDocument.cpp b/content/xul/document/s
  #include "nsIObserverService.h"
  #include "nsNodeUtils.h"
  #include "nsIDocShellTreeItem.h"
-@@ -3148,17 +3148,17 @@ nsresult
+@@ -3149,17 +3149,17 @@ nsresult
  nsXULDocument::DoneWalking()
  {
      NS_PRECONDITION(mPendingSheets == 0, "there are sheets to be loaded");
@@ -863,7 +863,7 @@ diff --git a/content/xul/document/src/nsXULDocument.cpp b/content/xul/document/s
      if (!mDocumentLoaded) {
          // Make sure we don't reenter here from StartLayout().  Note that
          // setting mDocumentLoaded to true here means that if StartLayout()
-@@ -3258,17 +3258,17 @@ nsXULDocument::DoneWalking()
+@@ -3259,17 +3259,17 @@ nsXULDocument::DoneWalking()
              }
          }
      }
@@ -882,7 +882,7 @@ diff --git a/content/xul/document/src/nsXULDocument.cpp b/content/xul/document/s
  
          NS_ASSERTION(mPendingSheets > 0,
              "Unexpected StyleSheetLoaded notification");
-@@ -3888,28 +3888,28 @@ nsXULDocument::AddPrototypeSheets()
+@@ -3889,28 +3889,28 @@ nsXULDocument::AddPrototypeSheets()
  {
      nsresult rv;
  
@@ -916,7 +916,7 @@ diff --git a/content/xul/document/src/nsXULDocument.cpp b/content/xul/document/s
 diff --git a/content/xul/document/src/nsXULDocument.h b/content/xul/document/src/nsXULDocument.h
 --- a/content/xul/document/src/nsXULDocument.h
 +++ b/content/xul/document/src/nsXULDocument.h
-@@ -171,17 +171,17 @@ public:
+@@ -175,17 +175,17 @@ public:
  
      // nsIDOMXULDocument interface
      NS_DECL_NSIDOMXULDOCUMENT
@@ -935,7 +935,7 @@ diff --git a/content/xul/document/src/nsXULDocument.h b/content/xul/document/src
      virtual PRBool IsDocumentRightToLeft();
  
      virtual void ResetDocumentDirection();
-@@ -299,17 +299,17 @@ protected:
+@@ -303,17 +303,17 @@ protected:
       * called in this situation.
       */
      PRPackedBool               mStillWalking;
@@ -1168,7 +1168,7 @@ diff --git a/editor/libeditor/base/nsEditor.cpp b/editor/libeditor/base/nsEditor
  #include "EditAggregateTxn.h"
  #include "PlaceholderTxn.h"
  #include "ChangeAttributeTxn.h"
-@@ -4595,30 +4595,30 @@ nsEditor::CreateTxnForIMEText(const nsAS
+@@ -4596,30 +4596,30 @@ nsEditor::CreateTxnForIMEText(const nsAS
    NS_ADDREF(*aTxn);
  
    return (*aTxn)->Init(mIMETextNode, mIMETextOffset, mIMEBufferLength,
@@ -2691,7 +2691,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  #include "nsString.h"
  #include "nsReadableUtils.h"
  #include "nsUnicharUtils.h"
-@@ -163,17 +163,17 @@ static void AppendRuleToSheet(nsICSSRule
+@@ -165,17 +165,17 @@ static void AppendRuleToSheet(nsICSSRule
  // Your basic top-down recursive descent style parser
  // The exposed methods and members of this class are precisely those
  // needed by nsCSSParser, far below.
@@ -2710,7 +2710,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  #endif
  
    nsresult SetChildLoader(mozilla::css::Loader* aChildLoader);
-@@ -609,17 +609,17 @@ protected:
+@@ -623,17 +623,17 @@ protected:
  
    // The URI to be used as an HTTP "Referer" and for error reporting.
    nsCOMPtr<nsIURI> mSheetURI;
@@ -2729,7 +2729,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    // various rule types (eg the fact that a @charset rule must come before
    // anything else).  Note that there are checks of similar things in various
    // places in nsCSSStyleSheet.cpp (e.g in insertRule, RebuildChildList).
-@@ -750,17 +750,17 @@ CSSParserImpl::CSSParserImpl()
+@@ -764,17 +764,17 @@ CSSParserImpl::CSSParserImpl()
  
  CSSParserImpl::~CSSParserImpl()
  {
@@ -2748,7 +2748,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
      if (mSheet) {
        mNameSpaceMap = mSheet->GetNameSpaceMap();
      } else {
-@@ -9157,17 +9157,17 @@ CSSParserImpl::ParseMarker()
+@@ -9547,17 +9547,17 @@ CSSParserImpl::ParseMarker()
  
  } // anonymous namespace
  
@@ -2767,7 +2767,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    } else {
      impl = new CSSParserImpl();
    }
-@@ -9203,17 +9203,17 @@ nsCSSParser::Shutdown()
+@@ -9593,17 +9593,17 @@ nsCSSParser::Shutdown()
        delete tofree;
        tofree = next;
      }

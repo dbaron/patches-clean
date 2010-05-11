@@ -5,7 +5,7 @@ DeCOMtaminate CSSStyleSheet method signatures.  (Bug 239008)  r=dbaron
 diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
 --- a/content/base/src/nsDocument.cpp
 +++ b/content/base/src/nsDocument.cpp
-@@ -7742,38 +7742,36 @@ nsIDocument::CreateStaticClone(nsISuppor
+@@ -7791,38 +7791,36 @@ nsIDocument::CreateStaticClone(nsISuppor
        PRInt32 sheetsCount = GetNumberOfStyleSheets();
        for (PRInt32 i = 0; i < sheetsCount; ++i) {
          nsCOMPtr<nsICSSStyleSheet> sheet =
@@ -190,7 +190,7 @@ diff --git a/layout/style/nsCSSLoader.cpp b/layout/style/nsCSSLoader.cpp
 diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
 --- a/layout/style/nsCSSParser.cpp
 +++ b/layout/style/nsCSSParser.cpp
-@@ -885,18 +885,17 @@ CSSParserImpl::Parse(nsIUnicharInputStre
+@@ -899,18 +899,17 @@ CSSParserImpl::Parse(nsIUnicharInputStre
    NS_ASSERTION(NS_SUCCEEDED(mSheet->Principal()->Equals(aSheetPrincipal,
                                                          &equal)) &&
                 equal,

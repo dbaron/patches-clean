@@ -5,7 +5,7 @@ Make most of the methods in nsCSSStyleSheet non-virtual.  (Bug 239008)  r=dbaron
 diff --git a/layout/style/nsCSSStyleSheet.cpp b/layout/style/nsCSSStyleSheet.cpp
 --- a/layout/style/nsCSSStyleSheet.cpp
 +++ b/layout/style/nsCSSStyleSheet.cpp
-@@ -2108,17 +2108,17 @@ nsCSSStyleSheet::StyleSheetLoaded(nsCSSS
+@@ -2109,17 +2109,17 @@ nsCSSStyleSheet::StyleSheetLoaded(nsCSSS
      nsCOMPtr<nsIStyleRule> styleRule(do_QueryInterface(ownerRule));
      
      mDocument->StyleRuleAdded(this, styleRule);
@@ -74,12 +74,15 @@ diff --git a/layout/style/nsCSSStyleSheet.h b/layout/style/nsCSSStyleSheet.h
 -  virtual already_AddRefed<nsICSSImportRule> GetOwnerRule();
 -  virtual nsXMLNameSpaceMap* GetNameSpaceMap() const;
 -  virtual already_AddRefed<nsCSSStyleSheet> Clone(nsCSSStyleSheet* aCloneParent,
+-                                                  nsICSSImportRule* aCloneOwnerRule,
+-                                                  nsIDocument* aCloneDocument,
+-                                                  nsIDOMNode* aCloneOwningNode) const;
 +  already_AddRefed<nsICSSImportRule> GetOwnerRule();
 +  nsXMLNameSpaceMap* GetNameSpaceMap() const;
 +  already_AddRefed<nsCSSStyleSheet> Clone(nsCSSStyleSheet* aCloneParent,
-                                                   nsICSSImportRule* aCloneOwnerRule,
-                                                   nsIDocument* aCloneDocument,
-                                                   nsIDOMNode* aCloneOwningNode) const;
++                                          nsICSSImportRule* aCloneOwnerRule,
++                                          nsIDocument* aCloneDocument,
++                                          nsIDOMNode* aCloneOwningNode) const;
    PRBool IsModified() const { return mDirty; }
    void SetModified(PRBool aModified) { mDirty = aModified; }
 -  virtual nsresult AddRuleProcessor(nsCSSRuleProcessor* aProcessor);

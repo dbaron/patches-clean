@@ -177,7 +177,7 @@ diff --git a/content/base/src/nsContentSink.h b/content/base/src/nsContentSink.h
 diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
 --- a/content/base/src/nsDocument.cpp
 +++ b/content/base/src/nsDocument.cpp
-@@ -3553,17 +3553,17 @@ nsDocument::EnsureCatalogStyleSheet(cons
+@@ -3551,17 +3551,17 @@ nsDocument::EnsureCatalogStyleSheet(cons
          if (uriStr.Equals(aStyleSheetURI))
            return;
        }
@@ -196,7 +196,7 @@ diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
        }
      }
    }
-@@ -7625,17 +7625,17 @@ namespace {
+@@ -7580,17 +7580,17 @@ namespace {
  
  /**
   * Stub for LoadSheet(), since all we want is to get the sheet into
@@ -215,7 +215,7 @@ diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
  NS_IMPL_ISUPPORTS1(StubCSSLoaderObserver, nsICSSLoaderObserver)
  
  }
-@@ -7649,17 +7649,17 @@ nsDocument::PreloadStyle(nsIURI* uri, co
+@@ -7604,17 +7604,17 @@ nsDocument::PreloadStyle(nsIURI* uri, co
    // Charset names are always ASCII.
    CSSLoader()->LoadSheet(uri, NodePrincipal(),
                           NS_LossyConvertUTF16toASCII(charset),
@@ -234,7 +234,7 @@ diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
  {
  public:
    nsDelayedEventDispatcher(nsTArray<nsCOMPtr<nsIDocument> >& aDocuments)
-@@ -7785,41 +7785,40 @@ nsIDocument::CreateStaticClone(nsISuppor
+@@ -7740,41 +7740,40 @@ nsIDocument::CreateStaticClone(nsISuppor
    nsCOMPtr<nsIDocument> clonedDoc;
    if (NS_SUCCEEDED(rv)) {
      clonedDoc = do_QueryInterface(clonedNode);
@@ -284,7 +284,7 @@ diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
 diff --git a/content/base/src/nsDocument.h b/content/base/src/nsDocument.h
 --- a/content/base/src/nsDocument.h
 +++ b/content/base/src/nsDocument.h
-@@ -911,17 +911,17 @@ public:
+@@ -914,17 +914,17 @@ public:
  
    void MaybeEndOutermostXBLUpdate();
  
@@ -478,7 +478,7 @@ diff --git a/content/xbl/src/nsXBLPrototypeResources.cpp b/content/xbl/src/nsXBL
  #include "nsXBLResourceLoader.h"
  #include "nsXBLPrototypeResources.h"
  #include "nsXBLPrototypeBinding.h"
-@@ -98,47 +97,45 @@ static PRBool IsChromeURI(nsIURI* aURI)
+@@ -98,47 +97,46 @@ static PRBool IsChromeURI(nsIURI* aURI)
    if (NS_SUCCEEDED(aURI->SchemeIs("chrome", &isChrome)) && isChrome)
      return PR_TRUE;
    return PR_FALSE;
@@ -508,7 +508,8 @@ diff --git a/content/xbl/src/nsXBLPrototypeResources.cpp b/content/xbl/src/nsXBL
 -  PRInt32 count = oldSheets.Count();
 -  for (i = 0; i < count; i++) {
 -    nsICSSStyleSheet* oldSheet = oldSheets[i];
-+  for (sheet_array_type::size_type i = 0, count = oldSheets.Length(); i < count; ++i) {
++  for (sheet_array_type::size_type i = 0, count = oldSheets.Length();
++       i < count; ++i) {
 +    nsCSSStyleSheet* oldSheet = oldSheets[i];
  
      nsCOMPtr<nsIURI> uri;
@@ -844,7 +845,7 @@ diff --git a/content/xul/document/src/nsXULDocument.cpp b/content/xul/document/s
  #include "nsIObserverService.h"
  #include "nsNodeUtils.h"
  #include "nsIDocShellTreeItem.h"
-@@ -3149,17 +3149,17 @@ nsresult
+@@ -3148,17 +3148,17 @@ nsresult
  nsXULDocument::DoneWalking()
  {
      NS_PRECONDITION(mPendingSheets == 0, "there are sheets to be loaded");
@@ -863,7 +864,7 @@ diff --git a/content/xul/document/src/nsXULDocument.cpp b/content/xul/document/s
      if (!mDocumentLoaded) {
          // Make sure we don't reenter here from StartLayout().  Note that
          // setting mDocumentLoaded to true here means that if StartLayout()
-@@ -3259,17 +3259,17 @@ nsXULDocument::DoneWalking()
+@@ -3258,17 +3258,17 @@ nsXULDocument::DoneWalking()
              }
          }
      }
@@ -882,7 +883,7 @@ diff --git a/content/xul/document/src/nsXULDocument.cpp b/content/xul/document/s
  
          NS_ASSERTION(mPendingSheets > 0,
              "Unexpected StyleSheetLoaded notification");
-@@ -3889,28 +3889,28 @@ nsXULDocument::AddPrototypeSheets()
+@@ -3888,28 +3888,28 @@ nsXULDocument::AddPrototypeSheets()
  {
      nsresult rv;
  
@@ -916,7 +917,7 @@ diff --git a/content/xul/document/src/nsXULDocument.cpp b/content/xul/document/s
 diff --git a/content/xul/document/src/nsXULDocument.h b/content/xul/document/src/nsXULDocument.h
 --- a/content/xul/document/src/nsXULDocument.h
 +++ b/content/xul/document/src/nsXULDocument.h
-@@ -175,17 +175,17 @@ public:
+@@ -171,17 +171,17 @@ public:
  
      // nsIDOMXULDocument interface
      NS_DECL_NSIDOMXULDOCUMENT
@@ -935,7 +936,7 @@ diff --git a/content/xul/document/src/nsXULDocument.h b/content/xul/document/src
      virtual PRBool IsDocumentRightToLeft();
  
      virtual void ResetDocumentDirection();
-@@ -303,17 +303,17 @@ protected:
+@@ -299,17 +299,17 @@ protected:
       * called in this situation.
       */
      PRPackedBool               mStillWalking;
@@ -3797,7 +3798,7 @@ diff --git a/layout/style/nsCSSStyleSheet.cpp b/layout/style/nsCSSStyleSheet.cpp
  
      nsRefPtr<nsCSSStyleSheet>* tail = &mInner->mFirstChild;
      while (*tail && aIndex) {
-@@ -1428,17 +1426,17 @@ nsCSSStyleSheet::StyleSheetCount() const
+@@ -1429,17 +1427,17 @@ nsCSSStyleSheet::StyleSheetCount() const
    while (child) {
      count++;
      child = child->mNext;
@@ -3816,7 +3817,7 @@ diff --git a/layout/style/nsCSSStyleSheet.cpp b/layout/style/nsCSSStyleSheet.cpp
    nsCSSStyleSheet* child = mInner->mFirstChild;
    while (child && (0 != aIndex)) {
      --aIndex;
-@@ -1477,18 +1475,18 @@ nsCSSStyleSheet::AppendAllChildSheets(ns
+@@ -1478,18 +1476,18 @@ nsCSSStyleSheet::AppendAllChildSheets(ns
         child = child->mNext) {
      if (!aArray.AppendElement(child)) {
        return PR_FALSE;
@@ -3837,7 +3838,7 @@ diff --git a/layout/style/nsCSSStyleSheet.cpp b/layout/style/nsCSSStyleSheet.cpp
                                                 aCloneParent,
                                                 aCloneOwnerRule,
                                                 aCloneDocument,
-@@ -2114,28 +2112,24 @@ nsCSSStyleSheet::ReplaceRuleInGroup(nsIC
+@@ -2115,28 +2113,24 @@ nsCSSStyleSheet::ReplaceRuleInGroup(nsIC
  
    result = aGroup->ReplaceStyleRule(aOld, aNew);
    DidDirty();
@@ -3868,7 +3869,7 @@ diff --git a/layout/style/nsCSSStyleSheet.cpp b/layout/style/nsCSSStyleSheet.cpp
      mozAutoDocUpdate updateBatch(mDocument, UPDATE_STYLE, PR_TRUE);
  
      // XXXldb @import rules shouldn't even implement nsIStyleRule (but
-@@ -2150,17 +2144,17 @@ nsCSSStyleSheet::StyleSheetLoaded(nsICSS
+@@ -2151,17 +2145,17 @@ nsCSSStyleSheet::StyleSheetLoaded(nsICSS
  
  nsIURI*
  nsCSSStyleSheet::GetOriginalURI() const

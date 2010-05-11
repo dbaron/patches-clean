@@ -96,7 +96,7 @@ diff --git a/layout/style/nsCSSStyleSheet.cpp b/layout/style/nsCSSStyleSheet.cpp
  }
  
  void
-@@ -1621,28 +1604,16 @@ nsCSSStyleSheet::RegisterNamespaceRule(n
+@@ -1622,28 +1605,16 @@ nsCSSStyleSheet::RegisterNamespaceRule(n
      nsresult rv = mInner->CreateNamespaceMap();
      NS_ENSURE_SUCCESS(rv, rv);
    }

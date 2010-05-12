@@ -1,0 +1,1663 @@
+From: Craig Topper <craig.topper@gmail.com>
+
+DeCOMtaminate nsIStyleSheet method signatures.  (Bug 239008)  r=dbaron
+
+diff --git a/chrome/src/nsChromeRegistry.cpp b/chrome/src/nsChromeRegistry.cpp
+--- a/chrome/src/nsChromeRegistry.cpp
++++ b/chrome/src/nsChromeRegistry.cpp
+@@ -954,19 +954,17 @@ nsresult nsChromeRegistry::RefreshWindow
+     nsCOMArray<nsIStyleSheet> agentSheets;
+     rv = shell->GetAgentStyleSheets(agentSheets);
+     NS_ENSURE_SUCCESS(rv, rv);
+ 
+     nsCOMArray<nsIStyleSheet> newAgentSheets;
+     for (PRInt32 l = 0; l < agentSheets.Count(); ++l) {
+       nsIStyleSheet *sheet = agentSheets[l];
+ 
+-      nsCOMPtr<nsIURI> uri;
+-      rv = sheet->GetSheetURI(getter_AddRefs(uri));
+-      if (NS_FAILED(rv)) return rv;
++      nsCOMPtr<nsIURI> uri = sheet->GetSheetURI();
+ 
+       if (IsChromeURI(uri)) {
+         // Reload the sheet.
+         nsRefPtr<nsCSSStyleSheet> newSheet;
+         rv = document->LoadChromeSheetSync(uri, PR_TRUE,
+                                            getter_AddRefs(newSheet));
+         if (NS_FAILED(rv)) return rv;
+         if (newSheet) {
+diff --git a/content/base/src/nsDocument.cpp b/content/base/src/nsDocument.cpp
+--- a/content/base/src/nsDocument.cpp
++++ b/content/base/src/nsDocument.cpp
+@@ -1979,33 +1979,29 @@ nsDocument::ResetStylesheetsToURI(nsIURI
+   mozAutoDocUpdate upd(this, UPDATE_STYLE, PR_TRUE);
+   
+   // The stylesheets should forget us
+   PRInt32 indx = mStyleSheets.Count();
+   while (--indx >= 0) {
+     nsIStyleSheet* sheet = mStyleSheets[indx];
+     sheet->SetOwningDocument(nsnull);
+ 
+-    PRBool applicable;
+-    sheet->GetApplicable(applicable);
+-    if (applicable) {
++    if (sheet->GetApplicable()) {
+       RemoveStyleSheetFromStyleSets(sheet);
+     }
+ 
+     // XXX Tell observers?
+   }
+ 
+   indx = mCatalogSheets.Count();
+   while (--indx >= 0) {
+     nsIStyleSheet* sheet = mCatalogSheets[indx];
+     sheet->SetOwningDocument(nsnull);
+ 
+-    PRBool applicable;
+-    sheet->GetApplicable(applicable);
+-    if (applicable) {
++    if (sheet->GetApplicable()) {
+       nsCOMPtr<nsIPresShell> shell = GetPrimaryShell();
+       if (shell) {
+         shell->StyleSet()->RemoveStyleSheet(nsStyleSet::eAgentSheet, sheet);
+       }
+     }
+ 
+     // XXX Tell observers?
+   }
+@@ -2088,28 +2084,24 @@ nsDocument::FillStyleSet(nsStyleSet* aSt
+   aStyleSet->AppendStyleSheet(GetAttrSheetType(), mAttrStyleSheet);
+ 
+   aStyleSet->AppendStyleSheet(nsStyleSet::eStyleAttrSheet,
+                               mStyleAttrStyleSheet);
+ 
+   PRInt32 i;
+   for (i = mStyleSheets.Count() - 1; i >= 0; --i) {
+     nsIStyleSheet* sheet = mStyleSheets[i];
+-    PRBool sheetApplicable;
+-    sheet->GetApplicable(sheetApplicable);
+-    if (sheetApplicable) {
++    if (sheet->GetApplicable()) {
+       aStyleSet->AddDocStyleSheet(sheet, this);
+     }
+   }
+ 
+   for (i = mCatalogSheets.Count() - 1; i >= 0; --i) {
+     nsIStyleSheet* sheet = mCatalogSheets[i];
+-    PRBool sheetApplicable;
+-    sheet->GetApplicable(sheetApplicable);
+-    if (sheetApplicable) {
++    if (sheet->GetApplicable()) {
+       aStyleSet->AppendStyleSheet(nsStyleSet::eAgentSheet, sheet);
+     }
+   }
+ }
+ 
+ nsresult
+ nsDocument::StartDocumentLoad(const char* aCommand, nsIChannel* aChannel,
+                               nsILoadGroup* aLoadGroup,
+@@ -3370,20 +3362,17 @@ nsDocument::AddStyleSheetToStyleSets(nsI
+ 
+ void
+ nsDocument::AddStyleSheet(nsIStyleSheet* aSheet)
+ {
+   NS_PRECONDITION(aSheet, "null arg");
+   mStyleSheets.AppendObject(aSheet);
+   aSheet->SetOwningDocument(this);
+ 
+-  PRBool applicable;
+-  aSheet->GetApplicable(applicable);
+-
+-  if (applicable) {
++  if (aSheet->GetApplicable()) {
+     AddStyleSheetToStyleSets(aSheet);
+   }
+ 
+   NS_DOCUMENT_NOTIFY_OBSERVERS(StyleSheetAdded, (this, aSheet, PR_TRUE));
+ }
+ 
+ void
+ nsDocument::RemoveStyleSheetFromStyleSets(nsIStyleSheet* aSheet)
+@@ -3401,19 +3390,17 @@ nsDocument::RemoveStyleSheet(nsIStyleShe
+   nsCOMPtr<nsIStyleSheet> sheet = aSheet; // hold ref so it won't die too soon
+ 
+   if (!mStyleSheets.RemoveObject(aSheet)) {
+     NS_NOTREACHED("stylesheet not found");
+     return;
+   }
+ 
+   if (!mIsGoingAway) {
+-    PRBool applicable = PR_TRUE;
+-    aSheet->GetApplicable(applicable);
+-    if (applicable) {
++    if (aSheet->GetApplicable()) {
+       RemoveStyleSheetFromStyleSets(aSheet);
+     }
+ 
+     NS_DOCUMENT_NOTIFY_OBSERVERS(StyleSheetRemoved, (this, aSheet, PR_TRUE));
+   }
+ 
+   aSheet->SetOwningDocument(nsnull);
+ }
+@@ -3439,19 +3426,17 @@ nsDocument::UpdateStyleSheets(nsCOMArray
+     PRInt32 oldIndex = mStyleSheets.IndexOf(oldSheet);
+     RemoveStyleSheet(oldSheet);  // This does the right notifications
+ 
+     // Now put the new one in its place.  If it's null, just ignore it.
+     nsIStyleSheet* newSheet = aNewSheets[i];
+     if (newSheet) {
+       mStyleSheets.InsertObjectAt(newSheet, oldIndex);
+       newSheet->SetOwningDocument(this);
+-      PRBool applicable = PR_TRUE;
+-      newSheet->GetApplicable(applicable);
+-      if (applicable) {
++      if (newSheet->GetApplicable()) {
+         AddStyleSheetToStyleSets(newSheet);
+       }
+ 
+       NS_DOCUMENT_NOTIFY_OBSERVERS(StyleSheetAdded, (this, newSheet, PR_TRUE));
+     }
+   }
+ 
+   EndUpdate(UPDATE_STYLE);
+@@ -3460,20 +3445,17 @@ nsDocument::UpdateStyleSheets(nsCOMArray
+ void
+ nsDocument::InsertStyleSheetAt(nsIStyleSheet* aSheet, PRInt32 aIndex)
+ {
+   NS_PRECONDITION(aSheet, "null ptr");
+   mStyleSheets.InsertObjectAt(aSheet, aIndex);
+ 
+   aSheet->SetOwningDocument(this);
+ 
+-  PRBool applicable;
+-  aSheet->GetApplicable(applicable);
+-
+-  if (applicable) {
++  if (aSheet->GetApplicable()) {
+     AddStyleSheetToStyleSets(aSheet);
+   }
+ 
+   NS_DOCUMENT_NOTIFY_OBSERVERS(StyleSheetAdded, (this, aSheet, PR_TRUE));
+ }
+ 
+ 
+ void
+@@ -3516,20 +3498,17 @@ nsDocument::GetCatalogStyleSheetAt(PRInt
+ }
+ 
+ void
+ nsDocument::AddCatalogStyleSheet(nsIStyleSheet* aSheet)
+ {
+   mCatalogSheets.AppendObject(aSheet);
+   aSheet->SetOwningDocument(this);
+ 
+-  PRBool applicable;
+-  aSheet->GetApplicable(applicable);
+-                                                                                
+-  if (applicable) {
++  if (aSheet->GetApplicable()) {
+     // This is like |AddStyleSheetToStyleSets|, but for an agent sheet.
+     nsCOMPtr<nsIPresShell> shell = GetPrimaryShell();
+     if (shell) {
+       shell->StyleSet()->AppendStyleSheet(nsStyleSet::eAgentSheet, aSheet);
+     }
+   }
+                                                                                 
+   NS_DOCUMENT_NOTIFY_OBSERVERS(StyleSheetAdded, (this, aSheet, PR_FALSE));
+@@ -3540,18 +3519,17 @@ nsDocument::EnsureCatalogStyleSheet(cons
+ {
+   mozilla::css::Loader* cssLoader = CSSLoader();
+   if (cssLoader->GetEnabled()) {
+     PRInt32 sheetCount = GetNumberOfCatalogStyleSheets();
+     for (PRInt32 i = 0; i < sheetCount; i++) {
+       nsIStyleSheet* sheet = GetCatalogStyleSheetAt(i);
+       NS_ASSERTION(sheet, "unexpected null stylesheet in the document");
+       if (sheet) {
+-        nsCOMPtr<nsIURI> uri;
+-        sheet->GetSheetURI(getter_AddRefs(uri));
++        nsCOMPtr<nsIURI> uri = sheet->GetSheetURI();
+         nsCAutoString uriStr;
+         uri->GetSpec(uriStr);
+         if (uriStr.Equals(aStyleSheetURI))
+           return;
+       }
+     }
+ 
+     nsCOMPtr<nsIURI> uri;
+@@ -7837,37 +7815,33 @@ nsIDocument::CreateStaticClone(nsISuppor
+     clonedDoc = do_QueryInterface(clonedNode);
+     nsCOMPtr<nsIDOMDocument> clonedDOMDoc = do_QueryInterface(clonedDoc);
+     if (clonedDOMDoc) {
+       clonedDoc->mOriginalDocument = this;
+       PRInt32 sheetsCount = GetNumberOfStyleSheets();
+       for (PRInt32 i = 0; i < sheetsCount; ++i) {
+         nsRefPtr<nsCSSStyleSheet> sheet = do_QueryObject(GetStyleSheetAt(i));
+         if (sheet) {
+-          PRBool applicable = PR_TRUE;
+-          sheet->GetApplicable(applicable);
+-          if (applicable) {
++          if (sheet->GetApplicable()) {
+             nsRefPtr<nsCSSStyleSheet> clonedSheet =
+               sheet->Clone(nsnull, nsnull, clonedDoc, nsnull);
+             NS_WARN_IF_FALSE(clonedSheet, "Cloning a stylesheet didn't work!");
+             if (clonedSheet) {
+               clonedDoc->AddStyleSheet(clonedSheet);
+             }
+           }
+         }
+       }
+ 
+       sheetsCount = GetNumberOfCatalogStyleSheets();
+       for (PRInt32 i = 0; i < sheetsCount; ++i) {
+         nsRefPtr<nsCSSStyleSheet> sheet =
+           do_QueryObject(GetCatalogStyleSheetAt(i));
+         if (sheet) {
+-          PRBool applicable = PR_TRUE;
+-          sheet->GetApplicable(applicable);
+-          if (applicable) {
++          if (sheet->GetApplicable()) {
+             nsRefPtr<nsCSSStyleSheet> clonedSheet =
+               sheet->Clone(nsnull, nsnull, clonedDoc, nsnull);
+             NS_WARN_IF_FALSE(clonedSheet, "Cloning a stylesheet didn't work!");
+             if (clonedSheet) {
+               clonedDoc->AddCatalogStyleSheet(clonedSheet);
+             }
+           }
+         }
+diff --git a/content/base/src/nsStyleLinkElement.cpp b/content/base/src/nsStyleLinkElement.cpp
+--- a/content/base/src/nsStyleLinkElement.cpp
++++ b/content/base/src/nsStyleLinkElement.cpp
+@@ -243,19 +243,17 @@ nsStyleLinkElement::DoUpdateStyleSheet(n
+   if (!doc || !doc->CSSLoader()->GetEnabled()) {
+     return NS_OK;
+   }
+ 
+   PRBool isInline;
+   nsCOMPtr<nsIURI> uri = GetStyleSheetURL(&isInline);
+ 
+   if (!aForceUpdate && mStyleSheet && !isInline && uri) {
+-    nsCOMPtr<nsIURI> oldURI;
+-
+-    mStyleSheet->GetSheetURI(getter_AddRefs(oldURI));
++    nsCOMPtr<nsIURI> oldURI = mStyleSheet->GetSheetURI();
+     if (oldURI) {
+       PRBool equal;
+       nsresult rv = oldURI->Equals(uri, &equal);
+       if (NS_SUCCEEDED(rv) && equal) {
+         return NS_OK; // We already loaded this stylesheet
+       }
+     }
+   }
+diff --git a/content/xbl/src/nsXBLPrototypeResources.cpp b/content/xbl/src/nsXBLPrototypeResources.cpp
+--- a/content/xbl/src/nsXBLPrototypeResources.cpp
++++ b/content/xbl/src/nsXBLPrototypeResources.cpp
+@@ -116,18 +116,17 @@ nsXBLPrototypeResources::FlushSkinSheets
+ 
+   sheet_array_type oldSheets(mStyleSheetList);
+   mStyleSheetList.Clear();
+ 
+   for (sheet_array_type::size_type i = 0, count = oldSheets.Length();
+        i < count; ++i) {
+     nsCSSStyleSheet* oldSheet = oldSheets[i];
+ 
+-    nsCOMPtr<nsIURI> uri;
+-    oldSheet->GetSheetURI(getter_AddRefs(uri));
++    nsCOMPtr<nsIURI> uri = oldSheet->GetSheetURI();
+ 
+     nsRefPtr<nsCSSStyleSheet> newSheet;
+     if (IsChromeURI(uri)) {
+       if (NS_FAILED(cssLoader->LoadSheetSync(uri, getter_AddRefs(newSheet))))
+         continue;
+     }
+     else {
+       newSheet = oldSheet;
+diff --git a/content/xul/document/src/nsXULPrototypeCache.cpp b/content/xul/document/src/nsXULPrototypeCache.cpp
+--- a/content/xul/document/src/nsXULPrototypeCache.cpp
++++ b/content/xul/document/src/nsXULPrototypeCache.cpp
+@@ -240,20 +240,17 @@ nsXULPrototypeCache::PutPrototype(nsXULP
+     NS_ENSURE_TRUE(mPrototypeTable.Put(uri, aDocument), NS_ERROR_OUT_OF_MEMORY);
+ 
+     return NS_OK;
+ }
+ 
+ nsresult
+ nsXULPrototypeCache::PutStyleSheet(nsCSSStyleSheet* aStyleSheet)
+ {
+-    nsCOMPtr<nsIURI> uri;
+-    nsresult rv = aStyleSheet->GetSheetURI(getter_AddRefs(uri));
+-    if (NS_FAILED(rv))
+-        return rv;
++    nsCOMPtr<nsIURI> uri = aStyleSheet->GetSheetURI();
+ 
+    NS_ENSURE_TRUE(mStyleSheetTable.Put(uri, aStyleSheet),
+                   NS_ERROR_OUT_OF_MEMORY);
+ 
+     return NS_OK;
+ }
+ 
+ 
+@@ -342,18 +339,17 @@ FlushSkinXBL(nsIURI* aKey, nsCOMPtr<nsIX
+   }
+ 
+   return ret;
+ }
+ 
+ static PLDHashOperator
+ FlushSkinSheets(nsIURI* aKey, nsRefPtr<nsCSSStyleSheet>& aSheet, void* aClosure)
+ {
+-  nsCOMPtr<nsIURI> uri;
+-  aSheet->GetSheetURI(getter_AddRefs(uri));
++  nsCOMPtr<nsIURI> uri = aSheet->GetSheetURI();
+   nsCAutoString str;
+   uri->GetPath(str);
+ 
+   PLDHashOperator ret = PL_DHASH_NEXT;
+ 
+   if (!strncmp(str.get(), "/skin", 5)) {
+     // This is a skin binding. Add the key to the list.
+     ret = PL_DHASH_REMOVE;
+diff --git a/editor/libeditor/html/nsHTMLEditor.cpp b/editor/libeditor/html/nsHTMLEditor.cpp
+--- a/editor/libeditor/html/nsHTMLEditor.cpp
++++ b/editor/libeditor/html/nsHTMLEditor.cpp
+@@ -3500,38 +3500,35 @@ nsHTMLEditor::EnableStyleSheet(const nsA
+   nsRefPtr<nsCSSStyleSheet> sheet;
+   nsresult rv = GetStyleSheetForURL(aURL, getter_AddRefs(sheet));
+   NS_ENSURE_SUCCESS(rv, rv);
+   if (!sheet)
+     return NS_OK; // Don't fail if sheet not found
+ 
+   // Ensure the style sheet is owned by our document.
+   nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocWeak);
+-  rv = sheet->SetOwningDocument(doc);
+-  NS_ENSURE_SUCCESS(rv, rv);
+-  
++  sheet->SetOwningDocument(doc);
++
+   return sheet->SetDisabled(!aEnable);
+ }
+ 
+ PRBool
+ nsHTMLEditor::EnableExistingStyleSheet(const nsAString &aURL)
+ {
+   nsRefPtr<nsCSSStyleSheet> sheet;
+   nsresult rv = GetStyleSheetForURL(aURL, getter_AddRefs(sheet));
+   if (NS_FAILED(rv))
+     return PR_FALSE;
+ 
+   // Enable sheet if already loaded.
+   if (sheet)
+   {
+     // Ensure the style sheet is owned by our document.
+     nsCOMPtr<nsIDocument> doc = do_QueryReferent(mDocWeak);
+-    rv = sheet->SetOwningDocument(doc);
+-    if (NS_FAILED(rv))
+-      return PR_FALSE;
++    sheet->SetOwningDocument(doc);
+ 
+     sheet->SetDisabled(PR_FALSE);
+     return PR_TRUE;
+   }
+   return PR_FALSE;
+ }
+ 
+ nsresult
+@@ -3897,32 +3894,28 @@ nsHTMLEditor::StyleSheetLoaded(nsCSSStyl
+   rv = CreateTxnForAddStyleSheet(aSheet, getter_AddRefs(txn));
+   if (!txn) rv = NS_ERROR_NULL_POINTER;
+   if (NS_SUCCEEDED(rv))
+   {
+     rv = DoTransaction(txn);
+     if (NS_SUCCEEDED(rv))
+     {
+       // Get the URI, then url spec from the sheet
+-      nsCOMPtr<nsIURI> uri;
+-      rv = aSheet->GetSheetURI(getter_AddRefs(uri));
++      nsCOMPtr<nsIURI> uri = aSheet->GetSheetURI();
++
++      nsCAutoString spec;
++      rv = uri->GetSpec(spec);
+ 
+       if (NS_SUCCEEDED(rv))
+       {
+-        nsCAutoString spec;
+-        rv = uri->GetSpec(spec);
+-
+-        if (NS_SUCCEEDED(rv))
+-        {
+-          // Save it so we can remove before applying the next one
+-          mLastStyleSheetURL.AssignWithConversion(spec.get());
+-
+-          // Also save in our arrays of urls and sheets
+-          AddNewStyleSheetToList(mLastStyleSheetURL, aSheet);
+-        }
++        // Save it so we can remove before applying the next one
++        mLastStyleSheetURL.AssignWithConversion(spec.get());
++
++        // Also save in our arrays of urls and sheets
++        AddNewStyleSheetToList(mLastStyleSheetURL, aSheet);
+       }
+     }
+   }
+ 
+   return NS_OK;
+ }
+ 
+ #ifdef XP_MAC
+diff --git a/layout/base/nsPresShell.cpp b/layout/base/nsPresShell.cpp
+--- a/layout/base/nsPresShell.cpp
++++ b/layout/base/nsPresShell.cpp
+@@ -4930,34 +4930,31 @@ nsIPresShell::ReconstructStyleDataExtern
+ 
+ void
+ PresShell::StyleSheetAdded(nsIDocument *aDocument,
+                            nsIStyleSheet* aStyleSheet,
+                            PRBool aDocumentSheet)
+ {
+   // We only care when enabled sheets are added
+   NS_PRECONDITION(aStyleSheet, "Must have a style sheet!");
+-  PRBool applicable;
+-  aStyleSheet->GetApplicable(applicable);
+-
+-  if (applicable && aStyleSheet->HasRules()) {
++
++  if (aStyleSheet->GetApplicable() && aStyleSheet->HasRules()) {
+     mStylesHaveChanged = PR_TRUE;
+   }
+ }
+ 
+ void 
+ PresShell::StyleSheetRemoved(nsIDocument *aDocument,
+                              nsIStyleSheet* aStyleSheet,
+                              PRBool aDocumentSheet)
+ {
+   // We only care when enabled sheets are removed
+   NS_PRECONDITION(aStyleSheet, "Must have a style sheet!");
+-  PRBool applicable;
+-  aStyleSheet->GetApplicable(applicable);
+-  if (applicable && aStyleSheet->HasRules()) {
++
++  if (aStyleSheet->GetApplicable() && aStyleSheet->HasRules()) {
+     mStylesHaveChanged = PR_TRUE;
+   }
+ }
+ 
+ void
+ PresShell::StyleSheetApplicableStateChanged(nsIDocument *aDocument,
+                                             nsIStyleSheet* aStyleSheet,
+                                             PRBool aApplicable)
+diff --git a/layout/base/nsStyleSheetService.cpp b/layout/base/nsStyleSheetService.cpp
+--- a/layout/base/nsStyleSheetService.cpp
++++ b/layout/base/nsStyleSheetService.cpp
+@@ -104,19 +104,18 @@ nsStyleSheetService::RegisterFromEnumera
+ }
+ 
+ PRInt32
+ nsStyleSheetService::FindSheetByURI(const nsCOMArray<nsIStyleSheet> &sheets,
+                                     nsIURI *sheetURI)
+ {
+   for (PRInt32 i = sheets.Count() - 1; i >= 0; i-- ) {
+     PRBool bEqual;
+-    nsCOMPtr<nsIURI> uri;
+-    if (NS_SUCCEEDED(sheets[i]->GetSheetURI(getter_AddRefs(uri)))
+-        && uri
++    nsCOMPtr<nsIURI> uri = sheets[i]->GetSheetURI();
++    if (uri
+         && NS_SUCCEEDED(uri->Equals(sheetURI, &bEqual))
+         && bEqual) {
+       return i;
+     }
+   }
+ 
+   return -1;
+ }
+diff --git a/layout/style/nsCSSLoader.cpp b/layout/style/nsCSSLoader.cpp
+--- a/layout/style/nsCSSLoader.cpp
++++ b/layout/style/nsCSSLoader.cpp
+@@ -786,22 +786,22 @@ SheetLoadData::OnDetermineCharset(nsIUni
+ 
+   mCharset = aCharset;
+   return NS_OK;
+ }
+ 
+ already_AddRefed<nsIURI>
+ SheetLoadData::GetReferrerURI()
+ {
+-  nsIURI* uri = nsnull;
++  nsCOMPtr<nsIURI> uri;
+   if (mParentData)
+-    mParentData->mSheet->GetSheetURI(&uri);
++    uri = mParentData->mSheet->GetSheetURI();
+   if (!uri && mLoader->mDocument)
+-    NS_IF_ADDREF(uri = mLoader->mDocument->GetDocumentURI());
+-  return uri;
++    uri = mLoader->mDocument->GetDocumentURI();
++  return uri.forget();
+ }
+ 
+ /*
+  * Here we need to check that the load did not give us an http error
+  * page and check the mimetype on the channel to make sure we're not
+  * loading non-text/css data in standards mode.
+  */
+ NS_IMETHODIMP
+@@ -1102,18 +1102,17 @@ Loader::CreateSheet(nsIURI* aURI,
+       mCompleteSheets.Get(&key, getter_AddRefs(sheet));
+       LOG(("  From completed: %p", sheet.get()));
+     }
+     
+     if (sheet) {
+ #ifdef DEBUG
+       // This sheet came from the XUL cache or our per-document hashtable; it
+       // better be a complete sheet.
+-      PRBool complete = PR_FALSE;
+-      sheet->GetComplete(complete);
++      PRBool complete = sheet->GetComplete();
+       NS_ASSERTION(complete,
+                    "Sheet thinks it's not complete while we think it is");
+ #endif
+       // Make sure it hasn't been modified; if it has, we can't use it
+       if (sheet->IsModified()) {
+         LOG(("  Not cloning completed sheet %p because it's been modified",
+              sheet.get()));
+         sheet = nsnull;
+@@ -1161,18 +1160,17 @@ Loader::CreateSheet(nsIURI* aURI,
+ #endif
+         }
+       }
+     }
+ 
+     if (sheet) {
+       // The sheet we have now should be either incomplete or unmodified
+ #ifdef DEBUG
+-      PRBool complete = PR_FALSE;
+-      sheet->GetComplete(complete);
++      PRBool complete = sheet->GetComplete();
+       NS_ASSERTION(!sheet->IsModified() || !complete,
+                    "Unexpected modified complete sheet");
+       NS_ASSERTION(complete || aSheetState != eSheetComplete,
+                    "Sheet thinks it's not complete while we think it is");
+ #endif
+       *aSheet = sheet->Clone(nsnull, nsnull, nsnull, nsnull).get();
+     }
+   }
+@@ -1643,18 +1641,18 @@ Loader::ParseSheet(nsIUnicharInputStream
+     LOG_ERROR(("  Failed to get CSS parser"));
+     SheetComplete(aLoadData, NS_ERROR_OUT_OF_MEMORY);
+     return NS_ERROR_OUT_OF_MEMORY;
+   }
+ 
+   // Push our load data on the stack so any kids can pick it up
+   mParsingDatas.AppendElement(aLoadData);
+   nsCOMPtr<nsIURI> sheetURI, baseURI;
+-  aLoadData->mSheet->GetSheetURI(getter_AddRefs(sheetURI));
+-  aLoadData->mSheet->GetBaseURI(getter_AddRefs(baseURI));
++  sheetURI = aLoadData->mSheet->GetSheetURI();
++  baseURI = aLoadData->mSheet->GetBaseURI();
+   nsresult rv = parser.Parse(aStream, sheetURI, baseURI,
+                              aLoadData->mSheet->Principal(),
+                              aLoadData->mLineNumber,
+                              aLoadData->mAllowUnsafeRules);
+   mParsingDatas.RemoveElementAt(mParsingDatas.Length() - 1);
+ 
+   if (NS_FAILED(rv)) {
+     LOG_ERROR(("  Low-level error in parser!"));
+@@ -1998,19 +1996,18 @@ Loader::LoadChildSheet(nsCSSStyleSheet* 
+   }
+   
+   LOG_URI("  Child uri: '%s'", aURL);
+ 
+   nsCOMPtr<nsIDOMNode> owningNode;
+ 
+   // check for an owning document: if none, don't bother walking up the parent
+   // sheets
+-  nsCOMPtr<nsIDocument> owningDoc;
+-  nsresult rv = aParentSheet->GetOwningDocument(*getter_AddRefs(owningDoc));
+-  if (NS_SUCCEEDED(rv) && owningDoc) {
++  nsCOMPtr<nsIDocument> owningDoc = aParentSheet->GetOwningDocument();
++  if (owningDoc) {
+     nsCOMPtr<nsIDOMStyleSheet> nextParentSheet(aParentSheet);
+     NS_ENSURE_TRUE(nextParentSheet, NS_ERROR_FAILURE); //Not a stylesheet!?
+ 
+     nsCOMPtr<nsIDOMStyleSheet> topSheet;
+     //traverse our way to the top-most sheet
+     do {
+       topSheet.swap(nextParentSheet);
+       topSheet->GetParentStyleSheet(getter_AddRefs(nextParentSheet));
+@@ -2020,17 +2017,17 @@ Loader::LoadChildSheet(nsCSSStyleSheet* 
+   }
+ 
+   nsISupports* context = owningNode;
+   if (!context) {
+     context = mDocument;
+   }
+ 
+   nsIPrincipal* principal = aParentSheet->Principal();
+-  rv = CheckLoadAllowed(principal, aURL, context);
++  nsresult rv = CheckLoadAllowed(principal, aURL, context);
+   if (NS_FAILED(rv)) return rv;
+ 
+   LOG(("  Passed load check"));
+   
+   SheetLoadData* parentData = nsnull;
+   nsCOMPtr<nsICSSLoaderObserver> observer;
+ 
+   PRInt32 count = mParsingDatas.Length();
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -887,18 +887,17 @@ CSSParserImpl::Parse(nsIUnicharInputStre
+   NS_ASSERTION(nsnull != aBaseURI, "need base URI");
+   NS_ASSERTION(nsnull != aSheetURI, "need sheet URI");
+   AssertInitialState();
+ 
+   NS_PRECONDITION(mSheet, "Must have sheet to parse into");
+   NS_ENSURE_STATE(mSheet);
+ 
+ #ifdef DEBUG
+-  nsCOMPtr<nsIURI> uri;
+-  mSheet->GetSheetURI(getter_AddRefs(uri));
++  nsCOMPtr<nsIURI> uri = mSheet->GetSheetURI();
+   PRBool equal;
+   NS_ASSERTION(NS_SUCCEEDED(aSheetURI->Equals(uri, &equal)) && equal,
+                "Sheet URI does not match passed URI");
+   NS_ASSERTION(NS_SUCCEEDED(mSheet->Principal()->Equals(aSheetPrincipal,
+                                                         &equal)) &&
+                equal,
+                "Sheet principal does not match passed principal");
+ #endif
+diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcessor.cpp
+--- a/layout/style/nsCSSRuleProcessor.cpp
++++ b/layout/style/nsCSSRuleProcessor.cpp
+@@ -2818,20 +2818,17 @@ CascadeRuleEnumFunc(nsICSSRule* aRule, v
+   }
+ 
+   return PR_TRUE;
+ }
+ 
+ /* static */ PRBool
+ nsCSSRuleProcessor::CascadeSheet(nsCSSStyleSheet* aSheet, CascadeEnumData* aData)
+ {
+-  PRBool bSheetApplicable = PR_TRUE;
+-  aSheet->GetApplicable(bSheetApplicable);
+-
+-  if (bSheetApplicable &&
++  if (aSheet->GetApplicable() &&
+       aSheet->UseForPresentation(aData->mPresContext, aData->mCacheKey) &&
+       aSheet->mInner) {
+     nsCSSStyleSheet* child = aSheet->mInner->mFirstChild;
+     while (child) {
+       CascadeSheet(child, aData);
+       child = child->mNext;
+     }
+ 
+diff --git a/layout/style/nsCSSStyleRule.cpp b/layout/style/nsCSSStyleRule.cpp
+--- a/layout/style/nsCSSStyleRule.cpp
++++ b/layout/style/nsCSSStyleRule.cpp
+@@ -1077,26 +1077,25 @@ DOMCSSDeclarationImpl::GetCSSParsingEnvi
+   *aBaseURI = nsnull;
+   *aSheetPrincipal = nsnull;
+   *aCSSLoader = nsnull;
+ 
+   nsCOMPtr<nsIStyleSheet> sheet;
+   if (mRule) {
+     mRule->GetStyleSheet(*getter_AddRefs(sheet));
+     if (sheet) {
+-      sheet->GetSheetURI(aSheetURI);
+-      sheet->GetBaseURI(aBaseURI);
++      *aSheetURI = sheet->GetSheetURI().get();
++      *aBaseURI = sheet->GetBaseURI().get();
+ 
+       nsRefPtr<nsCSSStyleSheet> cssSheet(do_QueryObject(sheet));
+       if (cssSheet) {
+         NS_ADDREF(*aSheetPrincipal = cssSheet->Principal());
+       }
+ 
+-      nsCOMPtr<nsIDocument> document;
+-      sheet->GetOwningDocument(*getter_AddRefs(document));
++      nsCOMPtr<nsIDocument> document = sheet->GetOwningDocument();
+       if (document) {
+         NS_ADDREF(*aCSSLoader = document->CSSLoader());
+       }
+     }
+   }
+ 
+   nsresult result = NS_OK;
+   if (!*aSheetPrincipal) {
+@@ -1125,17 +1124,17 @@ DOMCSSDeclarationImpl::DeclarationChange
+ {
+   NS_PRECONDITION(mRule,
+          "can only be called when |GetCSSDeclaration| returned a declaration");
+ 
+   nsCOMPtr<nsIDocument> owningDoc;
+   nsCOMPtr<nsIStyleSheet> sheet;
+   mRule->GetStyleSheet(*getter_AddRefs(sheet));
+   if (sheet) {
+-    sheet->GetOwningDocument(*getter_AddRefs(owningDoc));
++    owningDoc = sheet->GetOwningDocument();
+   }
+ 
+   mozAutoDocUpdate updateBatch(owningDoc, UPDATE_STYLE, PR_TRUE);
+ 
+   nsCOMPtr<nsICSSStyleRule> oldRule = mRule;
+   mRule = oldRule->DeclarationChanged(PR_TRUE).get();
+   if (!mRule)
+     return NS_ERROR_OUT_OF_MEMORY;
+diff --git a/layout/style/nsCSSStyleSheet.cpp b/layout/style/nsCSSStyleSheet.cpp
+--- a/layout/style/nsCSSStyleSheet.cpp
++++ b/layout/style/nsCSSStyleSheet.cpp
+@@ -609,18 +609,17 @@ nsMediaList::GetMediaText(nsAString& aMe
+ {
+   return GetText(aMediaText);
+ }
+ 
+ // "sheet" should be an nsCSSStyleSheet and "doc" should be an
+ // nsCOMPtr<nsIDocument>
+ #define BEGIN_MEDIA_CHANGE(sheet, doc)                         \
+   if (sheet) {                                                 \
+-    rv = sheet->GetOwningDocument(*getter_AddRefs(doc));       \
+-    NS_ENSURE_SUCCESS(rv, rv);                                 \
++    doc = sheet->GetOwningDocument();                          \
+   }                                                            \
+   mozAutoDocUpdate updateBatch(doc, UPDATE_STYLE, PR_TRUE);    \
+   if (sheet) {                                                 \
+     rv = sheet->WillDirty();                                   \
+     NS_ENSURE_SUCCESS(rv, rv);                                 \
+   }
+ 
+ #define END_MEDIA_CHANGE(sheet, doc)                           \
+@@ -1126,35 +1125,36 @@ nsCSSStyleSheet::SetPrincipal(nsIPrincip
+ }
+ 
+ nsIPrincipal*
+ nsCSSStyleSheet::Principal() const
+ {
+   return mInner->mPrincipal;
+ }
+ 
+-NS_IMETHODIMP
+-nsCSSStyleSheet::GetSheetURI(nsIURI** aSheetURI) const
++already_AddRefed<nsIURI>
++nsCSSStyleSheet::GetSheetURI() const
+ {
+-  NS_IF_ADDREF(*aSheetURI = mInner->mSheetURI.get());
+-  return NS_OK;
++  nsIURI* sheetURI = mInner->mSheetURI;
++  NS_IF_ADDREF(sheetURI);
++  return sheetURI;
+ }
+ 
+-NS_IMETHODIMP
+-nsCSSStyleSheet::GetBaseURI(nsIURI** aBaseURI) const
++already_AddRefed<nsIURI>
++nsCSSStyleSheet::GetBaseURI() const
+ {
+-  NS_IF_ADDREF(*aBaseURI = mInner->mBaseURI.get());
+-  return NS_OK;
++  nsIURI* baseURI = mInner->mBaseURI;
++  NS_IF_ADDREF(baseURI);
++  return baseURI;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsCSSStyleSheet::GetType(nsString& aType) const
+ {
+   aType.AssignLiteral("text/css");
+-  return NS_OK;
+ }
+ 
+ PRBool
+ nsCSSStyleSheet::UseForPresentation(nsPresContext* aPresContext,
+                                     nsMediaQueryResultCacheKey& aKey) const
+ {
+   if (mMedia) {
+     return mMedia->Matches(aPresContext, aKey);
+@@ -1164,98 +1164,90 @@ nsCSSStyleSheet::UseForPresentation(nsPr
+ 
+ 
+ void
+ nsCSSStyleSheet::SetMedia(nsMediaList* aMedia)
+ {
+   mMedia = aMedia;
+ }
+ 
+-NS_IMETHODIMP_(PRBool)
++PRBool
+ nsCSSStyleSheet::HasRules() const
+ {
+   return StyleRuleCount() != 0;
+ }
+ 
+-NS_IMETHODIMP
+-nsCSSStyleSheet::GetApplicable(PRBool& aApplicable) const
++PRBool
++nsCSSStyleSheet::GetApplicable() const
+ {
+-  aApplicable = !mDisabled && mInner->mComplete;
+-  return NS_OK;
++  return !mDisabled && mInner->mComplete;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsCSSStyleSheet::SetEnabled(PRBool aEnabled)
+ {
+   // Internal method, so callers must handle BeginUpdate/EndUpdate
+   PRBool oldDisabled = mDisabled;
+   mDisabled = !aEnabled;
+ 
+   if (mInner->mComplete && oldDisabled != mDisabled) {
+     ClearRuleCascades();
+ 
+     if (mDocument) {
+       mDocument->SetStyleSheetApplicableState(this, !mDisabled);
+     }
+   }
+-
+-  return NS_OK;
+ }
+ 
+-NS_IMETHODIMP
+-nsCSSStyleSheet::GetComplete(PRBool& aComplete) const
++PRBool
++nsCSSStyleSheet::GetComplete() const
+ {
+-  aComplete = mInner->mComplete;
+-  return NS_OK;
++  return mInner->mComplete;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsCSSStyleSheet::SetComplete()
+ {
+   NS_ASSERTION(!mDirty, "Can't set a dirty sheet complete!");
+   mInner->mComplete = PR_TRUE;
+   if (mDocument && !mDisabled) {
+     // Let the document know
+     mDocument->BeginUpdate(UPDATE_STYLE);
+     mDocument->SetStyleSheetApplicableState(this, PR_TRUE);
+     mDocument->EndUpdate(UPDATE_STYLE);
+   }
+-  return NS_OK;
+ }
+ 
+-NS_IMETHODIMP
+-nsCSSStyleSheet::GetParentSheet(nsIStyleSheet*& aParent) const
++already_AddRefed<nsIStyleSheet>
++nsCSSStyleSheet::GetParentSheet() const
+ {
+-  aParent = mParent;
+-  NS_IF_ADDREF(aParent);
+-  return NS_OK;
++  NS_IF_ADDREF(mParent);
++  return mParent;
+ }
+ 
+-NS_IMETHODIMP
+-nsCSSStyleSheet::GetOwningDocument(nsIDocument*& aDocument) const
++already_AddRefed<nsIDocument>
++nsCSSStyleSheet::GetOwningDocument() const
+ {
+-  aDocument = mDocument;
+-  NS_IF_ADDREF(aDocument);
+-  return NS_OK;
++  NS_IF_ADDREF(mDocument);
++  return mDocument;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsCSSStyleSheet::SetOwningDocument(nsIDocument* aDocument)
+ { // not ref counted
+   mDocument = aDocument;
+   // Now set the same document on all our child sheets....
+   // XXXbz this is a little bogus; see the XXX comment where we
+   // declare mFirstChild.
+   for (nsCSSStyleSheet* child = mInner->mFirstChild;
+        child; child = child->mNext) {
+     if (child->mParent == this) {
+       child->SetOwningDocument(aDocument);
+     }
+   }
+-  return NS_OK;
+ }
+ 
+ already_AddRefed<nsICSSImportRule>
+ nsCSSStyleSheet::GetOwnerRule()
+ {
+   NS_IF_ADDREF(mOwnerRule);
+   return mOwnerRule;
+ }
+@@ -1625,18 +1617,18 @@ nsCSSStyleSheet::GetDisabled(PRBool* aDi
+   return NS_OK;
+ }
+ 
+ NS_IMETHODIMP    
+ nsCSSStyleSheet::SetDisabled(PRBool aDisabled)
+ {
+   // DOM method, so handle BeginUpdate/EndUpdate
+   MOZ_AUTO_DOC_UPDATE(mDocument, UPDATE_STYLE, PR_TRUE);
+-  nsresult rv = nsCSSStyleSheet::SetEnabled(!aDisabled);
+-  return rv;
++  nsCSSStyleSheet::SetEnabled(!aDisabled);
++  return NS_OK;
+ }
+ 
+ NS_IMETHODIMP
+ nsCSSStyleSheet::GetOwnerNode(nsIDOMNode** aOwnerNode)
+ {
+   *aOwnerNode = mOwningNode;
+   NS_IF_ADDREF(*aOwnerNode);
+   return NS_OK;
+@@ -1668,21 +1660,20 @@ nsCSSStyleSheet::GetHref(nsAString& aHre
+     CopyUTF8toUTF16(str, aHref);
+   } else {
+     SetDOMStringToNull(aHref);
+   }
+ 
+   return NS_OK;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsCSSStyleSheet::GetTitle(nsString& aTitle) const
+ {
+   aTitle = mTitle;
+-  return NS_OK;
+ }
+ 
+ NS_IMETHODIMP
+ nsCSSStyleSheet::GetTitle(nsAString& aTitle)
+ {
+   aTitle.Assign(mTitle);
+   return NS_OK;
+ }
+@@ -1715,19 +1706,17 @@ nsCSSStyleSheet::GetOwnerRule(nsIDOMCSSR
+   *aOwnerRule = nsnull;
+   return NS_OK;    
+ }
+ 
+ NS_IMETHODIMP    
+ nsCSSStyleSheet::GetCssRules(nsIDOMCSSRuleList** aCssRules)
+ {
+   // No doing this on incomplete sheets!
+-  PRBool complete;
+-  GetComplete(complete);
+-  if (!complete) {
++  if (!GetComplete()) {
+     return NS_ERROR_DOM_INVALID_ACCESS_ERR;
+   }
+   
+   //-- Security check: Only scripts whose principal subsumes that of the
+   //   style sheet can access rule collections.
+   nsresult rv = SubjectSubsumesInnerPrincipal();
+   NS_ENSURE_SUCCESS(rv, rv);
+ 
+@@ -1760,19 +1749,17 @@ nsCSSStyleSheet::InsertRule(const nsAStr
+ }
+ 
+ nsresult
+ nsCSSStyleSheet::InsertRuleInternal(const nsAString& aRule, 
+                                     PRUint32 aIndex, 
+                                     PRUint32* aReturn)
+ {
+   // No doing this if the sheet is not complete!
+-  PRBool complete;
+-  GetComplete(complete);
+-  if (!complete) {
++  if (!GetComplete()) {
+     return NS_ERROR_DOM_INVALID_ACCESS_ERR;
+   }
+ 
+   if (aRule.IsEmpty()) {
+     // Nothing to do here
+     return NS_OK;
+   }
+   
+@@ -1909,19 +1896,17 @@ nsCSSStyleSheet::InsertRuleInternal(cons
+   return NS_OK;
+ }
+ 
+ NS_IMETHODIMP    
+ nsCSSStyleSheet::DeleteRule(PRUint32 aIndex)
+ {
+   nsresult result = NS_ERROR_DOM_INDEX_SIZE_ERR;
+   // No doing this if the sheet is not complete!
+-  PRBool complete;
+-  GetComplete(complete);
+-  if (!complete) {
++  if (!GetComplete()) {
+     return NS_ERROR_DOM_INVALID_ACCESS_ERR;
+   }
+ 
+   //-- Security check: Only scripts whose principal subsumes that of the
+   //   style sheet can modify rule collections.
+   nsresult rv = SubjectSubsumesInnerPrincipal();
+   NS_ENSURE_SUCCESS(rv, rv);
+ 
+@@ -2089,18 +2074,17 @@ nsCSSStyleSheet::ReplaceRuleInGroup(nsIC
+ 
+ // nsICSSLoaderObserver implementation
+ NS_IMETHODIMP
+ nsCSSStyleSheet::StyleSheetLoaded(nsCSSStyleSheet* aSheet,
+                                   PRBool aWasAlternate,
+                                   nsresult aStatus)
+ {
+ #ifdef DEBUG
+-  nsCOMPtr<nsIStyleSheet> parentSheet;
+-  aSheet->GetParentSheet(*getter_AddRefs(parentSheet));
++  nsCOMPtr<nsIStyleSheet> parentSheet = aSheet->GetParentSheet();
+   NS_ASSERTION(this == parentSheet, "We are being notified of a sheet load for a sheet that is not our child!\n");
+ #endif
+   
+   if (mDocument && NS_SUCCEEDED(aStatus)) {
+     nsCOMPtr<nsICSSImportRule> ownerRule = aSheet->GetOwnerRule();
+     
+     mozAutoDocUpdate updateBatch(mDocument, UPDATE_STYLE, PR_TRUE);
+ 
+diff --git a/layout/style/nsCSSStyleSheet.h b/layout/style/nsCSSStyleSheet.h
+--- a/layout/style/nsCSSStyleSheet.h
++++ b/layout/style/nsCSSStyleSheet.h
+@@ -132,28 +132,28 @@ class nsCSSStyleSheet : public nsIStyleS
+ public:
+   nsCSSStyleSheet();
+ 
+   NS_DECL_ISUPPORTS
+ 
+   NS_DECLARE_STATIC_IID_ACCESSOR(NS_CSS_STYLE_SHEET_IMPL_CID)
+ 
+   // nsIStyleSheet interface
+-  NS_IMETHOD GetSheetURI(nsIURI** aSheetURI) const;
+-  NS_IMETHOD GetBaseURI(nsIURI** aBaseURI) const;
+-  NS_IMETHOD GetTitle(nsString& aTitle) const;
+-  NS_IMETHOD GetType(nsString& aType) const;
+-  NS_IMETHOD_(PRBool) HasRules() const;
+-  NS_IMETHOD GetApplicable(PRBool& aApplicable) const;
+-  NS_IMETHOD SetEnabled(PRBool aEnabled);
+-  NS_IMETHOD GetComplete(PRBool& aComplete) const;
+-  NS_IMETHOD SetComplete();
+-  NS_IMETHOD GetParentSheet(nsIStyleSheet*& aParent) const;  // may be null
+-  NS_IMETHOD GetOwningDocument(nsIDocument*& aDocument) const;  // may be null
+-  NS_IMETHOD SetOwningDocument(nsIDocument* aDocument);
++  virtual already_AddRefed<nsIURI> GetSheetURI() const;
++  virtual already_AddRefed<nsIURI> GetBaseURI() const;
++  virtual void GetTitle(nsString& aTitle) const;
++  virtual void GetType(nsString& aType) const;
++  virtual PRBool HasRules() const;
++  virtual PRBool GetApplicable() const;
++  virtual void SetEnabled(PRBool aEnabled);
++  virtual PRBool GetComplete() const;
++  virtual void SetComplete();
++  virtual already_AddRefed<nsIStyleSheet> GetParentSheet() const;  // may be null
++  virtual already_AddRefed<nsIDocument> GetOwningDocument() const;  // may be null
++  virtual void SetOwningDocument(nsIDocument* aDocument);
+ #ifdef DEBUG
+   virtual void List(FILE* out = stdout, PRInt32 aIndent = 0) const;
+ #endif
+ 
+   void AppendStyleSheet(nsCSSStyleSheet* aSheet);
+   void InsertStyleSheetAt(nsCSSStyleSheet* aSheet, PRInt32 aIndex);
+ 
+   // XXX do these belong here or are they generic?
+diff --git a/layout/style/nsHTMLCSSStyleSheet.cpp b/layout/style/nsHTMLCSSStyleSheet.cpp
+--- a/layout/style/nsHTMLCSSStyleSheet.cpp
++++ b/layout/style/nsHTMLCSSStyleSheet.cpp
+@@ -178,100 +178,89 @@ nsHTMLCSSStyleSheet::Reset(nsIURI* aURL)
+ {
+   NS_IF_RELEASE(mURL);
+   mURL = aURL;
+   NS_ADDREF(mURL);
+ 
+   return NS_OK;
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLCSSStyleSheet::GetSheetURI(nsIURI** aSheetURL) const
++already_AddRefed<nsIURI>
++nsHTMLCSSStyleSheet::GetSheetURI() const
+ {
+   NS_IF_ADDREF(mURL);
+-  *aSheetURL = mURL;
+-  return NS_OK;
++  return mURL;
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLCSSStyleSheet::GetBaseURI(nsIURI** aBaseURL) const
++already_AddRefed<nsIURI>
++nsHTMLCSSStyleSheet::GetBaseURI() const
+ {
+   NS_IF_ADDREF(mURL);
+-  *aBaseURL = mURL;
+-  return NS_OK;
++  return mURL;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLCSSStyleSheet::GetTitle(nsString& aTitle) const
+ {
+   aTitle.AssignLiteral("Internal HTML/CSS Style Sheet");
+-  return NS_OK;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLCSSStyleSheet::GetType(nsString& aType) const
+ {
+   aType.AssignLiteral("text/html");
+-  return NS_OK;
+ }
+ 
+-NS_IMETHODIMP_(PRBool)
++PRBool
+ nsHTMLCSSStyleSheet::HasRules() const
+ {
+   // Say we always have rules, since we don't know.
+   return PR_TRUE;
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLCSSStyleSheet::GetApplicable(PRBool& aApplicable) const
++PRBool
++nsHTMLCSSStyleSheet::GetApplicable() const
+ {
+-  aApplicable = PR_TRUE;
+-  return NS_OK;
++  return PR_TRUE;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLCSSStyleSheet::SetEnabled(PRBool aEnabled)
+ { // these can't be disabled
+-  return NS_OK;
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLCSSStyleSheet::GetComplete(PRBool& aComplete) const
++PRBool
++nsHTMLCSSStyleSheet::GetComplete() const
+ {
+-  aComplete = PR_TRUE;
+-  return NS_OK;
++  return PR_TRUE;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLCSSStyleSheet::SetComplete()
+ {
+-  return NS_OK;
+ }
+ 
+ // style sheet owner info
+-NS_IMETHODIMP
+-nsHTMLCSSStyleSheet::GetParentSheet(nsIStyleSheet*& aParent) const
++already_AddRefed<nsIStyleSheet>
++nsHTMLCSSStyleSheet::GetParentSheet() const
+ {
+-  aParent = nsnull;
+-  return NS_OK;
++  return nsnull;
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLCSSStyleSheet::GetOwningDocument(nsIDocument*& aDocument) const
++already_AddRefed<nsIDocument>
++nsHTMLCSSStyleSheet::GetOwningDocument() const
+ {
+   NS_IF_ADDREF(mDocument);
+-  aDocument = mDocument;
+-  return NS_OK;
++  return mDocument;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLCSSStyleSheet::SetOwningDocument(nsIDocument* aDocument)
+ {
+   mDocument = aDocument;
+-  return NS_OK;
+ }
+ 
+ #ifdef DEBUG
+ void nsHTMLCSSStyleSheet::List(FILE* out, PRInt32 aIndent) const
+ {
+   // Indent
+   for (PRInt32 index = aIndent; --index >= 0; ) fputs("  ", out);
+ 
+diff --git a/layout/style/nsHTMLCSSStyleSheet.h b/layout/style/nsHTMLCSSStyleSheet.h
+--- a/layout/style/nsHTMLCSSStyleSheet.h
++++ b/layout/style/nsHTMLCSSStyleSheet.h
+@@ -51,28 +51,28 @@ public:
+   nsHTMLCSSStyleSheet();
+ 
+   NS_DECL_ISUPPORTS
+ 
+   nsresult Init(nsIURI* aURL, nsIDocument* aDocument);
+   nsresult Reset(nsIURI* aURL);
+ 
+   // nsIStyleSheet
+-  NS_IMETHOD GetSheetURI(nsIURI** aSheetURL) const;
+-  NS_IMETHOD GetBaseURI(nsIURI** aBaseURL) const;
+-  NS_IMETHOD GetTitle(nsString& aTitle) const;
+-  NS_IMETHOD GetType(nsString& aType) const;
+-  NS_IMETHOD_(PRBool) HasRules() const;
+-  NS_IMETHOD GetApplicable(PRBool& aApplicable) const;
+-  NS_IMETHOD SetEnabled(PRBool aEnabled);
+-  NS_IMETHOD GetComplete(PRBool& aComplete) const;
+-  NS_IMETHOD SetComplete();
+-  NS_IMETHOD GetParentSheet(nsIStyleSheet*& aParent) const;  // will be null
+-  NS_IMETHOD GetOwningDocument(nsIDocument*& aDocument) const;
+-  NS_IMETHOD SetOwningDocument(nsIDocument* aDocument);
++  virtual already_AddRefed<nsIURI> GetSheetURI() const;
++  virtual already_AddRefed<nsIURI> GetBaseURI() const;
++  virtual void GetTitle(nsString& aTitle) const;
++  virtual void GetType(nsString& aType) const;
++  virtual PRBool HasRules() const;
++  virtual PRBool GetApplicable() const;
++  virtual void SetEnabled(PRBool aEnabled);
++  virtual PRBool GetComplete() const;
++  virtual void SetComplete();
++  virtual already_AddRefed<nsIStyleSheet> GetParentSheet() const;  // will be null
++  virtual already_AddRefed<nsIDocument> GetOwningDocument() const;
++  virtual void SetOwningDocument(nsIDocument* aDocument);
+ #ifdef DEBUG
+   virtual void List(FILE* out = stdout, PRInt32 aIndent = 0) const;
+ #endif
+ 
+   // nsIStyleRuleProcessor
+   NS_IMETHOD RulesMatching(ElementRuleProcessorData* aData);
+   NS_IMETHOD RulesMatching(PseudoElementRuleProcessorData* aData);
+   NS_IMETHOD RulesMatching(AnonBoxRuleProcessorData* aData);
+diff --git a/layout/style/nsHTMLStyleSheet.cpp b/layout/style/nsHTMLStyleSheet.cpp
+--- a/layout/style/nsHTMLStyleSheet.cpp
++++ b/layout/style/nsHTMLStyleSheet.cpp
+@@ -369,98 +369,87 @@ nsHTMLStyleSheet::RulesMatching(AnonBoxR
+ NS_IMETHODIMP
+ nsHTMLStyleSheet::RulesMatching(XULTreeRuleProcessorData* aData)
+ {
+   return NS_OK;
+ }
+ #endif
+ 
+   // nsIStyleSheet api
+-NS_IMETHODIMP
+-nsHTMLStyleSheet::GetSheetURI(nsIURI** aSheetURI) const
++already_AddRefed<nsIURI>
++nsHTMLStyleSheet::GetSheetURI() const
+ {
+-  *aSheetURI = mURL;
+-  NS_IF_ADDREF(*aSheetURI);
+-  return NS_OK;
++  NS_IF_ADDREF(mURL);
++  return mURL;
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLStyleSheet::GetBaseURI(nsIURI** aBaseURI) const
++already_AddRefed<nsIURI>
++nsHTMLStyleSheet::GetBaseURI() const
+ {
+-  *aBaseURI = mURL;
+-  NS_IF_ADDREF(*aBaseURI);
+-  return NS_OK;
++  NS_IF_ADDREF(mURL);
++  return mURL;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLStyleSheet::GetTitle(nsString& aTitle) const
+ {
+   aTitle.Truncate();
+-  return NS_OK;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLStyleSheet::GetType(nsString& aType) const
+ {
+   aType.AssignLiteral("text/html");
+-  return NS_OK;
+ }
+ 
+-NS_IMETHODIMP_(PRBool)
++PRBool
+ nsHTMLStyleSheet::HasRules() const
+ {
+   return PR_TRUE; // We have rules at all reasonable times
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLStyleSheet::GetApplicable(PRBool& aApplicable) const
++PRBool
++nsHTMLStyleSheet::GetApplicable() const
+ {
+-  aApplicable = PR_TRUE;
+-  return NS_OK;
++  return PR_TRUE;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLStyleSheet::SetEnabled(PRBool aEnabled)
+ { // these can't be disabled
+-  return NS_OK;
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLStyleSheet::GetComplete(PRBool& aComplete) const
++PRBool
++nsHTMLStyleSheet::GetComplete() const
+ {
+-  aComplete = PR_TRUE;
+-  return NS_OK;
++  return PR_TRUE;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLStyleSheet::SetComplete()
+ {
+-  return NS_OK;
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLStyleSheet::GetParentSheet(nsIStyleSheet*& aParent) const
++already_AddRefed<nsIStyleSheet>
++nsHTMLStyleSheet::GetParentSheet() const
+ {
+-  aParent = nsnull;
+-  return NS_OK;
++  return nsnull;
+ }
+ 
+-NS_IMETHODIMP
+-nsHTMLStyleSheet::GetOwningDocument(nsIDocument*& aDocument) const
++already_AddRefed<nsIDocument>
++nsHTMLStyleSheet::GetOwningDocument() const
+ {
+-  aDocument = mDocument;
+-  NS_IF_ADDREF(aDocument);
+-  return NS_OK;
++  NS_IF_ADDREF(mDocument);
++  return mDocument;
+ }
+ 
+-NS_IMETHODIMP
++void
+ nsHTMLStyleSheet::SetOwningDocument(nsIDocument* aDocument)
+ {
+   mDocument = aDocument; // not refcounted
+-  return NS_OK;
+ }
+ 
+ nsresult
+ nsHTMLStyleSheet::Init(nsIURI* aURL, nsIDocument* aDocument)
+ {
+   NS_PRECONDITION(aURL && aDocument, "null ptr");
+   if (! aURL || ! aDocument)
+     return NS_ERROR_NULL_POINTER;
+diff --git a/layout/style/nsHTMLStyleSheet.h b/layout/style/nsHTMLStyleSheet.h
+--- a/layout/style/nsHTMLStyleSheet.h
++++ b/layout/style/nsHTMLStyleSheet.h
+@@ -56,28 +56,28 @@ class nsMappedAttributes;
+ class nsHTMLStyleSheet : public nsIStyleSheet, public nsIStyleRuleProcessor {
+ public:
+   nsHTMLStyleSheet(void);
+   nsresult Init();
+ 
+   NS_DECL_ISUPPORTS
+ 
+   // nsIStyleSheet api
+-  NS_IMETHOD GetSheetURI(nsIURI** aSheetURL) const;
+-  NS_IMETHOD GetBaseURI(nsIURI** aBaseURL) const;
+-  NS_IMETHOD GetTitle(nsString& aTitle) const;
+-  NS_IMETHOD GetType(nsString& aType) const;
+-  NS_IMETHOD_(PRBool) HasRules() const;
+-  NS_IMETHOD GetApplicable(PRBool& aApplicable) const;
+-  NS_IMETHOD SetEnabled(PRBool aEnabled);
+-  NS_IMETHOD GetComplete(PRBool& aComplete) const;
+-  NS_IMETHOD SetComplete();
+-  NS_IMETHOD GetParentSheet(nsIStyleSheet*& aParent) const;  // will be null
+-  NS_IMETHOD GetOwningDocument(nsIDocument*& aDocument) const;
+-  NS_IMETHOD SetOwningDocument(nsIDocument* aDocumemt);
++  virtual already_AddRefed<nsIURI> GetSheetURI() const;
++  virtual already_AddRefed<nsIURI> GetBaseURI() const;
++  virtual void GetTitle(nsString& aTitle) const;
++  virtual void GetType(nsString& aType) const;
++  virtual PRBool HasRules() const;
++  virtual PRBool GetApplicable() const;
++  virtual void SetEnabled(PRBool aEnabled);
++  virtual PRBool GetComplete() const;
++  virtual void SetComplete();
++  virtual already_AddRefed<nsIStyleSheet> GetParentSheet() const;  // will be null
++  virtual already_AddRefed<nsIDocument> GetOwningDocument() const;
++  virtual void SetOwningDocument(nsIDocument* aDocumemt);
+ #ifdef DEBUG
+   virtual void List(FILE* out = stdout, PRInt32 aIndent = 0) const;
+ #endif
+ 
+   // nsIStyleRuleProcessor API
+   NS_IMETHOD RulesMatching(ElementRuleProcessorData* aData);
+   NS_IMETHOD RulesMatching(PseudoElementRuleProcessorData* aData);
+   NS_IMETHOD RulesMatching(AnonBoxRuleProcessorData* aData);
+diff --git a/layout/style/nsIStyleSheet.h b/layout/style/nsIStyleSheet.h
+--- a/layout/style/nsIStyleSheet.h
++++ b/layout/style/nsIStyleSheet.h
+@@ -41,79 +41,76 @@
+  */
+ 
+ #ifndef nsIStyleSheet_h___
+ #define nsIStyleSheet_h___
+ 
+ #include <stdio.h>
+ #include "nsISupports.h"
+ 
+-class nsIAtom;
+ class nsString;
+ class nsIURI;
+-class nsIStyleRule;
+-class nsIContent;
+ class nsIDocument;
+-class nsIStyleRuleProcessor;
++template<class T> struct already_AddRefed;
+ 
+ // IID for the nsIStyleSheet interface
+-// 7b2d31da-c3fb-4537-bd97-337272b83568
++// 0304a68a-3ab2-413e-9979-a256b3416caa
+ #define NS_ISTYLE_SHEET_IID     \
+-{ 0x7b2d31da, 0xc3fb, 0x4537,   \
+- { 0xbd, 0x97, 0x33, 0x72, 0x72, 0xb8, 0x35, 0x68 } }
++{ 0x0304a68a, 0x3ab2, 0x413e,   \
++ { 0x99, 0x79, 0xa2, 0x56, 0xb3, 0x41, 0x6c, 0xaa } }
+ 
+ /**
+  * A style sheet is a thing associated with a document that has style
+  * rules.  Those style rules can be reached in one of two ways, depending
+  * on which level of the nsStyleSet it is in:
+  *   1) It can be |QueryInterface|d to nsIStyleRuleProcessor
+  *   2) It can be |QueryInterface|d to nsCSSStyleSheet, with which the
+  *      |nsStyleSet| uses an |nsCSSRuleProcessor| to access the rules.
+  */
+ class nsIStyleSheet : public nsISupports {
+ public:
+   NS_DECLARE_STATIC_IID_ACCESSOR(NS_ISTYLE_SHEET_IID)
+ 
+   // basic style sheet data
+-  NS_IMETHOD GetSheetURI(nsIURI** aSheetURI) const = 0;
+-  NS_IMETHOD GetBaseURI(nsIURI** aBaseURI) const = 0;
+-  NS_IMETHOD GetTitle(nsString& aTitle) const = 0;
+-  NS_IMETHOD GetType(nsString& aType) const = 0;
+-  NS_IMETHOD_(PRBool) HasRules() const = 0;
++  virtual already_AddRefed<nsIURI> GetSheetURI() const = 0;
++  virtual already_AddRefed<nsIURI> GetBaseURI() const = 0;
++  virtual void GetTitle(nsString& aTitle) const = 0;
++  virtual void GetType(nsString& aType) const = 0;
++  virtual PRBool HasRules() const = 0;
+ 
+   /**
+    * Whether the sheet is applicable.  A sheet that is not applicable
+    * should never be inserted into a style set.  A sheet may not be
+    * applicable for a variety of reasons including being disabled and
+    * being incomplete.
+    *
+    */
+-  NS_IMETHOD GetApplicable(PRBool& aApplicable) const = 0;
++  virtual PRBool GetApplicable() const = 0;
+ 
+   /**
+    * Set the stylesheet to be enabled.  This may or may not make it
+    * applicable.  Note that this WILL inform the sheet's document of
+    * its new applicable state if the state changes but WILL NOT call
+    * BeginUpdate() or EndUpdate() on the document -- calling those is
+    * the caller's responsibility.  This allows use of SetEnabled when
+    * batched updates are desired.  If you want updates handled for
+    * you, see nsIDOMStyleSheet::SetDisabled().
+    */
+-  NS_IMETHOD SetEnabled(PRBool aEnabled) = 0;
++  virtual void SetEnabled(PRBool aEnabled) = 0;
+ 
+   /**
+    * Whether the sheet is complete.
+    */
+-  NS_IMETHOD GetComplete(PRBool& aComplete) const = 0;
+-  NS_IMETHOD SetComplete() = 0;
++  virtual PRBool GetComplete() const = 0;
++  virtual void SetComplete() = 0;
+ 
+   // style sheet owner info
+-  NS_IMETHOD GetParentSheet(nsIStyleSheet*& aParent) const = 0;  // may be null
+-  NS_IMETHOD GetOwningDocument(nsIDocument*& aDocument) const = 0; // may be null
+-  NS_IMETHOD SetOwningDocument(nsIDocument* aDocument) = 0;
++  virtual already_AddRefed<nsIStyleSheet> GetParentSheet() const = 0;  // may be null
++  virtual already_AddRefed<nsIDocument> GetOwningDocument() const = 0; // may be null
++  virtual void SetOwningDocument(nsIDocument* aDocument) = 0;
+ 
+ #ifdef DEBUG
+   virtual void List(FILE* out = stdout, PRInt32 aIndent = 0) const = 0;
+ #endif
+ };
+ 
+ NS_DEFINE_STATIC_IID_ACCESSOR(nsIStyleSheet, NS_ISTYLE_SHEET_IID)
+ 
+diff --git a/layout/style/nsStyleSet.cpp b/layout/style/nsStyleSet.cpp
+--- a/layout/style/nsStyleSet.cpp
++++ b/layout/style/nsStyleSet.cpp
+@@ -230,68 +230,56 @@ nsStyleSet::GatherRuleProcessors(sheetTy
+         mRuleProcessors[aType] = do_QueryInterface(mSheets[aType][0]);
+         break;
+     }
+   }
+ 
+   return NS_OK;
+ }
+ 
+-#ifdef DEBUG
+-#define CHECK_APPLICABLE \
+-PR_BEGIN_MACRO \
+-  PRBool applicable = PR_TRUE; \
+-  aSheet->GetApplicable(applicable); \
+-  NS_ASSERTION(applicable, "Inapplicable sheet being placed in style set"); \
+-PR_END_MACRO
+-#else
+-#define CHECK_APPLICABLE
+-#endif
+-
+ nsresult
+ nsStyleSet::AppendStyleSheet(sheetType aType, nsIStyleSheet *aSheet)
+ {
+   NS_PRECONDITION(aSheet, "null arg");
+-  CHECK_APPLICABLE;
++  NS_ASSERTION(aSheet->GetApplicable(),
++               "Inapplicable sheet being placed in style set");
+   mSheets[aType].RemoveObject(aSheet);
+   if (!mSheets[aType].AppendObject(aSheet))
+     return NS_ERROR_OUT_OF_MEMORY;
+ 
+   if (!mBatching)
+     return GatherRuleProcessors(aType);
+ 
+   mDirty |= 1 << aType;
+   return NS_OK;
+ }
+ 
+ nsresult
+ nsStyleSet::PrependStyleSheet(sheetType aType, nsIStyleSheet *aSheet)
+ {
+   NS_PRECONDITION(aSheet, "null arg");
+-  CHECK_APPLICABLE;
++  NS_ASSERTION(aSheet->GetApplicable(),
++               "Inapplicable sheet being placed in style set");
+   mSheets[aType].RemoveObject(aSheet);
+   if (!mSheets[aType].InsertObjectAt(aSheet, 0))
+     return NS_ERROR_OUT_OF_MEMORY;
+ 
+   if (!mBatching)
+     return GatherRuleProcessors(aType);
+ 
+   mDirty |= 1 << aType;
+   return NS_OK;
+ }
+ 
+ nsresult
+ nsStyleSet::RemoveStyleSheet(sheetType aType, nsIStyleSheet *aSheet)
+ {
+   NS_PRECONDITION(aSheet, "null arg");
+-#ifdef DEBUG
+-  PRBool complete = PR_TRUE;
+-  aSheet->GetComplete(complete);
+-  NS_ASSERTION(complete, "Incomplete sheet being removed from style set");
+-#endif
++  NS_ASSERTION(aSheet->GetComplete(),
++               "Incomplete sheet being removed from style set");
+   mSheets[aType].RemoveObject(aSheet);
+   if (!mBatching)
+     return GatherRuleProcessors(aType);
+ 
+   mDirty |= 1 << aType;
+   return NS_OK;
+ }
+ 
+@@ -332,17 +320,18 @@ nsStyleSet::SetAuthorStyleDisabled(PRBoo
+ }
+ 
+ // -------- Doc Sheets
+ 
+ nsresult
+ nsStyleSet::AddDocStyleSheet(nsIStyleSheet* aSheet, nsIDocument* aDocument)
+ {
+   NS_PRECONDITION(aSheet && aDocument, "null arg");
+-  CHECK_APPLICABLE;
++  NS_ASSERTION(aSheet->GetApplicable(),
++               "Inapplicable sheet being placed in style set");
+ 
+   nsCOMArray<nsIStyleSheet>& docSheets = mSheets[eDocSheet];
+ 
+   docSheets.RemoveObject(aSheet);
+   // lowest index first
+   PRInt32 newDocIndex = aDocument->GetIndexOfStyleSheet(aSheet);
+   PRInt32 count = docSheets.Count();
+   PRInt32 index;
+@@ -356,18 +345,16 @@ nsStyleSet::AddDocStyleSheet(nsIStyleShe
+     return NS_ERROR_OUT_OF_MEMORY;
+   if (!mBatching)
+     return GatherRuleProcessors(eDocSheet);
+ 
+   mDirty |= 1 << eDocSheet;
+   return NS_OK;
+ }
+ 
+-#undef CHECK_APPLICABLE
+-
+ // Batching
+ void
+ nsStyleSet::BeginUpdate()
+ {
+   ++mBatching;
+ }
+ 
+ nsresult

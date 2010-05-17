@@ -1,0 +1,33 @@
+# HG changeset patch
+# User L. David Baron <dbaron@dbaron.org>
+# Date 1274121084 25200
+# Node ID d0eb6206b9df8f86169f7b904e6069c925cc394f
+# Parent  ea982e2a186f6c21086314f9e39492c2dfb9c3fb
+Remove workaround for all reftest-print tests asserting on mac now that bug 564071 is fixed.  (Bug 472557)
+
+diff --git a/layout/tools/reftest/reftest.js b/layout/tools/reftest/reftest.js
+--- a/layout/tools/reftest/reftest.js
++++ b/layout/tools/reftest/reftest.js
+@@ -772,22 +772,16 @@ function OnDocumentLoad(event)
+ 
+        ps.headerStrLeft = "";
+        ps.headerStrCenter = "";
+        ps.headerStrRight = "";
+        ps.footerStrLeft = "";
+        ps.footerStrCenter = "";
+        ps.footerStrRight = "";
+        gBrowser.docShell.contentViewer.setPageMode(true, ps);
+-
+-       // WORKAROUND FOR AN ASSERTION ON MAC!
+-       var xr = CC[NS_XREAPPINFO_CONTRACTID].getService(CI.nsIXULRuntime);
+-       var count = (xr.widgetToolkit == "cocoa") ? 1 : 0;
+-       gURLs[0].minAsserts += count;
+-       gURLs[0].maxAsserts += count;
+     }
+ 
+     setupZoom(contentRootElement);
+ 
+     if (shouldWait()) {
+         // The testcase will let us know when the test snapshot should be made.
+         // Register a mutation listener to know when the 'reftest-wait' class
+         // gets removed.

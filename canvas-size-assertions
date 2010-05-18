@@ -1,0 +1,33 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Fix spew of 'couldn't get canvas size' assertions.  (Bug 566603)
+
+diff --git a/layout/generic/nsHTMLCanvasFrame.cpp b/layout/generic/nsHTMLCanvasFrame.cpp
+--- a/layout/generic/nsHTMLCanvasFrame.cpp
++++ b/layout/generic/nsHTMLCanvasFrame.cpp
+@@ -107,25 +107,20 @@ NS_IMPL_FRAMEARENA_HELPERS(nsHTMLCanvasF
+ nsHTMLCanvasFrame::~nsHTMLCanvasFrame()
+ {
+ }
+ 
+ nsIntSize
+ nsHTMLCanvasFrame::GetCanvasSize()
+ {
+   nsIntSize size(0,0);
+-  nsresult rv;
+   nsHTMLCanvasElement *canvas = CanvasElementFromContent(GetContent());
+   if (canvas) {
+     size = canvas->GetSize();
+   } else {
+-    rv = NS_ERROR_NULL_POINTER;
+-  }
+-
+-  if (NS_FAILED(rv)) {
+     NS_NOTREACHED("couldn't get canvas size");
+   }
+ 
+   return size;
+ }
+ 
+ /* virtual */ nscoord
+ nsHTMLCanvasFrame::GetMinWidth(nsIRenderingContext *aRenderingContext)

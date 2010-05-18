@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Fix spew of 'couldn't get canvas size' assertions.  (Bug 566603)
+Fix spew of 'couldn't get canvas size' assertions.  (Bug 566603)  r=vlad
 
 diff --git a/layout/generic/nsHTMLCanvasFrame.cpp b/layout/generic/nsHTMLCanvasFrame.cpp
 --- a/layout/generic/nsHTMLCanvasFrame.cpp

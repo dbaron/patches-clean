@@ -539,7 +539,7 @@ diff --git a/configure.in b/configure.in
  dnl ActiveX
  dnl ========================================================
  
-@@ -6544,17 +6552,17 @@ MOZ_ARG_DISABLE_BOOL(tests,
+@@ -6535,17 +6543,17 @@ MOZ_ARG_DISABLE_BOOL(tests,
      ENABLE_TESTS=,
      ENABLE_TESTS=1 )
  
@@ -558,7 +558,7 @@ diff --git a/configure.in b/configure.in
  
  AC_SUBST(MOZ_DISABLE_PARENTAL_CONTROLS)
  
-@@ -6564,17 +6572,17 @@ dnl = Module specific options
+@@ -6555,17 +6563,17 @@ dnl = Module specific options
  dnl =
  dnl ========================================================
  MOZ_ARG_HEADER(Individual module options)
@@ -577,7 +577,7 @@ diff --git a/configure.in b/configure.in
      if test "$MOZ_BUILD_APP" = "browser"; then
          AC_MSG_ERROR([Cannot build Firefox with --disable-feeds.])
      fi
-@@ -6710,67 +6718,67 @@ if test -n "$MOZ_HELP_VIEWER"; then
+@@ -6701,67 +6709,67 @@ if test -n "$MOZ_HELP_VIEWER"; then
       dnl Do this if defined in confvars.sh
       AC_DEFINE(MOZ_HELP_VIEWER)
  fi
@@ -650,7 +650,7 @@ diff --git a/configure.in b/configure.in
                        MOZ_ENABLE_LIBCONIC=1,
                        MOZ_ENABLE_LIBCONIC=)
  fi
-@@ -6785,17 +6793,17 @@ AC_SUBST(LIBCONIC_LIBS)
+@@ -6776,17 +6784,17 @@ AC_SUBST(LIBCONIC_LIBS)
  dnl ========================================================
  dnl = Maemo checks
  dnl ========================================================
@@ -669,7 +669,7 @@ diff --git a/configure.in b/configure.in
      ;;
  
  6)
-@@ -6868,17 +6876,17 @@ if test $MOZ_PLATFORM_MAEMO; then
+@@ -6859,17 +6867,17 @@ if test $MOZ_PLATFORM_MAEMO; then
     AC_SUBST(MOZ_PLATFORM_MAEMO_LIBS)
     AC_SUBST(MOZ_PLATFORM_MAEMO_CFLAGS)
  fi
@@ -688,7 +688,7 @@ diff --git a/configure.in b/configure.in
  dnl =
  dnl = Feature options that require extra sources to be pulled
  dnl =
-@@ -6956,17 +6964,18 @@ if test -n "$MOZ_DEBUG"; then
+@@ -6955,17 +6963,18 @@ if test -n "$MOZ_DEBUG"; then
      fi
      CFLAGS=$_SAVE_CFLAGS
  fi
@@ -708,7 +708,7 @@ diff --git a/configure.in b/configure.in
      AC_DEFINE(MOZ_GFX_OPTIMIZE_MOBILE)
  fi
  
-@@ -7022,18 +7031,18 @@ MOZ_ARG_ENABLE_STRING(debugger-info-modu
+@@ -7021,18 +7030,18 @@ MOZ_ARG_ENABLE_STRING(debugger-info-modu
      AC_MSG_WARN([--enable-debugger-info-modules is deprecated, use --enable-debug-symbols instead])
      MOZ_DEBUG_SYMBOLS=1
    fi ])
@@ -729,7 +729,7 @@ diff --git a/configure.in b/configure.in
            else
                AC_MSG_ERROR([--enable-debug-symbols flags cannot be used with --enable-debug flags])
            fi
-@@ -7044,17 +7053,18 @@ if test -n "$MOZ_DEBUG" -o -n "$MOZ_DEBU
+@@ -7043,17 +7052,18 @@ if test -n "$MOZ_DEBUG" -o -n "$MOZ_DEBU
      AC_DEFINE(MOZ_DEBUG_SYMBOLS)
      export MOZ_DEBUG_SYMBOLS
  fi
@@ -749,7 +749,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl = Disable runtime logging checks
-@@ -7253,17 +7263,17 @@ MOZ_ARG_ENABLE_BOOL(tracevis,
+@@ -7252,17 +7262,17 @@ MOZ_ARG_ENABLE_BOOL(tracevis,
  if test -n "$MOZ_TRACEVIS"; then
      AC_DEFINE(MOZ_TRACEVIS)
  fi
@@ -768,7 +768,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl = Use Valgrind
-@@ -7322,30 +7332,30 @@ MOZ_ARG_ENABLE_BOOL(vtune,
+@@ -7321,30 +7331,30 @@ MOZ_ARG_ENABLE_BOOL(vtune,
  if test -n "$MOZ_VTUNE"; then
      AC_DEFINE(MOZ_VTUNE)
  fi
@@ -801,7 +801,7 @@ diff --git a/configure.in b/configure.in
          AC_MSG_ERROR([The dehydra plugin is not at the specified path.])
      fi
      AC_DEFINE(NS_STATIC_CHECKING)
-@@ -7397,17 +7407,17 @@ if test -n "$MOZ_TIMELINE"; then
+@@ -7396,17 +7406,17 @@ if test -n "$MOZ_TIMELINE"; then
  fi
  
  dnl ========================================================
@@ -820,7 +820,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl Turn on reflow counting
-@@ -7434,17 +7444,17 @@ if test -n "$_ENABLE_CODESIGHS"; then
+@@ -7433,17 +7443,17 @@ if test -n "$_ENABLE_CODESIGHS"; then
          AC_MSG_ERROR([Codesighs directory $srcdir/tools/codesighs required.])
      fi
  fi
@@ -839,7 +839,7 @@ diff --git a/configure.in b/configure.in
  dnl ========================================================
  if test -z "$SKIP_LIBRARY_CHECKS"; then
      AC_LANG_SAVE
-@@ -7620,17 +7630,17 @@ dnl Profile guided optimization
+@@ -7619,17 +7629,17 @@ dnl Profile guided optimization
  dnl ========================================================
  dnl Test for profiling options
  dnl Under gcc 3.3, use -fprofile-arcs/-fbranch-probabilities
@@ -858,7 +858,7 @@ diff --git a/configure.in b/configure.in
  _SAVE_CFLAGS="$CFLAGS"
  CFLAGS="$CFLAGS -fprofile-generate -fprofile-correction"
  
-@@ -8080,17 +8090,17 @@ AC_SUBST(HOST_LIBIDL_LIBS)
+@@ -8079,17 +8089,17 @@ AC_SUBST(HOST_LIBIDL_LIBS)
  
  dnl ========================================================
  dnl Check for cairo
@@ -877,7 +877,7 @@ diff --git a/configure.in b/configure.in
  
  if test "$MOZ_TREE_CAIRO"; then
      AC_DEFINE(MOZ_TREE_CAIRO)
-@@ -8267,17 +8277,18 @@ fi
+@@ -8266,17 +8276,18 @@ fi
  AC_SUBST(MOZ_XUL)
  
  dnl ========================================================
@@ -897,7 +897,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl disable rdf services
-@@ -8335,17 +8346,17 @@ AC_SUBST(NECKO_DISK_CACHE)
+@@ -8334,17 +8345,17 @@ AC_SUBST(NECKO_DISK_CACHE)
  if test "$NECKO_DISK_CACHE"; then
      AC_DEFINE(NECKO_DISK_CACHE)
  fi

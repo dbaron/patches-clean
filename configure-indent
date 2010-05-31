@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Fix indentation in configure --help.
+Fix indentation in configure --help.  (Bug 569261)
 
 diff --git a/build/autoconf/nss.m4 b/build/autoconf/nss.m4
 --- a/build/autoconf/nss.m4

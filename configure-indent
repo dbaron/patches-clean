@@ -139,7 +139,7 @@ diff --git a/configure.in b/configure.in
  AC_SUBST(NEXT_ROOT)
  
  if test "$MACOS_SDK_DIR"; then
-@@ -4643,17 +4643,17 @@ if test -n "$LIBXUL_SDK"; then
+@@ -4646,17 +4646,17 @@ if test -n "$LIBXUL_SDK"; then
  else
      LIBXUL_DIST="$MOZ_BUILD_ROOT/dist"
  fi
@@ -158,7 +158,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl = If NSPR was not detected in the system, 
-@@ -4732,17 +4732,17 @@ AC_SUBST(MOZ_LIBEVENT_INCLUDES)
+@@ -4735,17 +4735,17 @@ AC_SUBST(MOZ_LIBEVENT_INCLUDES)
  AC_SUBST(MOZ_LIBEVENT_LIBS)
  
  dnl ========================================================
@@ -177,7 +177,7 @@ diff --git a/configure.in b/configure.in
  
  if test -n "$MOZ_NATIVE_NSS"; then
     NSS_LIBS="$NSS_LIBS -lcrmf"
-@@ -4927,44 +4927,47 @@ if test "${PNG_DIR}" -a -d "${PNG_DIR}" 
+@@ -4930,44 +4930,47 @@ if test "${PNG_DIR}" -a -d "${PNG_DIR}" 
      PNG_LIBS="-L${PNG_DIR}/lib ${PNG_LIBS}"
  fi
  
@@ -229,7 +229,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl =
-@@ -5320,17 +5323,18 @@ dnl ====================================
+@@ -5324,17 +5327,18 @@ dnl ====================================
  dnl = startup-notification support module
  dnl ========================================================
  
@@ -249,7 +249,7 @@ diff --git a/configure.in b/configure.in
                            libstartup-notification-1.0 >= $STARTUP_NOTIFICATION_VERSION,
          [MOZ_ENABLE_STARTUP_NOTIFICATION=1], [
              if test "$MOZ_ENABLE_STARTUP_NOTIFICATION" = "force"
-@@ -5416,17 +5420,18 @@ MOZ_ARG_ENABLE_STRING(ui-locale,
+@@ -5420,17 +5424,18 @@ MOZ_ARG_ENABLE_STRING(ui-locale,
                            Select the user interface locale (default: en-US)],
      MOZ_UI_LOCALE=$enableval )
  AC_SUBST(MOZ_UI_LOCALE)
@@ -269,7 +269,7 @@ diff --git a/configure.in b/configure.in
    if test -z "$MOZ_OFFICIAL_BRANDING_DIRECTORY"; then
      AC_MSG_ERROR([You must specify MOZ_OFFICIAL_BRANDING_DIRECTORY to use --enable-official-branding.])
    else
-@@ -5436,17 +5441,17 @@ MOZ_ARG_ENABLE_BOOL(official-branding,
+@@ -5440,17 +5445,17 @@ MOZ_ARG_ENABLE_BOOL(official-branding,
  ], MOZ_OFFICIAL_BRANDING=)
  
  AC_SUBST(MOZ_OFFICIAL_BRANDING)
@@ -288,7 +288,7 @@ diff --git a/configure.in b/configure.in
  fi
  
  if test -f "${_topsrcdir}/$REAL_BRANDING_DIRECTORY/configure.sh"; then
-@@ -5454,33 +5459,34 @@ if test -f "${_topsrcdir}/$REAL_BRANDING
+@@ -5458,33 +5463,34 @@ if test -f "${_topsrcdir}/$REAL_BRANDING
  fi
  
  AC_SUBST(MOZ_BRANDING_DIRECTORY)
@@ -325,7 +325,7 @@ diff --git a/configure.in b/configure.in
  dnl ========================================================
  if test "$MOZ_ENABLE_GTK2"
  then
-@@ -5623,17 +5629,17 @@ dnl ====================================
+@@ -5627,17 +5633,17 @@ dnl ====================================
  dnl = libnotify support
  dnl ========================================================
  
@@ -344,7 +344,7 @@ diff --git a/configure.in b/configure.in
          AC_DEFINE(MOZ_ENABLE_LIBNOTIFY)
      fi
  fi
-@@ -5709,17 +5715,17 @@ dnl ====================================
+@@ -5713,17 +5719,17 @@ dnl ====================================
  dnl = dbus support
  dnl ========================================================
  
@@ -363,7 +363,7 @@ diff --git a/configure.in b/configure.in
          PKG_CHECK_MODULES(MOZ_DBUS, dbus-1 >= $DBUS_VERSION)
          PKG_CHECK_MODULES(MOZ_DBUS_GLIB, dbus-glib-1 >= $DBUS_VERSION)
          AC_DEFINE(MOZ_ENABLE_DBUS)
-@@ -5795,17 +5801,17 @@ MOZ_ARG_DISABLE_BOOL(plugins,
+@@ -5799,17 +5805,17 @@ MOZ_ARG_DISABLE_BOOL(plugins,
  [  --disable-plugins       Disable plugins support],
      MOZ_PLUGINS=,
      MOZ_PLUGINS=1)
@@ -382,7 +382,7 @@ diff --git a/configure.in b/configure.in
  AC_DEFINE(IBMBIDI)
  
  dnl ========================================================
-@@ -5846,17 +5852,17 @@ dnl ====================================
+@@ -5850,17 +5856,17 @@ dnl ====================================
  if test "$MOZ_JSLOADER"; then
      AC_DEFINE(MOZ_JSLOADER)
  fi
@@ -401,7 +401,7 @@ diff --git a/configure.in b/configure.in
      NS_PRINTING=
  fi
  
-@@ -5892,17 +5898,18 @@ MOZ_ARG_ENABLE_BOOL(plaintext-editor-onl
+@@ -5896,17 +5902,18 @@ MOZ_ARG_ENABLE_BOOL(plaintext-editor-onl
      MOZ_PLAINTEXT_EDITOR_ONLY= )
  dnl Note the #define is MOZILLA, not MOZ, for compat with the Mac build.
  AC_SUBST(MOZ_PLAINTEXT_EDITOR_ONLY)
@@ -421,7 +421,7 @@ diff --git a/configure.in b/configure.in
  if test -n "$MOZ_NO_FAST_LOAD"; then
      AC_DEFINE(MOZ_NO_FAST_LOAD)
  fi
-@@ -6132,17 +6139,17 @@ i?86-*-linux*|x86_64-*-linux*|arm-*-linu
+@@ -6136,17 +6143,17 @@ i?86-*-linux*|x86_64-*-linux*|arm-*-linu
    MOZ_CRASHREPORTER=1
    ;;
  *solaris*)
@@ -440,7 +440,7 @@ diff --git a/configure.in b/configure.in
  
    if (test "$OS_ARCH" = "Linux" || test "$OS_ARCH" = "SunOS") && \
      test -z "$SKIP_LIBRARY_CHECKS"; then
-@@ -6150,17 +6157,18 @@ if test -n "$MOZ_CRASHREPORTER"; then
+@@ -6154,17 +6161,18 @@ if test -n "$MOZ_CRASHREPORTER"; then
      AC_SUBST(MOZ_GTHREAD_CFLAGS)
      AC_SUBST(MOZ_GTHREAD_LIBS)
  
@@ -460,7 +460,7 @@ diff --git a/configure.in b/configure.in
  fi
  AC_DEFINE_UNQUOTED(MOZ_CRASHREPORTER_ENABLE_PERCENT, $MOZ_CRASHREPORTER_ENABLE_PERCENT)
  
-@@ -6353,44 +6361,44 @@ MOZ_ARG_DISABLE_BOOL(mathml,
+@@ -6357,44 +6365,44 @@ MOZ_ARG_DISABLE_BOOL(mathml,
  if test "$MOZ_MATHML"; then
    AC_DEFINE(MOZ_MATHML)
  fi
@@ -508,7 +508,7 @@ diff --git a/configure.in b/configure.in
     MOZ_ENABLE_CAIRO_FT=1       
     FT_FONT_FEATURE="#define CAIRO_HAS_FT_FONT 1"
     FT2_CFLAGS='-I$(topsrcdir)/modules/freetype2/include'
-@@ -6455,28 +6463,28 @@ MOZ_ARG_DISABLE_BOOL(updater,
+@@ -6459,28 +6467,28 @@ MOZ_ARG_DISABLE_BOOL(updater,
  [  --disable-updater       Disable building of updater],
      MOZ_UPDATER=,
      MOZ_UPDATER=1 )
@@ -539,7 +539,7 @@ diff --git a/configure.in b/configure.in
  dnl ActiveX
  dnl ========================================================
  
-@@ -6535,17 +6543,17 @@ MOZ_ARG_DISABLE_BOOL(tests,
+@@ -6539,17 +6547,17 @@ MOZ_ARG_DISABLE_BOOL(tests,
      ENABLE_TESTS=,
      ENABLE_TESTS=1 )
  
@@ -558,7 +558,7 @@ diff --git a/configure.in b/configure.in
  
  AC_SUBST(MOZ_DISABLE_PARENTAL_CONTROLS)
  
-@@ -6555,17 +6563,17 @@ dnl = Module specific options
+@@ -6559,17 +6567,17 @@ dnl = Module specific options
  dnl =
  dnl ========================================================
  MOZ_ARG_HEADER(Individual module options)
@@ -577,7 +577,7 @@ diff --git a/configure.in b/configure.in
      if test "$MOZ_BUILD_APP" = "browser"; then
          AC_MSG_ERROR([Cannot build Firefox with --disable-feeds.])
      fi
-@@ -6701,67 +6709,67 @@ if test -n "$MOZ_HELP_VIEWER"; then
+@@ -6705,67 +6713,67 @@ if test -n "$MOZ_HELP_VIEWER"; then
       dnl Do this if defined in confvars.sh
       AC_DEFINE(MOZ_HELP_VIEWER)
  fi
@@ -650,7 +650,7 @@ diff --git a/configure.in b/configure.in
                        MOZ_ENABLE_LIBCONIC=1,
                        MOZ_ENABLE_LIBCONIC=)
  fi
-@@ -6776,17 +6784,17 @@ AC_SUBST(LIBCONIC_LIBS)
+@@ -6780,17 +6788,17 @@ AC_SUBST(LIBCONIC_LIBS)
  dnl ========================================================
  dnl = Maemo checks
  dnl ========================================================
@@ -669,9 +669,9 @@ diff --git a/configure.in b/configure.in
      ;;
  
  6)
-@@ -6859,17 +6867,17 @@ if test $MOZ_PLATFORM_MAEMO; then
-    AC_SUBST(MOZ_PLATFORM_MAEMO_LIBS)
-    AC_SUBST(MOZ_PLATFORM_MAEMO_CFLAGS)
+@@ -6892,17 +6900,17 @@ if test -n "$MOZ_THUMB2"; then
+     ;;
+   esac
  fi
  
  dnl ========================================================
@@ -688,7 +688,7 @@ diff --git a/configure.in b/configure.in
  dnl =
  dnl = Feature options that require extra sources to be pulled
  dnl =
-@@ -6955,17 +6963,18 @@ if test -n "$MOZ_DEBUG"; then
+@@ -6996,17 +7004,18 @@ if test -n "$MOZ_DEBUG"; then
      fi
      CFLAGS=$_SAVE_CFLAGS
  fi
@@ -708,7 +708,7 @@ diff --git a/configure.in b/configure.in
      AC_DEFINE(MOZ_GFX_OPTIMIZE_MOBILE)
  fi
  
-@@ -7021,18 +7030,18 @@ MOZ_ARG_ENABLE_STRING(debugger-info-modu
+@@ -7062,18 +7071,18 @@ MOZ_ARG_ENABLE_STRING(debugger-info-modu
      AC_MSG_WARN([--enable-debugger-info-modules is deprecated, use --enable-debug-symbols instead])
      MOZ_DEBUG_SYMBOLS=1
    fi ])
@@ -729,7 +729,7 @@ diff --git a/configure.in b/configure.in
            else
                AC_MSG_ERROR([--enable-debug-symbols flags cannot be used with --enable-debug flags])
            fi
-@@ -7043,17 +7052,18 @@ if test -n "$MOZ_DEBUG" -o -n "$MOZ_DEBU
+@@ -7084,17 +7093,18 @@ if test -n "$MOZ_DEBUG" -o -n "$MOZ_DEBU
      AC_DEFINE(MOZ_DEBUG_SYMBOLS)
      export MOZ_DEBUG_SYMBOLS
  fi
@@ -749,7 +749,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl = Disable runtime logging checks
-@@ -7252,17 +7262,17 @@ MOZ_ARG_ENABLE_BOOL(tracevis,
+@@ -7297,17 +7307,17 @@ MOZ_ARG_ENABLE_BOOL(tracevis,
  if test -n "$MOZ_TRACEVIS"; then
      AC_DEFINE(MOZ_TRACEVIS)
  fi
@@ -768,7 +768,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl = Use Valgrind
-@@ -7321,30 +7331,30 @@ MOZ_ARG_ENABLE_BOOL(vtune,
+@@ -7366,30 +7376,30 @@ MOZ_ARG_ENABLE_BOOL(vtune,
  if test -n "$MOZ_VTUNE"; then
      AC_DEFINE(MOZ_VTUNE)
  fi
@@ -801,7 +801,7 @@ diff --git a/configure.in b/configure.in
          AC_MSG_ERROR([The dehydra plugin is not at the specified path.])
      fi
      AC_DEFINE(NS_STATIC_CHECKING)
-@@ -7396,17 +7406,17 @@ if test -n "$MOZ_TIMELINE"; then
+@@ -7441,17 +7451,17 @@ if test -n "$MOZ_TIMELINE"; then
  fi
  
  dnl ========================================================
@@ -820,7 +820,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl Turn on reflow counting
-@@ -7433,17 +7443,17 @@ if test -n "$_ENABLE_CODESIGHS"; then
+@@ -7478,17 +7488,17 @@ if test -n "$_ENABLE_CODESIGHS"; then
          AC_MSG_ERROR([Codesighs directory $srcdir/tools/codesighs required.])
      fi
  fi
@@ -839,7 +839,7 @@ diff --git a/configure.in b/configure.in
  dnl ========================================================
  if test -z "$SKIP_LIBRARY_CHECKS"; then
      AC_LANG_SAVE
-@@ -7619,17 +7629,17 @@ dnl Profile guided optimization
+@@ -7664,17 +7674,17 @@ dnl Profile guided optimization
  dnl ========================================================
  dnl Test for profiling options
  dnl Under gcc 3.3, use -fprofile-arcs/-fbranch-probabilities
@@ -858,7 +858,7 @@ diff --git a/configure.in b/configure.in
  _SAVE_CFLAGS="$CFLAGS"
  CFLAGS="$CFLAGS -fprofile-generate -fprofile-correction"
  
-@@ -8079,17 +8089,17 @@ AC_SUBST(HOST_LIBIDL_LIBS)
+@@ -8124,17 +8134,17 @@ AC_SUBST(HOST_LIBIDL_LIBS)
  
  dnl ========================================================
  dnl Check for cairo
@@ -877,7 +877,7 @@ diff --git a/configure.in b/configure.in
  
  if test "$MOZ_TREE_CAIRO"; then
      AC_DEFINE(MOZ_TREE_CAIRO)
-@@ -8266,17 +8276,18 @@ fi
+@@ -8311,17 +8321,18 @@ fi
  AC_SUBST(MOZ_XUL)
  
  dnl ========================================================
@@ -897,7 +897,7 @@ diff --git a/configure.in b/configure.in
  
  dnl ========================================================
  dnl disable rdf services
-@@ -8334,17 +8345,17 @@ AC_SUBST(NECKO_DISK_CACHE)
+@@ -8379,17 +8390,17 @@ AC_SUBST(NECKO_DISK_CACHE)
  if test "$NECKO_DISK_CACHE"; then
      AC_DEFINE(NECKO_DISK_CACHE)
  fi

@@ -669,6 +669,25 @@ diff --git a/configure.in b/configure.in
      ;;
  
  6)
+@@ -6867,17 +6875,17 @@ if test $MOZ_PLATFORM_MAEMO; then
+    AC_SUBST(MOZ_PLATFORM_MAEMO_LIBS)
+    AC_SUBST(MOZ_PLATFORM_MAEMO_CFLAGS)
+ fi
+ 
+ dnl ========================================================
+ dnl = Enable building the Thumb2 instruction set
+ dnl ========================================================
+ MOZ_ARG_ENABLE_BOOL(thumb2,
+- [  --enable-thumb2              Enable Thumb2 instruction set],
++ [  --enable-thumb2         Enable Thumb2 instruction set],
+     MOZ_THUMB2=1,
+     MOZ_THUMB2=)
+ 
+ if test -n "$MOZ_THUMB2"; then
+   case "$target_cpu" in
+     arm*)
+       if test "$GNU_CC"; then
+         CFLAGS="$CFLAGS -march=armv7-a -mthumb -Wa, -march=armv7-a -Wa, -mthumb"
 @@ -6892,17 +6900,17 @@ if test -n "$MOZ_THUMB2"; then
      ;;
    esac
@@ -688,6 +707,27 @@ diff --git a/configure.in b/configure.in
  dnl =
  dnl = Feature options that require extra sources to be pulled
  dnl =
+@@ -6956,18 +6964,18 @@ MOZ_ARG_ENABLE_STRING(debug,
+   else
+     MOZ_DEBUG=
+   fi ],
+   MOZ_DEBUG=)
+ 
+ MOZ_DEBUG_ENABLE_DEFS="-DDEBUG -D_DEBUG"
+ MOZ_ARG_WITH_STRING(debug-label,
+ [  --with-debug-label=LABELS
+-                           Define DEBUG_<value> for each comma-separated
+-                           value given.],
++                          Define DEBUG_<value> for each comma-separated
++                          value given.],
+ [ for option in `echo $withval | sed 's/,/ /g'`; do
+     MOZ_DEBUG_ENABLE_DEFS="$MOZ_DEBUG_ENABLE_DEFS -DDEBUG_${option}"
+ done])
+ 
+  case "${target_os}" in
+     beos*)
+         MOZ_DEBUG_ENABLE_DEFS="$MOZ_DEBUG_ENABLE_DEFS -DDEBUG_${USER}"
+         ;;
 @@ -6996,17 +7004,18 @@ if test -n "$MOZ_DEBUG"; then
      fi
      CFLAGS=$_SAVE_CFLAGS

@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Fix indentation of js/src/configure --help.  (Bug 569261)
+Fix indentation of js/src/configure --help.  (Bug 569261)  r=ted
 
 diff --git a/js/src/configure.in b/js/src/configure.in
 --- a/js/src/configure.in

@@ -2089,7 +2089,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
  const void*
  nsRuleNode::ComputeVisibilityData(void* aStartStruct,
                                    const nsRuleDataStruct& aData,
-@@ -5199,22 +5165,30 @@ nsRuleNode::ComputeBorderData(void* aSta
+@@ -5203,22 +5169,30 @@ nsRuleNode::ComputeBorderData(void* aSta
          border->SetBorderToForeground(side);
        }
      }
@@ -2126,7 +2126,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
                SETDSC_ENUMERATED, parentBorder->mFloatEdge,
                NS_STYLE_FLOAT_EDGE_CONTENT, 0, 0, 0, 0);
  
-@@ -5398,22 +5372,30 @@ nsRuleNode::ComputeOutlineData(void* aSt
+@@ -5402,22 +5376,30 @@ nsRuleNode::ComputeOutlineData(void* aSt
             eCSSUnit_Initial == marginData.mOutlineColor.GetUnit()) {
      outline->SetOutlineInitialColor();
    }
@@ -2163,7 +2163,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
    nsCSSUnit unit = marginData.mOutlineStyle.GetUnit();
    NS_ABORT_IF_FALSE(eCSSUnit_None != unit && eCSSUnit_Auto != unit,
                      "'none' and 'auto' should be handled as enumerated values");
-@@ -5612,41 +5594,36 @@ nsRuleNode::ComputeTableBorderData(void*
+@@ -5616,41 +5598,36 @@ nsRuleNode::ComputeTableBorderData(void*
                            Table, tableData)
  
    // border-collapse: enum, inherit, initial
@@ -2225,7 +2225,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
                NS_STYLE_CAPTION_SIDE_TOP, 0, 0, 0, 0);
  
    // empty-cells: enum, inherit, initial
-@@ -6049,47 +6026,56 @@ nsRuleNode::ComputeColumnData(void* aSta
+@@ -6061,47 +6038,56 @@ nsRuleNode::ComputeColumnData(void* aSta
                      column->mColumnRuleColor, canStoreInRuleTree)) {
      column->mColumnRuleColorIsForeground = PR_FALSE;
    }

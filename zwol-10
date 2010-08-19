@@ -99,7 +99,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    // ParseHSLColor parses everything starting with the opening '('
    // up through and including the aStop char.
    PRBool ParseHSLColor(nscolor& aColor, char aStop);
-@@ -4999,18 +4997,17 @@ CSSParserImpl::AppendValue(nsCSSProperty
+@@ -4997,18 +4995,17 @@ CSSParserImpl::AppendValue(nsCSSProperty
  }
  
  /**
@@ -119,7 +119,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
      if (! ParseSingleValueProperty(result.*(nsCSSRect::sides[index]),
                                     aPropIDs[index])) {
        break;
-@@ -5036,19 +5033,18 @@ CSSParserImpl::ParseBoxProperties(nsCSSR
+@@ -5034,19 +5031,18 @@ CSSParserImpl::ParseBoxProperties(nsCSSR
        result.mRight = result.mTop;
      case 2: // Make bottom == top
        result.mBottom = result.mTop;
@@ -141,7 +141,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
                                             PRInt32 aSourceType)
  {
    const nsCSSProperty* subprops = nsCSSProps::SubpropertyEntryFor(aProperty);
-@@ -5086,18 +5082,17 @@ CSSParserImpl::ParseBoxCornerRadius(nsCS
+@@ -5084,18 +5080,17 @@ CSSParserImpl::ParseBoxCornerRadius(nsCS
      nsCSSValue value;
      value.SetPairValue(dimenX, dimenY);
      AppendValue(aPropID, value);
@@ -161,7 +161,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    PRInt32 countX = 0, countY = 0;
  
    NS_FOR_CSS_SIDES (side) {
-@@ -5144,27 +5139,26 @@ CSSParserImpl::ParseBoxCornerRadii(nsCSS
+@@ -5142,27 +5137,26 @@ CSSParserImpl::ParseBoxCornerRadii(nsCSS
  
    switch (countY) {
      case 1: dimenY.mRight = dimenY.mTop;  // top-right same as top-left, and
@@ -194,7 +194,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  static const nsCSSProperty kBorderStyleIDs[] = {
    eCSSProperty_border_top_style,
    eCSSProperty_border_right_style_value,
-@@ -5279,21 +5273,19 @@ CSSParserImpl::ParseProperty(nsCSSProper
+@@ -5277,21 +5271,19 @@ CSSParserImpl::ParseProperty(nsCSSProper
                                         NS_BOXPROP_SOURCE_PHYSICAL);
    case eCSSProperty_border_right_style:
      return ParseDirectionalBoxProperty(eCSSProperty_border_right_style,
@@ -218,7 +218,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    case eCSSProperty__moz_outline_radius_topLeft:
    case eCSSProperty__moz_outline_radius_topRight:
    case eCSSProperty__moz_outline_radius_bottomRight:
-@@ -6623,30 +6615,30 @@ CSSParserImpl::ParseBorderColor()
+@@ -6621,30 +6613,30 @@ CSSParserImpl::ParseBorderColor()
      eCSSProperty_border_left_color_rtl_source,
      eCSSProperty_border_right_color_ltr_source,
      eCSSProperty_border_right_color_rtl_source,
@@ -255,7 +255,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  
    nsCSSValue& url = arr->Item(0);
    nsCSSValue& splitTop = arr->Item(1);
-@@ -6705,18 +6697,18 @@ CSSParserImpl::ParseBorderImage()
+@@ -6703,18 +6695,18 @@ CSSParserImpl::ParseBorderImage()
    if (ParseEnum(horizontalKeyword, nsCSSProps::kBorderImageKTable)) {
      (void)ParseEnum(verticalKeyword, nsCSSProps::kBorderImageKTable);
    }
@@ -276,7 +276,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  CSSParserImpl::ParseBorderSpacing()
  {
    nsCSSValue xValue, yValue;
-@@ -6730,21 +6722,22 @@ CSSParserImpl::ParseBorderSpacing()
+@@ -6728,21 +6720,22 @@ CSSParserImpl::ParseBorderSpacing()
      ParseNonNegativeVariant(yValue, VARIANT_LENGTH | VARIANT_CALC, nsnull);
    }
  
@@ -303,7 +303,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
                                 PRBool aSetAllSides)
  {
    const PRInt32 numProps = 3;
-@@ -6803,21 +6796,19 @@ CSSParserImpl::ParseBorderSide(const nsC
+@@ -6801,21 +6794,19 @@ CSSParserImpl::ParseBorderSide(const nsC
      // initial values.
      nsCSSValue extraValue;
      switch (values[0].GetUnit()) {
@@ -328,7 +328,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
      }
    }
    return PR_TRUE;
-@@ -6865,35 +6856,33 @@ CSSParserImpl::ParseBorderStyle()
+@@ -6863,35 +6854,33 @@ CSSParserImpl::ParseBorderStyle()
      eCSSProperty_border_left_style_rtl_source,
      eCSSProperty_border_right_style_ltr_source,
      eCSSProperty_border_right_style_rtl_source,
@@ -366,7 +366,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    nsCSSValue value;
    if (ParseVariant(value, VARIANT_INHERIT | VARIANT_NONE, nsnull)) {
      // 'inherit', 'initial', and 'none' are only allowed on their own
-@@ -7977,22 +7966,22 @@ PRBool CSSParserImpl::ParseMozTransformO
+@@ -7986,22 +7975,22 @@ PRBool CSSParserImpl::ParseMozTransformO
  
    // Unlike many other uses of pairs, this position should always be stored
    // as a pair, even if the values are the same, so it always serializes as
@@ -394,7 +394,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  {
    if (!GetToken(PR_TRUE))
      return PR_FALSE;
-@@ -8268,18 +8257,17 @@ CSSParserImpl::ParseMargin()
+@@ -8277,18 +8266,17 @@ CSSParserImpl::ParseMargin()
      eCSSProperty_margin_left_rtl_source,
      eCSSProperty_margin_right_ltr_source,
      eCSSProperty_margin_right_rtl_source,
@@ -414,7 +414,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    if (ParseVariant(aValue, VARIANT_HK, nsCSSProps::kPageMarksKTable)) {
      if (eCSSUnit_Enumerated == aValue.GetUnit()) {
        if (NS_STYLE_PAGE_MARKS_NONE != aValue.GetIntValue() &&
-@@ -8380,18 +8368,17 @@ CSSParserImpl::ParsePadding()
+@@ -8389,18 +8377,17 @@ CSSParserImpl::ParsePadding()
      eCSSProperty_padding_left_rtl_source,
      eCSSProperty_padding_right_ltr_source,
      eCSSProperty_padding_right_rtl_source,
@@ -434,7 +434,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    nsCSSValue  before;
    if (ParseSingleValueProperty(before, eCSSProperty_pause_before)) {
      if (eCSSUnit_Inherit != before.GetUnit() && eCSSUnit_Initial != before.GetUnit()) {
-@@ -8459,21 +8446,22 @@ CSSParserImpl::ParseSize()
+@@ -8468,21 +8455,22 @@ CSSParserImpl::ParseSize()
    if (width.IsLengthUnit()) {
      ParseVariant(height, VARIANT_LENGTH, nsnull);
    }

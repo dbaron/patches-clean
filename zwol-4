@@ -1625,7 +1625,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
  
      PRUint32 fillCount = bg->mImageCount;
      FillBackgroundList(bg->mLayers, &nsStyleBackground::Layer::mImage,
-@@ -5723,99 +5773,117 @@ nsRuleNode::ComputeContentData(void* aSt
+@@ -5727,99 +5777,117 @@ nsRuleNode::ComputeContentData(void* aSt
            }
            contentValue = contentValue->mNext;
          }
@@ -1820,7 +1820,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
               SETCOORD_CALC_LENGTH_ONLY,
             aContext, mPresContext, canStoreInRuleTree);
  
-@@ -5829,48 +5897,55 @@ nsRuleNode::ComputeQuotesData(void* aSta
+@@ -5841,48 +5909,55 @@ nsRuleNode::ComputeQuotesData(void* aSta
                                nsRuleNode* aHighestNode,
                                const RuleDetail aRuleDetail,
                                const PRBool aCanStoreInRuleTree)
@@ -1908,7 +1908,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
  const void*
  nsRuleNode::ComputeXULData(void* aStartStruct,
                             const nsRuleDataStruct& aData,
-@@ -6641,20 +6716,18 @@ nsRuleNode::HasAuthorSpecifiedRules(nsSt
+@@ -6653,20 +6728,18 @@ nsRuleNode::HasAuthorSpecifiedRules(nsSt
          }
          // Do the same nulling out as in GetBorderData, GetBackgroundData
          // or GetPaddingData.

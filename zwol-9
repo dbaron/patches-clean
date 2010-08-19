@@ -61,7 +61,7 @@ diff --git a/layout/style/nsCSSDataBlock.h b/layout/style/nsCSSDataBlock.h
 diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
 --- a/layout/style/nsCSSParser.cpp
 +++ b/layout/style/nsCSSParser.cpp
-@@ -4990,22 +4990,17 @@ CSSParserImpl::ParseChoice(nsCSSValue aV
+@@ -4988,22 +4988,17 @@ CSSParserImpl::ParseChoice(nsCSSValue aV
      }
    }
    return found;

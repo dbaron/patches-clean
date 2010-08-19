@@ -1343,7 +1343,7 @@ diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
      // positioned, we can deal with it here.
  
      if (nsCSSPseudoElements::firstLetter == aContext->GetPseudo()) {
-@@ -5445,55 +5436,62 @@ nsRuleNode::ComputeListData(void* aStart
+@@ -5449,55 +5440,62 @@ nsRuleNode::ComputeListData(void* aStart
    }
  
    // list-style-position: enum, inherit, initial

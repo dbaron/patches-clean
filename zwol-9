@@ -1,0 +1,87 @@
+From: Zack Weinberg <zweinberg@mozilla.com>
+
+Bug 576044 (9/12): Add an AddLonghandProperty method to nsCSSExpandedDataBlock.  r=dbaron  a2.0=dbaron
+
+diff --git a/layout/style/nsCSSDataBlock.cpp b/layout/style/nsCSSDataBlock.cpp
+--- a/layout/style/nsCSSDataBlock.cpp
++++ b/layout/style/nsCSSDataBlock.cpp
+@@ -487,16 +487,26 @@ nsCSSExpandedDataBlock::Compress(nsCSSCo
+ 
+     ClearSets();
+     AssertInitialState();
+     *aNormalBlock = result_normal.forget();
+     *aImportantBlock = result_important.forget();
+ }
+ 
+ void
++nsCSSExpandedDataBlock::AddLonghandProperty(nsCSSProperty aProperty,
++                                            const nsCSSValue& aValue)
++{
++    NS_ASSERTION(!nsCSSProps::IsShorthand(aProperty), "property out of range");
++    nsCSSValue& storage = *static_cast<nsCSSValue*>(PropertyAt(aProperty));
++    storage = aValue;
++    SetPropertyBit(aProperty);
++}
++
++void
+ nsCSSExpandedDataBlock::Clear()
+ {
+     for (size_t iHigh = 0; iHigh < nsCSSPropertySet::kChunkCount; ++iHigh) {
+         if (!mPropertiesSet.HasPropertyInChunk(iHigh))
+             continue;
+         for (size_t iLow = 0; iLow < nsCSSPropertySet::kBitsInChunk; ++iLow) {
+             if (!mPropertiesSet.HasPropertyAt(iHigh, iLow))
+                 continue;
+diff --git a/layout/style/nsCSSDataBlock.h b/layout/style/nsCSSDataBlock.h
+--- a/layout/style/nsCSSDataBlock.h
++++ b/layout/style/nsCSSDataBlock.h
+@@ -185,16 +185,22 @@ public:
+      * an important block will only be allocated if there are
+      * !important properties in the expanded block; otherwise
+      * |*aImportantBlock| will be set to null.
+      */
+     void Compress(nsCSSCompressedDataBlock **aNormalBlock,
+                   nsCSSCompressedDataBlock **aImportantBlock);
+ 
+     /**
++     * Copy a value into this expanded block.  This does NOT destroy
++     * the source value object.  |aProperty| cannot be a shorthand.
++     */
++    void AddLonghandProperty(nsCSSProperty aProperty, const nsCSSValue& aValue);
++
++    /**
+      * Clear the state of this expanded block.
+      */
+     void Clear();
+ 
+     /**
+      * Clear the data for the given property (including the set and
+      * important bits).  Can be used with shorthand properties.
+      */
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -4990,22 +4990,17 @@ CSSParserImpl::ParseChoice(nsCSSValue aV
+     }
+   }
+   return found;
+ }
+ 
+ void
+ CSSParserImpl::AppendValue(nsCSSProperty aPropID, const nsCSSValue& aValue)
+ {
+-  NS_ASSERTION(0 <= aPropID && aPropID < eCSSProperty_COUNT_no_shorthands,
+-               "property out of range");
+-  nsCSSValue& storage =
+-      *static_cast<nsCSSValue*>(mTempData.PropertyAt(aPropID));
+-  storage = aValue;
+-  mTempData.SetPropertyBit(aPropID);
++  mTempData.AddLonghandProperty(aPropID, aValue);
+ }
+ 
+ /**
+  * Parse a "box" property. Box properties have 1 to 4 values. When less
+  * than 4 values are provided a standard mapping is used to replicate
+  * existing values.
+  */
+ PRBool

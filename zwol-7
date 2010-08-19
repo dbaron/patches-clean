@@ -1,0 +1,338 @@
+From: Zack Weinberg <zweinberg@mozilla.com>
+
+Bug 576044 (7/12): cleanup pass on css/Declaration.{h,cpp} and nsCSSDataBlock.{h,cpp}.  r=dbaron  a2.0=dbaron
+
+diff --git a/layout/style/Declaration.cpp b/layout/style/Declaration.cpp
+--- a/layout/style/Declaration.cpp
++++ b/layout/style/Declaration.cpp
+@@ -39,30 +39,17 @@
+  *
+  * ***** END LICENSE BLOCK ***** */
+ 
+ /*
+  * representation of a declaration block (or style attribute) in a CSS
+  * stylesheet
+  */
+ 
+-#include "nscore.h"
+-#include "prlog.h"
+ #include "mozilla/css/Declaration.h"
+-#include "nsString.h"
+-#include "nsIAtom.h"
+-#include "nsUnicharUtils.h"
+-#include "nsReadableUtils.h"
+-#include "nsCRT.h"
+-#include "nsCSSProps.h"
+-#include "nsFont.h"
+-#include "nsReadableUtils.h"
+-#include "nsStyleUtil.h"
+-#include "nsStyleConsts.h"
+-#include "nsCOMPtr.h"
+ #include "nsPrintfCString.h"
+ 
+ namespace mozilla {
+ namespace css {
+ 
+ // check that we can fit all the CSS properties into a PRUint8
+ // for the mOrder array - if not, might need to use PRUint16!
+ PR_STATIC_ASSERT(eCSSProperty_COUNT_no_shorthands - 1 <= PR_UINT8_MAX);
+@@ -115,18 +102,19 @@ Declaration::RemoveProperty(nsCSSPropert
+   } else {
+     data.ClearLonghandProperty(aProperty);
+     mOrder.RemoveElement(aProperty);
+   }
+ 
+   CompressFrom(&data);
+ }
+ 
+-PRBool Declaration::AppendValueToString(nsCSSProperty aProperty,
+-                                        nsAString& aResult) const
++PRBool
++Declaration::AppendValueToString(nsCSSProperty aProperty,
++                                 nsAString& aResult) const
+ {
+   NS_ABORT_IF_FALSE(0 <= aProperty &&
+                     aProperty < eCSSProperty_COUNT_no_shorthands,
+                     "property ID out of range");
+ 
+   nsCSSCompressedDataBlock *data = GetValueIsImportant(aProperty)
+                                       ? mImportantData : mData;
+   const nsCSSValue *val = data->ValueFor(aProperty);
+@@ -626,17 +614,18 @@ Declaration::GetValue(nsCSSProperty aPro
+           transProp.GetUnit() == eCSSUnit_All) {
+         // If any of the other three lists has more than one element,
+         // we can't use the shorthand.
+         if (!dur->mNext && !tim->mNext && !del->mNext) {
+           transProp.AppendToString(eCSSProperty_transition_property, aValue);
+           aValue.Append(PRUnichar(' '));
+           dur->mValue.AppendToString(eCSSProperty_transition_duration,aValue);
+           aValue.Append(PRUnichar(' '));
+-          tim->mValue.AppendToString(eCSSProperty_transition_timing_function, aValue);
++          tim->mValue.AppendToString(eCSSProperty_transition_timing_function,
++                                     aValue);
+           aValue.Append(PRUnichar(' '));
+           del->mValue.AppendToString(eCSSProperty_transition_delay, aValue);
+           aValue.Append(PRUnichar(' '));
+         } else {
+           aValue.Truncate();
+         }
+       } else {
+         NS_ABORT_IF_FALSE(transProp.GetUnit() == eCSSUnit_List ||
+@@ -700,39 +689,30 @@ Declaration::GetValueIsImportant(const n
+ PRBool
+ Declaration::GetValueIsImportant(nsCSSProperty aProperty) const
+ {
+   if (!mImportantData)
+     return PR_FALSE;
+ 
+   // Calling ValueFor is inefficient, but we can assume '!important' is rare.
+ 
+-  if (nsCSSProps::IsShorthand(aProperty)) {
+-    CSSPROPS_FOR_SHORTHAND_SUBPROPERTIES(p, aProperty) {
+-      if (*p == eCSSProperty__x_system_font) {
+-        // The system_font subproperty doesn't count.
+-        continue;
+-      }
+-      if (!mImportantData->ValueFor(*p)) {
+-        return PR_FALSE;
+-      }
+-    }
+-    return PR_TRUE;
++  if (!nsCSSProps::IsShorthand(aProperty)) {
++    return mImportantData->ValueFor(aProperty) != nsnull;
+   }
+ 
+-  return mImportantData->ValueFor(aProperty) != nsnull;
+-}
+-
+-/* static */ void
+-Declaration::AppendImportanceToString(PRBool aIsImportant,
+-                                      nsAString& aString)
+-{
+-  if (aIsImportant) {
+-   aString.AppendLiteral(" ! important");
++  CSSPROPS_FOR_SHORTHAND_SUBPROPERTIES(p, aProperty) {
++    if (*p == eCSSProperty__x_system_font) {
++      // The system_font subproperty doesn't count.
++      continue;
++    }
++    if (!mImportantData->ValueFor(*p)) {
++      return PR_FALSE;
++    }
+   }
++  return PR_TRUE;
+ }
+ 
+ void
+ Declaration::AppendPropertyAndValueToString(nsCSSProperty aProperty,
+                                             nsAutoString& aValue,
+                                             nsAString& aResult) const
+ {
+   NS_ASSERTION(0 <= aProperty && aProperty < eCSSProperty_COUNT,
+@@ -741,18 +721,19 @@ Declaration::AppendPropertyAndValueToStr
+                  aValue.IsEmpty(),
+                "aValue should be given for shorthands but not longhands");
+   AppendASCIItoUTF16(nsCSSProps::GetStringValue(aProperty), aResult);
+   aResult.AppendLiteral(": ");
+   if (aValue.IsEmpty())
+     AppendValueToString(aProperty, aResult);
+   else
+     aResult.Append(aValue);
+-  PRBool  isImportant = GetValueIsImportant(aProperty);
+-  AppendImportanceToString(isImportant, aResult);
++  if (GetValueIsImportant(aProperty)) {
++    aResult.AppendLiteral(" ! important");
++  }
+   aResult.AppendLiteral("; ");
+ }
+ 
+ void
+ Declaration::ToString(nsAString& aString) const
+ {
+   // Someone cares about this declaration's contents, so don't let it
+   // change from under them.  See e.g. bug 338679.
+@@ -823,38 +804,39 @@ Declaration::ToString(nsAString& aString
+         }
+ 
+         // That we output the system font is enough for this property if:
+         //   (1) it's the hidden system font subproperty (which either
+         //       means we output it or we don't have it), or
+         //   (2) its value is the hidden system font value and it matches
+         //       the hidden system font subproperty in importance, and
+         //       we output the system font subproperty.
+-        const nsCSSValue *val =
+-          systemFontData->ValueFor(property);
++        const nsCSSValue *val = systemFontData->ValueFor(property);
+         if (property == eCSSProperty__x_system_font ||
+             (haveSystemFont && val && val->GetUnit() == eCSSUnit_System_Font)) {
+           doneProperty = PR_TRUE;
+         }
+       }
+     }
+     if (doneProperty)
+       continue;
+-    
++
+     NS_ASSERTION(value.IsEmpty(), "value should be empty now");
+     AppendPropertyAndValueToString(property, value, aString);
+   }
+   if (! aString.IsEmpty()) {
+-    // if the string is not empty, we have a trailing whitespace we should remove
++    // if the string is not empty, we have trailing whitespace we
++    // should remove
+     aString.Truncate(aString.Length() - 1);
+   }
+ }
+ 
+ #ifdef DEBUG
+-void Declaration::List(FILE* out, PRInt32 aIndent) const
++void
++Declaration::List(FILE* out, PRInt32 aIndent) const
+ {
+   for (PRInt32 index = aIndent; --index >= 0; ) fputs("  ", out);
+ 
+   fputs("{ ", out);
+   nsAutoString s;
+   ToString(s);
+   fputs(NS_ConvertUTF16toUTF8(s).get(), out);
+   fputs("}", out);
+diff --git a/layout/style/Declaration.h b/layout/style/Declaration.h
+--- a/layout/style/Declaration.h
++++ b/layout/style/Declaration.h
+@@ -45,26 +45,22 @@
+ #define mozilla_css_Declaration_h
+ 
+ // This header is in EXPORTS because it's used in several places in content/,
+ // but it's not really a public interface.
+ #ifndef _IMPL_NS_LAYOUT
+ #error "This file should only be included within the layout library"
+ #endif
+ 
+-#include "nsISupports.h"
+-#include "nsColor.h"
++#include "nsCSSDataBlock.h"
++#include "nsCSSProperty.h"
++#include "nsCSSProps.h"
++#include "nsStringFwd.h"
++#include "nsTArray.h"
+ #include <stdio.h>
+-#include "nsString.h"
+-#include "nsCoord.h"
+-#include "nsCSSValue.h"
+-#include "nsCSSProps.h"
+-#include "nsTArray.h"
+-#include "nsCSSDataBlock.h"
+-#include "nsCSSStruct.h"
+ 
+ namespace mozilla {
+ namespace css {
+ 
+ // Declaration objects have unusual lifetime rules.  Every declaration
+ // begins life in an invalid state which ends when InitializeEmpty or
+ // CompressFrom is called upon it.  After that, it can be attached to
+ // exactly one style rule, and will be destroyed when that style rule
+diff --git a/layout/style/nsCSSDataBlock.cpp b/layout/style/nsCSSDataBlock.cpp
+--- a/layout/style/nsCSSDataBlock.cpp
++++ b/layout/style/nsCSSDataBlock.cpp
+@@ -37,19 +37,17 @@
+ 
+ /*
+  * compact representation of the property-value pairs within a CSS
+  * declaration, and the code for expanding and compacting it
+  */
+ 
+ #include "nsCSSDataBlock.h"
+ #include "mozilla/css/Declaration.h"
+-#include "nsCSSProps.h"
+ #include "nsRuleData.h"
+-#include "nsRuleNode.h"
+ #include "nsStyleSet.h"
+ #include "nsStyleContext.h"
+ 
+ namespace css = mozilla::css;
+ 
+ /*
+  * nsCSSCompressedDataBlock holds property-value pairs corresponding
+  * to CSS declaration blocks.  Each pair is stored in a CDBValueStorage
+@@ -403,33 +401,24 @@ nsCSSExpandedDataBlock::Compress(nsCSSCo
+                                  nsCSSCompressedDataBlock **aImportantBlock)
+ {
+     nsAutoPtr<nsCSSCompressedDataBlock> result_normal, result_important;
+     char *cursor_normal, *cursor_important;
+ 
+     ComputeSizeResult size = ComputeSize();
+ 
+     result_normal = new(size.normal) nsCSSCompressedDataBlock();
+-    if (!result_normal) {
+-        *aNormalBlock = nsnull;
+-        *aImportantBlock = nsnull;
+-        return;
+-    }
+     cursor_normal = result_normal->Block();
+ 
+     if (size.important != 0) {
+         result_important = new(size.important) nsCSSCompressedDataBlock();
+-        if (!result_important) {
+-            *aNormalBlock = nsnull;
+-            *aImportantBlock = nsnull;
+-            return;
+-        }
+         cursor_important = result_important->Block();
+     } else {
+         result_important = nsnull;
++        cursor_important = nsnull;
+     }
+ 
+     /*
+      * Save needless copying and allocation by copying the memory
+      * corresponding to the stored data in the expanded block, and then
+      * clearing the data in the expanded block.
+      */
+     for (size_t iHigh = 0; iHigh < nsCSSPropertySet::kChunkCount; ++iHigh) {
+@@ -458,16 +447,17 @@ nsCSSExpandedDataBlock::Compress(nsCSSCo
+             result->mStyleBits |=
+                 nsCachedStyleData::GetBitForSID(nsCSSProps::kSIDTable[iProp]);
+         }
+     }
+ 
+     result_normal->mBlockEnd = cursor_normal;
+     NS_ASSERTION(result_normal->DataSize() == ptrdiff_t(size.normal),
+                  "size miscalculation");
++
+     if (result_important) {
+         result_important->mBlockEnd = cursor_important;
+         NS_ASSERTION(result_important->DataSize() == ptrdiff_t(size.important),
+                      "size miscalculation");
+     }
+ 
+     ClearSets();
+     AssertInitialState();
+diff --git a/layout/style/nsCSSDataBlock.h b/layout/style/nsCSSDataBlock.h
+--- a/layout/style/nsCSSDataBlock.h
++++ b/layout/style/nsCSSDataBlock.h
+@@ -178,19 +178,22 @@ public:
+      * This method DELETES both of the compressed data blocks it is
+      * passed.  (This is necessary because ownership of sub-objects
+      * is transferred to the expanded block.)
+      */
+     void Expand(nsCSSCompressedDataBlock *aNormalBlock,
+                 nsCSSCompressedDataBlock *aImportantBlock);
+ 
+     /**
+-     * Allocate a new compressed block and transfer all of the state
+-     * from this expanded block to the new compressed block, clearing
+-     * the state of this expanded block.
++     * Allocate new compressed blocks and transfer all of the state
++     * from this expanded block to the new blocks, clearing this
++     * expanded block.  A normal block will always be allocated, but
++     * an important block will only be allocated if there are
++     * !important properties in the expanded block; otherwise
++     * |*aImportantBlock| will be set to null.
+      */
+     void Compress(nsCSSCompressedDataBlock **aNormalBlock,
+                   nsCSSCompressedDataBlock **aImportantBlock);
+ 
+     /**
+      * Clear the state of this expanded block.
+      */
+     void Clear();

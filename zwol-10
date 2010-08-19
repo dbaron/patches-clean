@@ -1,0 +1,463 @@
+From: Zack Weinberg <zweinberg@mozilla.com>
+
+Bug 576044 (10/12): Don't directly manipulate the contents of mTempData in the CSS parser.  r=dbaron  a2.0=dbaron
+
+diff --git a/layout/style/nsCSSDataBlock.h b/layout/style/nsCSSDataBlock.h
+--- a/layout/style/nsCSSDataBlock.h
++++ b/layout/style/nsCSSDataBlock.h
+@@ -136,22 +136,25 @@ private:
+     char* Block() { return mBlock_; }
+     char* BlockEnd() { return mBlockEnd; }
+     const char* Block() const { return mBlock_; }
+     const char* BlockEnd() const { return mBlockEnd; }
+     ptrdiff_t DataSize() const { return BlockEnd() - Block(); }
+ };
+ 
+ class nsCSSExpandedDataBlock {
++    friend class nsCSSCompressedDataBlock;
++
+ public:
+     nsCSSExpandedDataBlock();
+     ~nsCSSExpandedDataBlock();
+-    /*
+-     * When setting properties in an |nsCSSExpandedDataBlock|, callers
+-     * must make the appropriate |AddPropertyBit| call.
++
++private:
++    /* Property storage may not be accessed directly; use AddLonghandProperty
++     * and friends.
+      */
+ 
+     nsCSSFont mFont;
+     nsCSSDisplay mDisplay;
+     nsCSSMargin mMargin;
+     nsCSSList mList;
+     nsCSSPosition mPosition;
+     nsCSSTable mTable;
+@@ -161,16 +164,17 @@ public:
+     nsCSSUserInterface mUserInterface;
+     nsCSSAural mAural;
+     nsCSSPage mPage;
+     nsCSSBreaks mBreaks;
+     nsCSSXUL mXUL;
+     nsCSSSVG mSVG;
+     nsCSSColumn mColumn;
+ 
++public:
+     /**
+      * Transfer all of the state from a pair of compressed data blocks
+      * to this expanded block.  This expanded block must be clear
+      * beforehand.
+      *
+      * This method DELETES both of the compressed data blocks it is
+      * passed.  (This is necessary because ownership of sub-objects
+      * is transferred to the expanded block.)
+@@ -272,17 +276,16 @@ private:
+      * property is set in this block.
+      */
+     nsCSSPropertySet mPropertiesSet;
+     /*
+      * mPropertiesImportant indicates which properties are '!important'.
+      */
+     nsCSSPropertySet mPropertiesImportant;
+ 
+-public:
+     /*
+      * Return the storage location within |this| of the value of the
+      * property |aProperty|.
+      */
+     nsCSSValue* PropertyAt(nsCSSProperty aProperty) {
+         size_t offset = nsCSSExpandedDataBlock::kOffsetTable[aProperty];
+         return reinterpret_cast<nsCSSValue*>(reinterpret_cast<char*>(this) +
+                                              offset);
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -510,23 +510,21 @@ protected:
+ #ifdef MOZ_SVG
+   PRBool ParsePaint(nsCSSProperty aPropID);
+   PRBool ParseDasharray();
+   PRBool ParseMarker();
+ #endif
+ 
+   // Reused utility parsing routines
+   void AppendValue(nsCSSProperty aPropID, const nsCSSValue& aValue);
+-  PRBool ParseBoxProperties(nsCSSRect& aResult,
+-                            const nsCSSProperty aPropIDs[]);
++  PRBool ParseBoxProperties(const nsCSSProperty aPropIDs[]);
+   PRBool ParseDirectionalBoxProperty(nsCSSProperty aProperty,
+                                      PRInt32 aSourceType);
+   PRBool ParseBoxCornerRadius(const nsCSSProperty aPropID);
+-  PRBool ParseBoxCornerRadii(nsCSSCornerSizes& aRadii,
+-                             const nsCSSProperty aPropIDs[]);
++  PRBool ParseBoxCornerRadii(const nsCSSProperty aPropIDs[]);
+   PRInt32 ParseChoice(nsCSSValue aValues[],
+                       const nsCSSProperty aPropIDs[], PRInt32 aNumIDs);
+   PRBool ParseColor(nsCSSValue& aValue);
+   PRBool ParseColorComponent(PRUint8& aComponent,
+                              PRInt32& aType, char aStop);
+   // ParseHSLColor parses everything starting with the opening '('
+   // up through and including the aStop char.
+   PRBool ParseHSLColor(nscolor& aColor, char aStop);
+@@ -4999,18 +4997,17 @@ CSSParserImpl::AppendValue(nsCSSProperty
+ }
+ 
+ /**
+  * Parse a "box" property. Box properties have 1 to 4 values. When less
+  * than 4 values are provided a standard mapping is used to replicate
+  * existing values.
+  */
+ PRBool
+-CSSParserImpl::ParseBoxProperties(nsCSSRect& aResult,
+-                                  const nsCSSProperty aPropIDs[])
++CSSParserImpl::ParseBoxProperties(const nsCSSProperty aPropIDs[])
+ {
+   // Get up to four values for the property
+   PRInt32 count = 0;
+   nsCSSRect result;
+   NS_FOR_CSS_SIDES (index) {
+     if (! ParseSingleValueProperty(result.*(nsCSSRect::sides[index]),
+                                    aPropIDs[index])) {
+       break;
+@@ -5036,19 +5033,18 @@ CSSParserImpl::ParseBoxProperties(nsCSSR
+       result.mRight = result.mTop;
+     case 2: // Make bottom == top
+       result.mBottom = result.mTop;
+     case 3: // Make left == right
+       result.mLeft = result.mRight;
+   }
+ 
+   NS_FOR_CSS_SIDES (index) {
+-    mTempData.SetPropertyBit(aPropIDs[index]);
+-  }
+-  aResult = result;
++    AppendValue(aPropIDs[index], result.*(nsCSSRect::sides[index]));
++  }
+   return PR_TRUE;
+ }
+ 
+ PRBool
+ CSSParserImpl::ParseDirectionalBoxProperty(nsCSSProperty aProperty,
+                                            PRInt32 aSourceType)
+ {
+   const nsCSSProperty* subprops = nsCSSProps::SubpropertyEntryFor(aProperty);
+@@ -5086,18 +5082,17 @@ CSSParserImpl::ParseBoxCornerRadius(nsCS
+     nsCSSValue value;
+     value.SetPairValue(dimenX, dimenY);
+     AppendValue(aPropID, value);
+   }
+   return PR_TRUE;
+ }
+ 
+ PRBool
+-CSSParserImpl::ParseBoxCornerRadii(nsCSSCornerSizes& aRadii,
+-                                   const nsCSSProperty aPropIDs[])
++CSSParserImpl::ParseBoxCornerRadii(const nsCSSProperty aPropIDs[])
+ {
+   // Rectangles are used as scratch storage.
+   // top => top-left, right => top-right,
+   // bottom => bottom-right, left => bottom-left.
+   nsCSSRect dimenX, dimenY;
+   PRInt32 countX = 0, countY = 0;
+ 
+   NS_FOR_CSS_SIDES (side) {
+@@ -5144,27 +5139,26 @@ CSSParserImpl::ParseBoxCornerRadii(nsCSS
+ 
+   switch (countY) {
+     case 1: dimenY.mRight = dimenY.mTop;  // top-right same as top-left, and
+     case 2: dimenY.mBottom = dimenY.mTop; // bottom-right same as top-left, and 
+     case 3: dimenY.mLeft = dimenY.mRight; // bottom-left same as top-right
+   }
+ 
+   NS_FOR_CSS_SIDES(side) {
+-    nsCSSValue& corner =
+-      aRadii.GetCorner(NS_SIDE_TO_FULL_CORNER(side, PR_FALSE));
+     nsCSSValue& x = dimenX.*nsCSSRect::sides[side];
+     nsCSSValue& y = dimenY.*nsCSSRect::sides[side];
+ 
+     if (x == y) {
+-      corner = x;
++      AppendValue(aPropIDs[side], x);
+     } else {
+-      corner.SetPairValue(x, y);
+-    }
+-    mTempData.SetPropertyBit(aPropIDs[side]);
++      nsCSSValue pair;
++      pair.SetPairValue(x, y);
++      AppendValue(aPropIDs[side], pair);
++    }
+   }
+   return PR_TRUE;
+ }
+ 
+ // These must be in CSS order (top,right,bottom,left) for indexing to work
+ static const nsCSSProperty kBorderStyleIDs[] = {
+   eCSSProperty_border_top_style,
+   eCSSProperty_border_right_style_value,
+@@ -5279,21 +5273,19 @@ CSSParserImpl::ParseProperty(nsCSSProper
+                                        NS_BOXPROP_SOURCE_PHYSICAL);
+   case eCSSProperty_border_right_style:
+     return ParseDirectionalBoxProperty(eCSSProperty_border_right_style,
+                                        NS_BOXPROP_SOURCE_PHYSICAL);
+   case eCSSProperty_border_start_style:
+     return ParseDirectionalBoxProperty(eCSSProperty_border_start_style,
+                                        NS_BOXPROP_SOURCE_LOGICAL);
+   case eCSSProperty__moz_border_radius:
+-    return ParseBoxCornerRadii(mTempData.mMargin.mBorderRadius,
+-                               kBorderRadiusIDs);
++    return ParseBoxCornerRadii(kBorderRadiusIDs);
+   case eCSSProperty__moz_outline_radius:
+-    return ParseBoxCornerRadii(mTempData.mMargin.mOutlineRadius,
+-                               kOutlineRadiusIDs);
++    return ParseBoxCornerRadii(kOutlineRadiusIDs);
+ 
+   case eCSSProperty__moz_border_radius_topLeft:
+   case eCSSProperty__moz_border_radius_topRight:
+   case eCSSProperty__moz_border_radius_bottomRight:
+   case eCSSProperty__moz_border_radius_bottomLeft:
+   case eCSSProperty__moz_outline_radius_topLeft:
+   case eCSSProperty__moz_outline_radius_topRight:
+   case eCSSProperty__moz_outline_radius_bottomRight:
+@@ -6623,30 +6615,30 @@ CSSParserImpl::ParseBorderColor()
+     eCSSProperty_border_left_color_rtl_source,
+     eCSSProperty_border_right_color_ltr_source,
+     eCSSProperty_border_right_color_rtl_source,
+     eCSSProperty_UNKNOWN
+   };
+ 
+   // do this now, in case 4 values weren't specified
+   InitBoxPropsAsPhysical(kBorderColorSources);
+-  return ParseBoxProperties(mTempData.mMargin.mBorderColor,
+-                            kBorderColorIDs);
++  return ParseBoxProperties(kBorderColorIDs);
+ }
+ 
+ PRBool
+ CSSParserImpl::ParseBorderImage()
+ {
+-  if (ParseVariant(mTempData.mMargin.mBorderImage,
+-                   VARIANT_INHERIT | VARIANT_NONE, nsnull)) {
+-    mTempData.SetPropertyBit(eCSSProperty_border_image);
++  nsCSSValue val;
++  if (ParseVariant(val, VARIANT_INHERIT | VARIANT_NONE, nsnull)) {
++    AppendValue(eCSSProperty_border_image, val);
+     return PR_TRUE;
+   }
+ 
+-  // <uri> [<number> | <percentage>]{1,4} [ / <border-width>{1,4} ]? [stretch | repeat | round]{0,2}
++  // <uri> [<number> | <percentage>]{1,4}
++  //       [ / <border-width>{1,4} ]? [stretch | repeat | round]{0,2}
+   nsRefPtr<nsCSSValue::Array> arr = nsCSSValue::Array::Create(11);
+   if (!arr) {
+     mScanner.SetLowLevelError(NS_ERROR_OUT_OF_MEMORY);
+     return PR_FALSE;
+   }
+ 
+   nsCSSValue& url = arr->Item(0);
+   nsCSSValue& splitTop = arr->Item(1);
+@@ -6705,18 +6697,18 @@ CSSParserImpl::ParseBorderImage()
+   if (ParseEnum(horizontalKeyword, nsCSSProps::kBorderImageKTable)) {
+     (void)ParseEnum(verticalKeyword, nsCSSProps::kBorderImageKTable);
+   }
+ 
+   if (!ExpectEndProperty()) {
+     return PR_FALSE;
+   }
+ 
+-  mTempData.mMargin.mBorderImage.SetArrayValue(arr, eCSSUnit_Array);
+-  mTempData.SetPropertyBit(eCSSProperty_border_image);
++  val.SetArrayValue(arr, eCSSUnit_Array);
++  AppendValue(eCSSProperty_border_image, val);
+ 
+   return PR_TRUE;
+ }
+ 
+ PRBool
+ CSSParserImpl::ParseBorderSpacing()
+ {
+   nsCSSValue xValue, yValue;
+@@ -6730,21 +6722,22 @@ CSSParserImpl::ParseBorderSpacing()
+     ParseNonNegativeVariant(yValue, VARIANT_LENGTH | VARIANT_CALC, nsnull);
+   }
+ 
+   if (!ExpectEndProperty()) {
+     return PR_FALSE;
+   }
+ 
+   if (yValue == xValue || yValue.GetUnit() == eCSSUnit_Null) {
+-    mTempData.mTable.mBorderSpacing = xValue;
++    AppendValue(eCSSProperty_border_spacing, xValue);
+   } else {
+-    mTempData.mTable.mBorderSpacing.SetPairValue(xValue, yValue);
+-  }
+-  mTempData.SetPropertyBit(eCSSProperty_border_spacing);
++    nsCSSValue pair;
++    pair.SetPairValue(xValue, yValue);
++    AppendValue(eCSSProperty_border_spacing, pair);
++  }
+   return PR_TRUE;
+ }
+ 
+ PRBool
+ CSSParserImpl::ParseBorderSide(const nsCSSProperty aPropIDs[],
+                                PRBool aSetAllSides)
+ {
+   const PRInt32 numProps = 3;
+@@ -6803,21 +6796,19 @@ CSSParserImpl::ParseBorderSide(const nsC
+     // initial values.
+     nsCSSValue extraValue;
+     switch (values[0].GetUnit()) {
+       case eCSSUnit_Inherit:    extraValue.SetInheritValue();    break;
+       case eCSSUnit_Initial:    extraValue.SetInitialValue();    break;
+       default:                  extraValue.SetNoneValue();       break;
+     }
+     NS_FOR_CSS_SIDES(side) {
+-      mTempData.mMargin.mBorderColors.*(nsCSSRect::sides[side]) = extraValue;
+-      mTempData.SetPropertyBit(kBorderColorsProps[side]);
+-    }
+-    mTempData.mMargin.mBorderImage = extraValue;
+-    mTempData.SetPropertyBit(eCSSProperty_border_image);
++      AppendValue(kBorderColorsProps[side], extraValue);
++    }
++    AppendValue(eCSSProperty_border_image, extraValue);
+   }
+   else {
+     // Just set our one side
+     for (PRInt32 index = 0; index < numProps; index++) {
+       AppendValue(aPropIDs[index], values[index]);
+     }
+   }
+   return PR_TRUE;
+@@ -6865,35 +6856,33 @@ CSSParserImpl::ParseBorderStyle()
+     eCSSProperty_border_left_style_rtl_source,
+     eCSSProperty_border_right_style_ltr_source,
+     eCSSProperty_border_right_style_rtl_source,
+     eCSSProperty_UNKNOWN
+   };
+ 
+   // do this now, in case 4 values weren't specified
+   InitBoxPropsAsPhysical(kBorderStyleSources);
+-  return ParseBoxProperties(mTempData.mMargin.mBorderStyle,
+-                            kBorderStyleIDs);
++  return ParseBoxProperties(kBorderStyleIDs);
+ }
+ 
+ PRBool
+ CSSParserImpl::ParseBorderWidth()
+ {
+   static const nsCSSProperty kBorderWidthSources[] = {
+     eCSSProperty_border_left_width_ltr_source,
+     eCSSProperty_border_left_width_rtl_source,
+     eCSSProperty_border_right_width_ltr_source,
+     eCSSProperty_border_right_width_rtl_source,
+     eCSSProperty_UNKNOWN
+   };
+ 
+   // do this now, in case 4 values weren't specified
+   InitBoxPropsAsPhysical(kBorderWidthSources);
+-  return ParseBoxProperties(mTempData.mMargin.mBorderWidth,
+-                            kBorderWidthIDs);
++  return ParseBoxProperties(kBorderWidthIDs);
+ }
+ 
+ PRBool
+ CSSParserImpl::ParseBorderColors(nsCSSProperty aProperty)
+ {
+   nsCSSValue value;
+   if (ParseVariant(value, VARIANT_INHERIT | VARIANT_NONE, nsnull)) {
+     // 'inherit', 'initial', and 'none' are only allowed on their own
+@@ -7977,22 +7966,22 @@ PRBool CSSParserImpl::ParseMozTransformO
+ 
+   // Unlike many other uses of pairs, this position should always be stored
+   // as a pair, even if the values are the same, so it always serializes as
+   // a pair, and to keep the computation code simple.
+   if (position.mXValue.GetUnit() == eCSSUnit_Inherit ||
+       position.mXValue.GetUnit() == eCSSUnit_Initial) {
+     NS_ABORT_IF_FALSE(position.mXValue == position.mYValue,
+                       "inherit/initial only half?");
+-    mTempData.mDisplay.mTransformOrigin = position.mXValue;
++    AppendValue(eCSSProperty__moz_transform_origin, position.mXValue);
+   } else {
+-    mTempData.mDisplay.mTransformOrigin.SetPairValue(position.mXValue,
+-                                                     position.mYValue);
+-  }
+-  mTempData.SetPropertyBit(eCSSProperty__moz_transform_origin);
++    nsCSSValue pair;
++    pair.SetPairValue(&position);
++    AppendValue(eCSSProperty__moz_transform_origin, pair);
++  }
+   return PR_TRUE;
+ }
+ 
+ PRBool
+ CSSParserImpl::ParseFamily(nsCSSValue& aValue)
+ {
+   if (!GetToken(PR_TRUE))
+     return PR_FALSE;
+@@ -8268,18 +8257,17 @@ CSSParserImpl::ParseMargin()
+     eCSSProperty_margin_left_rtl_source,
+     eCSSProperty_margin_right_ltr_source,
+     eCSSProperty_margin_right_rtl_source,
+     eCSSProperty_UNKNOWN
+   };
+ 
+   // do this now, in case 4 values weren't specified
+   InitBoxPropsAsPhysical(kMarginSources);
+-  return ParseBoxProperties(mTempData.mMargin.mMargin,
+-                            kMarginSideIDs);
++  return ParseBoxProperties(kMarginSideIDs);
+ }
+ 
+ PRBool
+ CSSParserImpl::ParseMarks(nsCSSValue& aValue)
+ {
+   if (ParseVariant(aValue, VARIANT_HK, nsCSSProps::kPageMarksKTable)) {
+     if (eCSSUnit_Enumerated == aValue.GetUnit()) {
+       if (NS_STYLE_PAGE_MARKS_NONE != aValue.GetIntValue() &&
+@@ -8380,18 +8368,17 @@ CSSParserImpl::ParsePadding()
+     eCSSProperty_padding_left_rtl_source,
+     eCSSProperty_padding_right_ltr_source,
+     eCSSProperty_padding_right_rtl_source,
+     eCSSProperty_UNKNOWN
+   };
+ 
+   // do this now, in case 4 values weren't specified
+   InitBoxPropsAsPhysical(kPaddingSources);
+-  return ParseBoxProperties(mTempData.mMargin.mPadding,
+-                            kPaddingSideIDs);
++  return ParseBoxProperties(kPaddingSideIDs);
+ }
+ 
+ PRBool
+ CSSParserImpl::ParsePause()
+ {
+   nsCSSValue  before;
+   if (ParseSingleValueProperty(before, eCSSProperty_pause_before)) {
+     if (eCSSUnit_Inherit != before.GetUnit() && eCSSUnit_Initial != before.GetUnit()) {
+@@ -8459,21 +8446,22 @@ CSSParserImpl::ParseSize()
+   if (width.IsLengthUnit()) {
+     ParseVariant(height, VARIANT_LENGTH, nsnull);
+   }
+   if (!ExpectEndProperty()) {
+     return PR_FALSE;
+   }
+ 
+   if (width == height || height.GetUnit() == eCSSUnit_Null) {
+-    mTempData.mPage.mSize = width;
++    AppendValue(eCSSProperty_size, width);
+   } else {
+-    mTempData.mPage.mSize.SetPairValue(width, height);
+-  }
+-  mTempData.SetPropertyBit(eCSSProperty_size);
++    nsCSSValue pair;
++    pair.SetPairValue(width, height);
++    AppendValue(eCSSProperty_size, pair);
++  }
+   return PR_TRUE;
+ }
+ 
+ PRBool
+ CSSParserImpl::ParseTextDecoration(nsCSSValue& aValue)
+ {
+   if (ParseVariant(aValue, VARIANT_HK, nsCSSProps::kTextDecorationKTable)) {
+     if (eCSSUnit_Enumerated == aValue.GetUnit()) {

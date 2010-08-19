@@ -1,0 +1,1599 @@
+From: Zack Weinberg <zweinberg@mozilla.com>
+
+Bug 576044 (3/12): eliminate Rect as a storage type.  r=dbaron  a2.0=dbaron
+
+diff --git a/layout/style/Declaration.cpp b/layout/style/Declaration.cpp
+--- a/layout/style/Declaration.cpp
++++ b/layout/style/Declaration.cpp
+@@ -133,20 +133,16 @@ PRBool Declaration::AppendValueToString(
+     return PR_FALSE;
+   }
+ 
+   switch (nsCSSProps::kTypeTable[aProperty]) {
+     case eCSSType_Value:
+       static_cast<const nsCSSValue*>(storage)->
+         AppendToString(aProperty, aResult);
+       break;
+-    case eCSSType_Rect:
+-      static_cast<const nsCSSRect*>(storage)->
+-        AppendToString(aProperty, aResult);
+-      break;
+     case eCSSType_ValueList:
+       (*static_cast<nsCSSValueList*const*>(storage))->
+         AppendToString(aProperty, aResult);
+       break;
+     case eCSSType_ValuePairList:
+       (*static_cast<nsCSSValuePairList*const*>(storage))->
+         AppendToString(aProperty, aResult);
+       break;
+@@ -207,20 +203,16 @@ Declaration::GetValue(nsCSSProperty aPro
+       return;
+     }
+     nsCSSUnit unit;
+     switch (nsCSSProps::kTypeTable[*p]) {
+       case eCSSType_Value: {
+         const nsCSSValue *val = static_cast<const nsCSSValue*>(storage);
+         unit = val->GetUnit();
+       } break;
+-      case eCSSType_Rect: {
+-        const nsCSSRect *rect = static_cast<const nsCSSRect*>(storage);
+-        unit = rect->mTop.GetUnit();
+-      } break;
+       case eCSSType_ValueList: {
+         const nsCSSValueList* item =
+             *static_cast<nsCSSValueList*const*>(storage);
+         NS_ABORT_IF_FALSE(item, "null not allowed in compressed block");
+         unit = item->mValue.GetUnit();
+       } break;
+       case eCSSType_ValuePairList: {
+         const nsCSSValuePairList* item =
+diff --git a/layout/style/nsCSSDataBlock.cpp b/layout/style/nsCSSDataBlock.cpp
+--- a/layout/style/nsCSSDataBlock.cpp
++++ b/layout/style/nsCSSDataBlock.cpp
+@@ -47,50 +47,42 @@
+ #include "nsRuleNode.h"
+ #include "nsStyleSet.h"
+ #include "nsStyleContext.h"
+ 
+ namespace css = mozilla::css;
+ 
+ /*
+  * nsCSSCompressedDataBlock holds property-value pairs corresponding
+- * to CSS declaration blocks.  The value is stored in one of the four
+- * CSS data types: nsCSSValue, nsCSSRect, nsCSSValueList, and
+- * nsCSSValuePairList, which each correspond to a value of the
+- * nsCSSType enumeration.
++ * to CSS declaration blocks.  The value is stored in one of the three
++ * CSS data types: nsCSSValue, nsCSSValueList, and nsCSSValuePairList,
++ * which each correspond to a value of the nsCSSType enumeration.
+  *
+  * The storage strategy uses the CDB*Storage structs below to help
+  * ensure that all the types remain properly aligned.  nsCSSValue's
+  * alignment requirements cannot be weaker than any others, since it
+  * contains a pointer and an enumeration.
+  *
+- * The simple types, nsCSSValue and nsCSSRect have the nsCSSValue or
+- * nsCSSRect objects stored in the block.  The list types have only a
+- * pointer to the first element in the list stored in the block.
++ * nsCSSValue objects are stored directly in the block; list types
++ * have only a pointer to the first element in the list stored in the
++ * block.
+  */
+ 
+ struct CDBValueStorage {
+     nsCSSProperty property;
+     nsCSSValue value;
+ };
+ 
+-struct CDBRectStorage {
+-    nsCSSProperty property;
+-    nsCSSRect value;
+-
+-};
+-
+ struct CDBPointerStorage {
+     nsCSSProperty property;
+     void *value;
+ };
+ 
+ enum {
+     CDBValueStorage_advance = sizeof(CDBValueStorage),
+-    CDBRectStorage_advance = sizeof(CDBRectStorage),
+     // round up using the closest estimate we can get of the alignment
+     // requirements of nsCSSValue:
+     CDBPointerStorage_advance = PR_ROUNDUP(sizeof(CDBPointerStorage),
+                                 sizeof(CDBValueStorage) - sizeof(nsCSSValue))
+ };
+ 
+ /*
+  * Define a bunch of utility functions for getting the property or any
+@@ -111,24 +103,16 @@ inline nsCSSProperty PropertyAtCursor(co
+ inline nsCSSValue* ValueAtCursor(char *aCursor) {
+     return & reinterpret_cast<CDBValueStorage*>(aCursor)->value;
+ }
+ 
+ inline const nsCSSValue* ValueAtCursor(const char *aCursor) {
+     return & reinterpret_cast<const CDBValueStorage*>(aCursor)->value;
+ }
+ 
+-inline nsCSSRect* RectAtCursor(char *aCursor) {
+-    return & reinterpret_cast<CDBRectStorage*>(aCursor)->value;
+-}
+-
+-inline const nsCSSRect* RectAtCursor(const char *aCursor) {
+-    return & reinterpret_cast<const CDBRectStorage*>(aCursor)->value;
+-}
+-
+ inline void*& PointerAtCursor(char *aCursor) {
+     return reinterpret_cast<CDBPointerStorage*>(aCursor)->value;
+ }
+ 
+ inline void* PointerAtCursor(const char *aCursor) {
+     return reinterpret_cast<const CDBPointerStorage*>(aCursor)->value;
+ }
+ 
+@@ -258,34 +242,16 @@ nsCSSCompressedDataBlock::MapRuleInfoInt
+                                 // Ignore 'color', 'border-*-color', etc.
+                                 *target = nsCSSValue();
+                             }
+                         }
+                     }
+                     cursor += CDBValueStorage_advance;
+                 } break;
+ 
+-                case eCSSType_Rect: {
+-                    NS_ABORT_IF_FALSE(!nsCSSProps::PropHasFlags(iProp,
+-                        CSS_PROPERTY_IGNORED_WHEN_COLORS_DISABLED),
+-                        "this case needs to handle color properties");
+-                    const nsCSSRect* val = RectAtCursor(cursor);
+-                    NS_ASSERTION(val->HasValue(), "oops");
+-                    nsCSSRect* target = static_cast<nsCSSRect*>(prop);
+-                    if (target->mTop.GetUnit() == eCSSUnit_Null)
+-                        target->mTop = val->mTop;
+-                    if (target->mRight.GetUnit() == eCSSUnit_Null)
+-                        target->mRight = val->mRight;
+-                    if (target->mBottom.GetUnit() == eCSSUnit_Null)
+-                        target->mBottom = val->mBottom;
+-                    if (target->mLeft.GetUnit() == eCSSUnit_Null)
+-                        target->mLeft = val->mLeft;
+-                    cursor += CDBRectStorage_advance;
+-                } break;
+-
+                 case eCSSType_ValueList:
+                 case eCSSType_ValuePairList: {
+                     void** target = static_cast<void**>(prop);
+                     if (!*target) {
+                         if (ShouldStartImageLoads(aRuleData, iProp)) {
+                             for (nsCSSValueList* l = ValueListAtCursor(cursor);
+                                  l; l = l->mNext) {
+                                 TryToStartImageLoad(l->mValue, doc, iProp);
+@@ -307,20 +273,16 @@ nsCSSCompressedDataBlock::MapRuleInfoInt
+                 } break;
+             }
+         } else {
+             switch (nsCSSProps::kTypeTable[iProp]) {
+                 case eCSSType_Value: {
+                     cursor += CDBValueStorage_advance;
+                 } break;
+ 
+-                case eCSSType_Rect: {
+-                    cursor += CDBRectStorage_advance;
+-                } break;
+-
+                 case eCSSType_ValueList:
+                 case eCSSType_ValuePairList: {
+                     cursor += CDBPointerStorage_advance;
+                 } break;
+             }
+         }
+     }
+     NS_ASSERTION(cursor == cursor_end, "inconsistent data");
+@@ -346,34 +308,27 @@ nsCSSCompressedDataBlock::StorageFor(nsC
+         nsCSSProperty iProp = PropertyAtCursor(cursor);
+         NS_ASSERTION(0 <= iProp && iProp < eCSSProperty_COUNT_no_shorthands,
+                      "out of range");
+         if (iProp == aProperty) {
+             switch (nsCSSProps::kTypeTable[iProp]) {
+                 case eCSSType_Value: {
+                     return ValueAtCursor(cursor);
+                 }
+-                case eCSSType_Rect: {
+-                    return RectAtCursor(cursor);
+-                }
+                 case eCSSType_ValueList:
+                 case eCSSType_ValuePairList: {
+                     return &PointerAtCursor(const_cast<char*>(cursor));
+                 }
+             }
+         }
+         switch (nsCSSProps::kTypeTable[iProp]) {
+             case eCSSType_Value: {
+                 cursor += CDBValueStorage_advance;
+             } break;
+ 
+-            case eCSSType_Rect: {
+-                cursor += CDBRectStorage_advance;
+-            } break;
+-
+             case eCSSType_ValueList:
+             case eCSSType_ValuePairList: {
+                 cursor += CDBPointerStorage_advance;
+             } break;
+         }
+     }
+     NS_ASSERTION(cursor == cursor_end, "inconsistent data");
+ 
+@@ -403,25 +358,16 @@ nsCSSCompressedDataBlock::Clone() const
+                 const nsCSSValue* val = ValueAtCursor(cursor);
+                 NS_ASSERTION(val->GetUnit() != eCSSUnit_Null, "oops");
+                 nsCSSValue *result_val = ValueAtCursor(result_cursor);
+                 new (result_val) nsCSSValue(*val);
+                 cursor += CDBValueStorage_advance;
+                 result_cursor +=  CDBValueStorage_advance;
+             } break;
+ 
+-            case eCSSType_Rect: {
+-                const nsCSSRect* val = RectAtCursor(cursor);
+-                NS_ASSERTION(val->HasValue(), "oops");
+-                nsCSSRect* result_val = RectAtCursor(result_cursor);
+-                new (result_val) nsCSSRect(*val);
+-                cursor += CDBRectStorage_advance;
+-                result_cursor += CDBRectStorage_advance;
+-            } break;
+-
+             case eCSSType_ValueList:
+             case eCSSType_ValuePairList: {
+                 void *copy;
+                 NS_ASSERTION(PointerAtCursor(cursor), "oops");
+                 switch (nsCSSProps::kTypeTable[iProp]) {
+                     default:
+                         NS_NOTREACHED("unreachable");
+                         // fall through to keep gcc's uninitialized
+@@ -465,23 +411,16 @@ nsCSSCompressedDataBlock::~nsCSSCompress
+         switch (nsCSSProps::kTypeTable[iProp]) {
+             case eCSSType_Value: {
+                 const nsCSSValue* val = ValueAtCursor(cursor);
+                 NS_ASSERTION(val->GetUnit() != eCSSUnit_Null, "oops");
+                 val->~nsCSSValue();
+                 cursor += CDBValueStorage_advance;
+             } break;
+ 
+-            case eCSSType_Rect: {
+-                const nsCSSRect* val = RectAtCursor(cursor);
+-                NS_ASSERTION(val->HasValue(), "oops");
+-                val->~nsCSSRect();
+-                cursor += CDBRectStorage_advance;
+-            } break;
+-
+             case eCSSType_ValueList: {
+                 nsCSSValueList* val = ValueListAtCursor(cursor);
+                 NS_ASSERTION(val, "oops");
+                 delete val;
+                 cursor += CDBPointerStorage_advance;
+             } break;
+ 
+             case eCSSType_ValuePairList: {
+@@ -514,26 +453,16 @@ nsCSSCompressedDataBlock::MoveValue(void
+       nsCSSValue *dest = static_cast<nsCSSValue*>(aDest);
+       if (*source != *dest)
+         *aChanged = PR_TRUE;
+       dest->~nsCSSValue();
+       memcpy(dest, source, sizeof(nsCSSValue));
+       new (source) nsCSSValue();
+     } break;
+ 
+-    case eCSSType_Rect: {
+-      nsCSSRect *source = static_cast<nsCSSRect*>(aSource);
+-      nsCSSRect *dest = static_cast<nsCSSRect*>(aDest);
+-      if (*source != *dest)
+-        *aChanged = PR_TRUE;
+-      dest->~nsCSSRect();
+-      memcpy(dest, source, sizeof(nsCSSRect));
+-      new (source) nsCSSRect();
+-    } break;
+-
+     case eCSSType_ValueList: {
+       nsCSSValueList **source = static_cast<nsCSSValueList**>(aSource);
+       nsCSSValueList **dest = static_cast<nsCSSValueList**>(aDest);
+       if (**source != **dest)
+         *aChanged = PR_TRUE;
+       delete *dest;
+       *dest = *source;
+       *source = nsnull;
+@@ -604,29 +533,16 @@ nsCSSExpandedDataBlock::DoExpand(nsCSSCo
+                              "expanding into non-empty block");
+ #ifdef NS_BUILD_REFCNT_LOGGING
+                 dest->~nsCSSValue();
+ #endif
+                 memcpy(dest, val, sizeof(nsCSSValue));
+                 cursor += CDBValueStorage_advance;
+             } break;
+ 
+-            case eCSSType_Rect: {
+-                const nsCSSRect* val = RectAtCursor(cursor);
+-                nsCSSRect* dest = static_cast<nsCSSRect*>(prop);
+-                NS_ASSERTION(val->HasValue(), "oops");
+-                NS_ASSERTION(!dest->HasValue(),
+-                             "expanding into non-empty block");
+-#ifdef NS_BUILD_REFCNT_LOGGING
+-                dest->~nsCSSRect();
+-#endif
+-                memcpy(dest, val, sizeof(nsCSSRect));
+-                cursor += CDBRectStorage_advance;
+-            } break;
+-
+             case eCSSType_ValueList:
+             case eCSSType_ValuePairList: {
+                 void* val = PointerAtCursor(cursor);
+                 void** dest = static_cast<void**>(prop);
+                 NS_ASSERTION(val, "oops");
+                 NS_ASSERTION(!*dest, "expanding into non-empty block");
+                 *dest = val;
+                 cursor += CDBPointerStorage_advance;
+@@ -675,25 +591,16 @@ nsCSSExpandedDataBlock::ComputeSize()
+ #ifdef DEBUG
+                     nsCSSValue* val = static_cast<nsCSSValue*>(prop);
+                     NS_ASSERTION(val->GetUnit() != eCSSUnit_Null,
+                                  "null value while computing size");
+ #endif
+                     increment = CDBValueStorage_advance;
+                 } break;
+ 
+-                case eCSSType_Rect: {
+-#ifdef DEBUG
+-                    nsCSSRect* val = static_cast<nsCSSRect*>(prop);
+-                    NS_ASSERTION(val->HasValue(),
+-                                 "Valueless rect while computing size");
+-#endif
+-                    increment = CDBRectStorage_advance;
+-                } break;
+-
+                 case eCSSType_ValueList:
+                 case eCSSType_ValuePairList: {
+ #ifdef DEBUG
+                     void* val = *static_cast<void**>(prop);
+                     NS_ASSERTION(val, "Null pointer while computing size");
+ #endif
+                     increment = CDBPointerStorage_advance;
+                 } break;
+@@ -764,28 +671,16 @@ nsCSSExpandedDataBlock::Compress(nsCSSCo
+                     CDBValueStorage *storage =
+                         reinterpret_cast<CDBValueStorage*>(cursor);
+                     storage->property = iProp;
+                     memcpy(&storage->value, val, sizeof(nsCSSValue));
+                     new (val) nsCSSValue();
+                     cursor += CDBValueStorage_advance;
+                 } break;
+ 
+-                case eCSSType_Rect: {
+-                    nsCSSRect* val = static_cast<nsCSSRect*>(prop);
+-                    NS_ASSERTION(val->HasValue(),
+-                                 "Valueless rect while compressing");
+-                    CDBRectStorage *storage =
+-                        reinterpret_cast<CDBRectStorage*>(cursor);
+-                    storage->property = iProp;
+-                    memcpy(&storage->value, val, sizeof(nsCSSRect));
+-                    new (val) nsCSSRect();
+-                    cursor += CDBRectStorage_advance;
+-                } break;
+-
+                 case eCSSType_ValueList:
+                 case eCSSType_ValuePairList: {
+                     void*& val = *static_cast<void**>(prop);
+                     NS_ASSERTION(val, "Null pointer while compressing");
+                     CDBPointerStorage *storage =
+                         reinterpret_cast<CDBPointerStorage*>(cursor);
+                     storage->property = iProp;
+                     storage->value = val;
+@@ -854,21 +749,16 @@ nsCSSExpandedDataBlock::ClearLonghandPro
+ 
+     void *prop = PropertyAt(aPropID);
+     switch (nsCSSProps::kTypeTable[aPropID]) {
+         case eCSSType_Value: {
+             nsCSSValue* val = static_cast<nsCSSValue*>(prop);
+             val->Reset();
+         } break;
+ 
+-        case eCSSType_Rect: {
+-            nsCSSRect* val = static_cast<nsCSSRect*>(prop);
+-            val->Reset();
+-        } break;
+-
+         case eCSSType_ValueList: {
+             nsCSSValueList*& val = *static_cast<nsCSSValueList**>(prop);
+             if (val) {
+                 delete val;
+                 val = nsnull;
+             }
+         } break;
+ 
+@@ -961,28 +851,16 @@ nsCSSExpandedDataBlock::DoAssertInitialS
+         void *prop = PropertyAt(nsCSSProperty(i));
+         switch (nsCSSProps::kTypeTable[i]) {
+             case eCSSType_Value: {
+                 nsCSSValue* val = static_cast<nsCSSValue*>(prop);
+                 NS_ASSERTION(val->GetUnit() == eCSSUnit_Null,
+                              "not initial state");
+             } break;
+ 
+-            case eCSSType_Rect: {
+-                nsCSSRect* val = static_cast<nsCSSRect*>(prop);
+-                NS_ASSERTION(val->mTop.GetUnit() == eCSSUnit_Null,
+-                             "not initial state");
+-                NS_ASSERTION(val->mRight.GetUnit() == eCSSUnit_Null,
+-                             "not initial state");
+-                NS_ASSERTION(val->mBottom.GetUnit() == eCSSUnit_Null,
+-                             "not initial state");
+-                NS_ASSERTION(val->mLeft.GetUnit() == eCSSUnit_Null,
+-                             "not initial state");
+-            } break;
+-
+             case eCSSType_ValueList: {
+                 nsCSSValueList* val = *static_cast<nsCSSValueList**>(prop);
+                 NS_ASSERTION(val == nsnull, "not initial state");
+             } break;
+ 
+             case eCSSType_ValuePairList: {
+                 nsCSSValuePairList* val =
+                   *static_cast<nsCSSValuePairList**>(prop);
+diff --git a/layout/style/nsCSSDataBlock.h b/layout/style/nsCSSDataBlock.h
+--- a/layout/style/nsCSSDataBlock.h
++++ b/layout/style/nsCSSDataBlock.h
+@@ -102,21 +102,16 @@ public:
+      * A set of slightly more typesafe helpers for the above.  All
+      * return null if the value is not present.
+      */
+     const nsCSSValue* ValueStorageFor(nsCSSProperty aProperty) const {
+       NS_ABORT_IF_FALSE(nsCSSProps::kTypeTable[aProperty] == eCSSType_Value,
+                         "type mismatch");
+       return static_cast<const nsCSSValue*>(StorageFor(aProperty));
+     }
+-    const nsCSSRect* RectStorageFor(nsCSSProperty aProperty) const {
+-      NS_ABORT_IF_FALSE(nsCSSProps::kTypeTable[aProperty] == eCSSType_Rect,
+-                        "type mismatch");
+-      return static_cast<const nsCSSRect*>(StorageFor(aProperty));
+-    }
+     const nsCSSValueList*const*
+     ValueListStorageFor(nsCSSProperty aProperty) const {
+       NS_ABORT_IF_FALSE(nsCSSProps::kTypeTable[aProperty] ==
+                           eCSSType_ValueList,
+                         "type mismatch");
+       return static_cast<const nsCSSValueList*const*>(StorageFor(aProperty));
+     }
+     const nsCSSValuePairList*const*
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -475,19 +475,17 @@ protected:
+                                            PRInt32& aVariantMask,
+                                            PRBool *aHadFinalWS);
+   PRBool ParseCalcTerm(nsCSSValue& aValue, PRInt32& aVariantMask);
+   PRBool ParseCalcMinMax(nsCSSValue& aValue, nsCSSUnit aUnit,
+                          PRInt32& aVariantMask);
+   PRBool RequireWhitespace();
+ 
+   // for 'clip' and '-moz-image-region'
+-  PRBool ParseRect(nsCSSRect& aRect,
+-                   nsCSSProperty aPropID);
+-  PRBool DoParseRect(nsCSSRect& aRect);
++  PRBool ParseRect(nsCSSProperty aPropID);
+   PRBool ParseContent();
+   PRBool ParseCounterData(nsCSSValuePairList** aResult,
+                           nsCSSProperty aPropID);
+   PRBool ParseCue();
+   PRBool ParseCursor();
+   PRBool ParseFont();
+   PRBool ParseFontWeight(nsCSSValue& aValue);
+   PRBool ParseOneFamily(nsAString& aValue);
+@@ -5327,17 +5325,17 @@ CSSParserImpl::ParseProperty(nsCSSProper
+   case eCSSProperty__moz_outline_radius_topRight:
+   case eCSSProperty__moz_outline_radius_bottomRight:
+   case eCSSProperty__moz_outline_radius_bottomLeft:
+     return ParseBoxCornerRadius(aPropID);
+ 
+   case eCSSProperty_box_shadow:
+     return ParseBoxShadow();
+   case eCSSProperty_clip:
+-    return ParseRect(mTempData.mDisplay.mClip, eCSSProperty_clip);
++    return ParseRect(eCSSProperty_clip);
+   case eCSSProperty__moz_column_rule:
+     return ParseBorderSide(kColumnRuleIDs, PR_FALSE);
+   case eCSSProperty_content:
+     return ParseContent();
+   case eCSSProperty_counter_increment:
+     return ParseCounterData(&mTempData.mContent.mCounterIncrement,
+                             aPropID);
+   case eCSSProperty_counter_reset:
+@@ -5345,18 +5343,17 @@ CSSParserImpl::ParseProperty(nsCSSProper
+                             aPropID);
+   case eCSSProperty_cue:
+     return ParseCue();
+   case eCSSProperty_cursor:
+     return ParseCursor();
+   case eCSSProperty_font:
+     return ParseFont();
+   case eCSSProperty_image_region:
+-    return ParseRect(mTempData.mList.mImageRegion,
+-                     eCSSProperty_image_region);
++    return ParseRect(eCSSProperty_image_region);
+   case eCSSProperty_list_style:
+     return ParseListStyle();
+   case eCSSProperty_margin:
+     return ParseMargin();
+   case eCSSProperty_margin_end:
+     return ParseDirectionalBoxProperty(eCSSProperty_margin_end,
+                                        NS_BOXPROP_SOURCE_LOGICAL);
+   case eCSSProperty_margin_left:
+@@ -7389,81 +7386,75 @@ CSSParserImpl::RequireWhitespace()
+   // Skip any additional whitespace tokens.
+   if (GetToken(PR_TRUE)) {
+     UngetToken();
+   }
+   return PR_TRUE;
+ }
+ 
+ PRBool
+-CSSParserImpl::ParseRect(nsCSSRect& aRect, nsCSSProperty aPropID)
+-{
+-  nsCSSRect rect;
+-  PRBool result;
+-  if ((result = DoParseRect(rect)) &&
+-      rect != aRect) {
+-    aRect = rect;
+-    mTempData.SetPropertyBit(aPropID);
+-  }
+-  return result;
+-}
+-
+-PRBool
+-CSSParserImpl::DoParseRect(nsCSSRect& aRect)
++CSSParserImpl::ParseRect(nsCSSProperty aPropID)
+ {
+   if (! GetToken(PR_TRUE)) {
+     return PR_FALSE;
+   }
+-  if (eCSSToken_Ident == mToken.mType) {
++
++  nsCSSValue val;
++
++  if (mToken.mType == eCSSToken_Ident) {
+     nsCSSKeyword keyword = nsCSSKeywords::LookupKeyword(mToken.mIdent);
+     switch (keyword) {
+       case eCSSKeyword_auto:
+-        if (ExpectEndProperty()) {
+-          aRect.SetAllSidesTo(nsCSSValue(eCSSUnit_RectIsAuto));
+-          return PR_TRUE;
++        if (!ExpectEndProperty()) {
++          return PR_FALSE;
+         }
++        val.SetAutoValue();
+         break;
+       case eCSSKeyword_inherit:
+-        if (ExpectEndProperty()) {
+-          aRect.SetAllSidesTo(nsCSSValue(eCSSUnit_Inherit));
+-          return PR_TRUE;
++        if (!ExpectEndProperty()) {
++          return PR_FALSE;
+         }
++        val.SetInheritValue();
+         break;
+       case eCSSKeyword__moz_initial:
+-        if (ExpectEndProperty()) {
+-          aRect.SetAllSidesTo(nsCSSValue(eCSSUnit_Initial));
+-          return PR_TRUE;
++        if (!ExpectEndProperty()) {
++          return PR_FALSE;
+         }
++        val.SetInitialValue();
+         break;
+       default:
+         UngetToken();
+-        break;
+-    }
+-  } else if ((eCSSToken_Function == mToken.mType) &&
++        return PR_FALSE;
++    }
++  } else if (mToken.mType == eCSSToken_Function &&
+              mToken.mIdent.LowerCaseEqualsLiteral("rect")) {
++    nsCSSRect& rect = val.SetRectValue();
+     NS_FOR_CSS_SIDES(side) {
+-      if (! ParseVariant(aRect.*(nsCSSRect::sides[side]),
++      if (! ParseVariant(rect.*(nsCSSRect::sides[side]),
+                          VARIANT_AL, nsnull)) {
+         return PR_FALSE;
+       }
+-      if (3 != side) {
++      if (side < 3) {
+         // skip optional commas between elements
+         (void)ExpectSymbol(',', PR_TRUE);
+       }
+     }
+     if (!ExpectSymbol(')', PR_TRUE)) {
+       return PR_FALSE;
+     }
+-    if (ExpectEndProperty()) {
+-      return PR_TRUE;
++    if (!ExpectEndProperty()) {
++      return PR_FALSE;
+     }
+   } else {
+     UngetToken();
+-  }
+-  return PR_FALSE;
++    return PR_FALSE;
++  }
++
++  AppendValue(aPropID, val);
++  return PR_TRUE;
+ }
+ 
+ #define VARIANT_CONTENT (VARIANT_STRING | VARIANT_URL | VARIANT_COUNTER | VARIANT_ATTR | \
+                          VARIANT_KEYWORD)
+ PRBool
+ CSSParserImpl::ParseContent()
+ {
+   // XXX Rewrite to make it look more like ParseCursor or ParseCounterData?
+diff --git a/layout/style/nsCSSPropList.h b/layout/style/nsCSSPropList.h
+--- a/layout/style/nsCSSPropList.h
++++ b/layout/style/nsCSSPropList.h
+@@ -1189,17 +1189,17 @@ CSS_PROP_DISPLAY(
+     eStyleAnimType_None)
+ CSS_PROP_DISPLAY(
+     clip,
+     clip,
+     Clip,
+     0,
+     Display,
+     mClip,
+-    eCSSType_Rect,
++    eCSSType_Value,
+     nsnull,
+     offsetof(nsStyleDisplay, mClip),
+     eStyleAnimType_Custom)
+ CSS_PROP_COLOR(
+     color,
+     color,
+     Color,
+     CSS_PROPERTY_APPLIES_TO_FIRST_LETTER_AND_FIRST_LINE |
+@@ -1544,17 +1544,17 @@ CSS_PROP_POSITION(
+     eStyleAnimType_Coord)
+ CSS_PROP_LIST(
+     -moz-image-region,
+     image_region,
+     MozImageRegion,
+     0,
+     List,
+     mImageRegion,
+-    eCSSType_Rect,
++    eCSSType_Value,
+     nsnull,
+     offsetof(nsStyleList, mImageRegion),
+     eStyleAnimType_Custom)
+ CSS_PROP_UIRESET(
+     ime-mode,
+     ime_mode,
+     ImeMode,
+     0,
+diff --git a/layout/style/nsCSSProperty.h b/layout/style/nsCSSProperty.h
+--- a/layout/style/nsCSSProperty.h
++++ b/layout/style/nsCSSProperty.h
+@@ -78,17 +78,16 @@ enum nsCSSProperty {
+   // Extra dummy values for nsCSSParser internal use.
+   eCSSPropertyExtra_x_none_value
+ };
+ 
+ // The types of values that can be in the nsCSS*/nsRuleData* structs.
+ // See nsCSSPropList.h for uses.
+ enum nsCSSType {
+   eCSSType_Value,
+-  eCSSType_Rect,
+   eCSSType_ValueList,
+   eCSSType_ValuePairList
+ };
+ 
+ // The "descriptors" that can appear in a @font-face rule.
+ // They have the syntax of properties but different value rules.
+ // Keep in sync with kCSSRawFontDescs in nsCSSProps.cpp and
+ // nsCSSFontFaceStyleDecl::Fields in nsCSSRules.cpp.
+diff --git a/layout/style/nsCSSStruct.h b/layout/style/nsCSSStruct.h
+--- a/layout/style/nsCSSStruct.h
++++ b/layout/style/nsCSSStruct.h
+@@ -222,17 +222,17 @@ struct nsCSSDisplay : public nsCSSStruct
+ 
+   nsCSSValue mDirection;
+   nsCSSValue mDisplay;
+   nsCSSValue mBinding;
+   nsCSSValue mAppearance;
+   nsCSSValue mPosition;
+   nsCSSValue mFloat;
+   nsCSSValue mClear;
+-  nsCSSRect  mClip;
++  nsCSSValue mClip;
+   nsCSSValue mOverflowX;
+   nsCSSValue mOverflowY;
+   nsCSSValue mResize;
+   nsCSSValue mPointerEvents;
+   nsCSSValue mVisibility;
+   nsCSSValue mOpacity;
+   nsCSSValueList *mTransform; // List of Arrays containing transform information
+   nsCSSValue mTransformOrigin;
+@@ -340,17 +340,17 @@ private:
+ 
+ struct nsCSSList : public nsCSSStruct  {
+   nsCSSList(void);
+   ~nsCSSList(void);
+ 
+   nsCSSValue mType;
+   nsCSSValue mImage;
+   nsCSSValue mPosition;
+-  nsCSSRect  mImageRegion;
++  nsCSSValue mImageRegion;
+ private:
+   nsCSSList(const nsCSSList& aOther); // NOT IMPLEMENTED
+ };
+ 
+ struct nsRuleDataList : public nsCSSList {
+   nsRuleDataList() {}
+ private:
+   nsRuleDataList(const nsRuleDataList& aOther); // NOT IMPLEMENTED
+diff --git a/layout/style/nsCSSValue.cpp b/layout/style/nsCSSValue.cpp
+--- a/layout/style/nsCSSValue.cpp
++++ b/layout/style/nsCSSValue.cpp
+@@ -121,17 +121,17 @@ nsCSSValue::nsCSSValue(nsCSSValueGradien
+ {
+   mValue.mGradient = aValue;
+   mValue.mGradient->AddRef();
+ }
+ 
+ nsCSSValue::nsCSSValue(const nsCSSValue& aCopy)
+   : mUnit(aCopy.mUnit)
+ {
+-  if (mUnit <= eCSSUnit_RectIsAuto) {
++  if (mUnit <= eCSSUnit_DummyInherit) {
+     // nothing to do, but put this important case first
+   }
+   else if (eCSSUnit_Percent <= mUnit) {
+     mValue.mFloat = aCopy.mValue.mFloat;
+   }
+   else if (UnitHasStringValue()) {
+     mValue.mString = aCopy.mValue.mString;
+     mValue.mString->AddRef();
+@@ -157,16 +157,20 @@ nsCSSValue::nsCSSValue(const nsCSSValue&
+   else if (eCSSUnit_Gradient == mUnit) {
+     mValue.mGradient = aCopy.mValue.mGradient;
+     mValue.mGradient->AddRef();
+   }
+   else if (eCSSUnit_Pair == mUnit) {
+     mValue.mPair = aCopy.mValue.mPair;
+     mValue.mPair->AddRef();
+   }
++  else if (eCSSUnit_Rect == mUnit) {
++    mValue.mRect = aCopy.mValue.mRect;
++    mValue.mRect->AddRef();
++  }
+   else {
+     NS_NOTREACHED("unknown unit");
+   }
+ }
+ 
+ nsCSSValue& nsCSSValue::operator=(const nsCSSValue& aCopy)
+ {
+   if (this != &aCopy) {
+@@ -174,17 +178,17 @@ nsCSSValue& nsCSSValue::operator=(const 
+     new (this) nsCSSValue(aCopy);
+   }
+   return *this;
+ }
+ 
+ PRBool nsCSSValue::operator==(const nsCSSValue& aOther) const
+ {
+   if (mUnit == aOther.mUnit) {
+-    if (mUnit <= eCSSUnit_RectIsAuto) {
++    if (mUnit <= eCSSUnit_DummyInherit) {
+       return PR_TRUE;
+     }
+     else if (UnitHasStringValue()) {
+       return (NS_strcmp(GetBufferValue(mValue.mString),
+                         GetBufferValue(aOther.mValue.mString)) == 0);
+     }
+     else if ((eCSSUnit_Integer <= mUnit) && (mUnit <= eCSSUnit_EnumColor)) {
+       return mValue.mInt == aOther.mValue.mInt;
+@@ -202,16 +206,19 @@ PRBool nsCSSValue::operator==(const nsCS
+       return *mValue.mImage == *aOther.mValue.mImage;
+     }
+     else if (eCSSUnit_Gradient == mUnit) {
+       return *mValue.mGradient == *aOther.mValue.mGradient;
+     }
+     else if (eCSSUnit_Pair == mUnit) {
+       return *mValue.mPair == *aOther.mValue.mPair;
+     }
++    else if (eCSSUnit_Rect == mUnit) {
++      return *mValue.mRect == *aOther.mValue.mRect;
++    }
+     else {
+       return mValue.mFloat == aOther.mValue.mFloat;
+     }
+   }
+   return PR_FALSE;
+ }
+ 
+ double nsCSSValue::GetAngleValueInRadians() const
+@@ -271,16 +278,18 @@ void nsCSSValue::DoReset()
+   } else if (eCSSUnit_URL == mUnit) {
+     mValue.mURL->Release();
+   } else if (eCSSUnit_Image == mUnit) {
+     mValue.mImage->Release();
+   } else if (eCSSUnit_Gradient == mUnit) {
+     mValue.mGradient->Release();
+   } else if (eCSSUnit_Pair == mUnit) {
+     mValue.mPair->Release();
++  } else if (eCSSUnit_Rect == mUnit) {
++    mValue.mRect->Release();
+   }
+   mUnit = eCSSUnit_Null;
+ }
+ 
+ void nsCSSValue::SetIntValue(PRInt32 aValue, nsCSSUnit aUnit)
+ {
+   NS_ASSERTION(aUnit == eCSSUnit_Integer || aUnit == eCSSUnit_Enumerated ||
+                aUnit == eCSSUnit_EnumColor, "not an int value");
+@@ -394,16 +403,25 @@ void nsCSSValue::SetPairValue(const nsCS
+                     yValue.GetUnit() != eCSSUnit_Initial,
+                     "inappropriate pair value");
+   Reset();
+   mUnit = eCSSUnit_Pair;
+   mValue.mPair = new nsCSSValuePair_heap(xValue, yValue);
+   mValue.mPair->AddRef();
+ }
+ 
++nsCSSRect& nsCSSValue::SetRectValue()
++{
++  Reset();
++  mUnit = eCSSUnit_Rect;
++  mValue.mRect = new nsCSSRect_heap;
++  mValue.mRect->AddRef();
++  return *mValue.mRect;
++}
++
+ void nsCSSValue::SetAutoValue()
+ {
+   Reset();
+   mUnit = eCSSUnit_Auto;
+ }
+ 
+ void nsCSSValue::SetInheritValue()
+ {
+@@ -867,30 +885,31 @@ nsCSSValue::AppendToString(nsCSSProperty
+         break;
+       }
+       aResult.AppendLiteral(", ");
+     }
+ 
+     aResult.AppendLiteral(")");
+   } else if (eCSSUnit_Pair == unit) {
+     GetPairValue().AppendToString(aProperty, aResult);
++  } else if (eCSSUnit_Rect == unit) {
++    GetRectValue().AppendToString(aProperty, aResult);
+   }
+ 
+   switch (unit) {
+     case eCSSUnit_Null:         break;
+     case eCSSUnit_Auto:         aResult.AppendLiteral("auto");     break;
+     case eCSSUnit_Inherit:      aResult.AppendLiteral("inherit");  break;
+     case eCSSUnit_Initial:      aResult.AppendLiteral("-moz-initial"); break;
+     case eCSSUnit_None:         aResult.AppendLiteral("none");     break;
+     case eCSSUnit_Normal:       aResult.AppendLiteral("normal");   break;
+     case eCSSUnit_System_Font:  aResult.AppendLiteral("-moz-use-system-font"); break;
+     case eCSSUnit_All:          aResult.AppendLiteral("all"); break;
+     case eCSSUnit_Dummy:
+     case eCSSUnit_DummyInherit:
+-    case eCSSUnit_RectIsAuto:
+       NS_NOTREACHED("should never serialize");
+       break;
+ 
+     case eCSSUnit_String:       break;
+     case eCSSUnit_Ident:        break;
+     case eCSSUnit_Families:     break;
+     case eCSSUnit_URL:          break;
+     case eCSSUnit_Image:        break;
+@@ -914,16 +933,17 @@ nsCSSValue::AppendToString(nsCSSProperty
+     case eCSSUnit_Integer:      break;
+     case eCSSUnit_Enumerated:   break;
+     case eCSSUnit_EnumColor:    break;
+     case eCSSUnit_Color:        break;
+     case eCSSUnit_Percent:      aResult.Append(PRUnichar('%'));    break;
+     case eCSSUnit_Number:       break;
+     case eCSSUnit_Gradient:     break;
+     case eCSSUnit_Pair:         break;
++    case eCSSUnit_Rect:         break;
+ 
+     case eCSSUnit_Inch:         aResult.AppendLiteral("in");   break;
+     case eCSSUnit_Millimeter:   aResult.AppendLiteral("mm");   break;
+     case eCSSUnit_PhysicalMillimeter: aResult.AppendLiteral("mozmm");   break;
+     case eCSSUnit_Centimeter:   aResult.AppendLiteral("cm");   break;
+     case eCSSUnit_Point:        aResult.AppendLiteral("pt");   break;
+     case eCSSUnit_Pica:         aResult.AppendLiteral("pc");   break;
+ 
+@@ -1018,51 +1038,44 @@ nsCSSRect::nsCSSRect(const nsCSSRect& aC
+ nsCSSRect::~nsCSSRect()
+ {
+   MOZ_COUNT_DTOR(nsCSSRect);
+ }
+ 
+ void
+ nsCSSRect::AppendToString(nsCSSProperty aProperty, nsAString& aResult) const
+ {
+-  const nsCSSUnit topUnit = mTop.GetUnit();
+-  if (topUnit == eCSSUnit_Inherit ||
+-      topUnit == eCSSUnit_Initial ||
+-      topUnit == eCSSUnit_RectIsAuto) {
+-    NS_ABORT_IF_FALSE(mRight.GetUnit() == topUnit &&
+-                      mBottom.GetUnit() == topUnit &&
+-                      mLeft.GetUnit() == topUnit,
+-                      "parser should make all sides have the same unit");
+-    if (topUnit == eCSSUnit_RectIsAuto)
+-      aResult.AppendLiteral("auto");
+-    else
+-      mTop.AppendToString(aProperty, aResult);
+-  } else {
+-    aResult.AppendLiteral("rect(");
+-    mTop.AppendToString(aProperty, aResult);
+-    NS_NAMED_LITERAL_STRING(comma, ", ");
+-    aResult.Append(comma);
+-    mRight.AppendToString(aProperty, aResult);
+-    aResult.Append(comma);
+-    mBottom.AppendToString(aProperty, aResult);
+-    aResult.Append(comma);
+-    mLeft.AppendToString(aProperty, aResult);
+-    aResult.Append(PRUnichar(')'));
+-  }
++  NS_ABORT_IF_FALSE(mTop.GetUnit() != eCSSUnit_Null &&
++                    mTop.GetUnit() != eCSSUnit_Inherit &&
++                    mTop.GetUnit() != eCSSUnit_Initial,
++                    "parser should have used a bare value");
++
++  NS_NAMED_LITERAL_STRING(comma, ", ");
++
++  aResult.AppendLiteral("rect(");
++  mTop.AppendToString(aProperty, aResult);
++  aResult.Append(comma);
++  mRight.AppendToString(aProperty, aResult);
++  aResult.Append(comma);
++  mBottom.AppendToString(aProperty, aResult);
++  aResult.Append(comma);
++  mLeft.AppendToString(aProperty, aResult);
++  aResult.Append(PRUnichar(')'));
+ }
+ 
+ void nsCSSRect::SetAllSidesTo(const nsCSSValue& aValue)
+ {
+   mTop = aValue;
+   mRight = aValue;
+   mBottom = aValue;
+   mLeft = aValue;
+ }
+ 
+-PR_STATIC_ASSERT((NS_SIDE_TOP == 0) && (NS_SIDE_RIGHT == 1) && (NS_SIDE_BOTTOM == 2) && (NS_SIDE_LEFT == 3));
++PR_STATIC_ASSERT(NS_SIDE_TOP == 0 && NS_SIDE_RIGHT == 1 &&
++                 NS_SIDE_BOTTOM == 2 && NS_SIDE_LEFT == 3);
+ 
+ /* static */ const nsCSSRect::side_type nsCSSRect::sides[4] = {
+   &nsCSSRect::mTop,
+   &nsCSSRect::mRight,
+   &nsCSSRect::mBottom,
+   &nsCSSRect::mLeft,
+ };
+ 
+diff --git a/layout/style/nsCSSValue.h b/layout/style/nsCSSValue.h
+--- a/layout/style/nsCSSValue.h
++++ b/layout/style/nsCSSValue.h
+@@ -95,17 +95,16 @@ enum nsCSSUnit {
+   eCSSUnit_None         = 4,      // (n/a) value is none
+   eCSSUnit_Normal       = 5,      // (n/a) value is normal (algorithmic, different than auto)
+   eCSSUnit_System_Font  = 6,      // (n/a) value is -moz-use-system-font
+   eCSSUnit_All          = 7,      // (n/a) value is all
+   eCSSUnit_Dummy        = 8,      // (n/a) a fake but specified value, used
+                                   //       only in temporary values
+   eCSSUnit_DummyInherit = 9,      // (n/a) a fake but specified value, used
+                                   //       only in temporary values
+-  eCSSUnit_RectIsAuto   = 10,     // (n/a) 'auto' for an entire rect()
+ 
+   eCSSUnit_String       = 11,     // (PRUnichar*) a string value
+   eCSSUnit_Ident        = 12,     // (PRUnichar*) a string value
+   eCSSUnit_Families     = 13,     // (PRUnichar*) a string value
+   eCSSUnit_Attr         = 14,     // (PRUnichar*) a attr(string) value
+   eCSSUnit_Local_Font   = 15,     // (PRUnichar*) a local font name
+   eCSSUnit_Font_Format  = 16,     // (PRUnichar*) a font format name
+   eCSSUnit_Element      = 17,     // (PRUnichar*) an element id
+@@ -139,16 +138,17 @@ enum nsCSSUnit {
+   eCSSUnit_Calc_Minimum = 31,     // (nsCSSValue::Array*) min() within calc
+   eCSSUnit_Calc_Maximum = 32,     // (nsCSSValue::Array*) max() within calc
+ 
+   eCSSUnit_URL          = 40,     // (nsCSSValue::URL*) value
+   eCSSUnit_Image        = 41,     // (nsCSSValue::Image*) value
+   eCSSUnit_Gradient     = 42,     // (nsCSSValueGradient*) value
+ 
+   eCSSUnit_Pair         = 50,     // (nsCSSValuePair*) pair of values
++  eCSSUnit_Rect         = 51,     // (nsCSSRect*) rectangle (four values)
+ 
+   eCSSUnit_Integer      = 70,     // (int) simple value
+   eCSSUnit_Enumerated   = 71,     // (int) value has enumerated meaning
+ 
+   eCSSUnit_EnumColor    = 80,     // (int) enumerated color (kColorKTable)
+   eCSSUnit_Color        = 81,     // (nscolor) an RGBA value
+ 
+   eCSSUnit_Percent      = 90,     // (float) 1.0 == 100%) value is percentage of something
+@@ -184,33 +184,35 @@ enum nsCSSUnit {
+   // Time units
+   eCSSUnit_Seconds      = 3000,    // (float) Standard time
+   eCSSUnit_Milliseconds = 3001     // (float) 1/1000 second
+ };
+ 
+ struct nsCSSValueGradient;
+ struct nsCSSValuePair;
+ struct nsCSSValuePair_heap;
++struct nsCSSRect;
++struct nsCSSRect_heap;
+ 
+ class nsCSSValue {
+ public:
+   struct Array;
+   friend struct Array;
+ 
+   struct URL;
+   friend struct URL;
+ 
+   struct Image;
+   friend struct Image;
+ 
+   // for valueless units only (null, auto, inherit, none, all, normal)
+   explicit nsCSSValue(nsCSSUnit aUnit = eCSSUnit_Null)
+     : mUnit(aUnit)
+   {
+-    NS_ASSERTION(aUnit <= eCSSUnit_RectIsAuto, "not a valueless unit");
++    NS_ASSERTION(aUnit <= eCSSUnit_DummyInherit, "not a valueless unit");
+   }
+ 
+   nsCSSValue(PRInt32 aValue, nsCSSUnit aUnit);
+   nsCSSValue(float aValue, nsCSSUnit aUnit);
+   nsCSSValue(const nsString& aValue, nsCSSUnit aUnit);
+   nsCSSValue(Array* aArray, nsCSSUnit aUnit);
+   explicit nsCSSValue(URL* aValue);
+   explicit nsCSSValue(Image* aValue);
+@@ -343,16 +345,19 @@ public:
+   {
+     NS_ASSERTION(mUnit == eCSSUnit_Gradient, "not a gradient value");
+     return mValue.mGradient;
+   }
+ 
+   inline nsCSSValuePair& GetPairValue(); // body below
+   inline const nsCSSValuePair& GetPairValue() const; // body below
+ 
++  inline nsCSSRect& GetRectValue(); // body below
++  inline const nsCSSRect& GetRectValue() const; // body below
++
+   URL* GetURLStructValue() const
+   {
+     // Not allowing this for Image values, because if the caller takes
+     // a ref to them they won't be able to delete them properly.
+     NS_ASSERTION(mUnit == eCSSUnit_URL, "not a URL value");
+     return mValue.mURL;
+   }
+ 
+@@ -397,16 +402,21 @@ public:
+   void SetInheritValue();
+   void SetInitialValue();
+   void SetNoneValue();
+   void SetAllValue();
+   void SetNormalValue();
+   void SetSystemFontValue();
+   void SetDummyValue();
+   void SetDummyInheritValue();
++
++  // These are a little different - they allocate storage for you and
++  // return a handle.
++  nsCSSRect& SetRectValue();
++
+   void StartImageLoad(nsIDocument* aDocument) const;  // Only pretend const
+ 
+   // Initializes as a function value with the specified function id.
+   Array* InitFunction(nsCSSKeyword aFunctionId, PRUint32 aNumArgs);
+   // Checks if this is a function value with the specified function id.
+   PRBool EqualsFunction(nsCSSKeyword aFunctionId) const;
+ 
+   // Returns an already addrefed buffer.  Can return null on allocation
+@@ -480,16 +490,17 @@ protected:
+     // If we're of a string type, mString is not null.
+     nsStringBuffer* mString;
+     nscolor    mColor;
+     Array*     mArray;
+     URL*       mURL;
+     Image*     mImage;
+     nsCSSValueGradient* mGradient;
+     nsCSSValuePair_heap* mPair;
++    nsCSSRect_heap* mRect;
+   }         mValue;
+ };
+ 
+ struct nsCSSValue::Array {
+ 
+   // return |Array| with reference count of zero
+   static Array* Create(size_t aItemCount) {
+     return new (aItemCount) Array(aItemCount);
+@@ -656,16 +667,39 @@ struct nsCSSRect {
+   nsCSSValue mRight;
+   nsCSSValue mBottom;
+   nsCSSValue mLeft;
+ 
+   typedef nsCSSValue nsCSSRect::*side_type;
+   static const side_type sides[4];
+ };
+ 
++// nsCSSRect_heap differs from nsCSSRect only in being
++// refcounted.  It should not be necessary to use this class directly;
++// it's an implementation detail of nsCSSValue.
++struct nsCSSRect_heap : public nsCSSRect {
++  NS_INLINE_DECL_REFCOUNTING(nsCSSRect_heap)
++};
++
++// This has to be here so that the relationship between nsCSSRect
++// and nsCSSRect_heap is visible.
++inline nsCSSRect&
++nsCSSValue::GetRectValue()
++{
++  NS_ASSERTION(mUnit == eCSSUnit_Rect, "not a pair value");
++  return *mValue.mRect;
++}
++
++inline const nsCSSRect&
++nsCSSValue::GetRectValue() const
++{
++  NS_ASSERTION(mUnit == eCSSUnit_Rect, "not a pair value");
++  return *mValue.mRect;
++}
++
+ struct nsCSSValuePair {
+   nsCSSValuePair()
+   {
+     MOZ_COUNT_CTOR(nsCSSValuePair);
+   }
+   nsCSSValuePair(nsCSSUnit aUnit)
+     : mXValue(aUnit), mYValue(aUnit)
+   {
+diff --git a/layout/style/nsRuleNode.cpp b/layout/style/nsRuleNode.cpp
+--- a/layout/style/nsRuleNode.cpp
++++ b/layout/style/nsRuleNode.cpp
+@@ -1400,28 +1400,16 @@ ExamineCSSValue(const nsCSSValue& aValue
+   if (aValue.GetUnit() != eCSSUnit_Null) {
+     ++aSpecifiedCount;
+     if (aValue.GetUnit() == eCSSUnit_Inherit) {
+       ++aInheritedCount;
+     }
+   }
+ }
+ 
+-static void
+-ExamineCSSRect(const nsCSSRect* aRect,
+-               PRUint32& aSpecifiedCount, PRUint32& aInheritedCount)
+-{
+-  NS_PRECONDITION(aRect, "Must have a rect");
+-
+-  NS_FOR_CSS_SIDES(side) {
+-    ExamineCSSValue(aRect->*(nsCSSRect::sides[side]),
+-                    aSpecifiedCount, aInheritedCount);
+-  }
+-}
+-
+ static nsRuleNode::RuleDetail
+ CheckFontCallback(const nsRuleDataStruct& aData,
+                   nsRuleNode::RuleDetail aResult)
+ {
+   const nsRuleDataFont& fontData =
+       static_cast<const nsRuleDataFont&>(aData);
+ 
+   // em, ex, percent, 'larger', and 'smaller' values on font-size depend
+@@ -1750,22 +1738,16 @@ nsRuleNode::CheckSpecifiedProperties(con
+     switch (prop->type) {
+ 
+       case eCSSType_Value:
+         ++total;
+         ExamineCSSValue(ValueAtOffset(aRuleDataStruct, prop->offset),
+                         specified, inherited);
+         break;
+ 
+-      case eCSSType_Rect:
+-        total += 4;
+-        ExamineCSSRect(RectAtOffset(aRuleDataStruct, prop->offset),
+-                       specified, inherited);
+-        break;
+-
+       case eCSSType_ValueList:
+         {
+           ++total;
+           const nsCSSValueList* valueList =
+               ValueListAtOffset(aRuleDataStruct, prop->offset);
+           if (valueList) {
+             ++specified;
+             if (eCSSUnit_Inherit == valueList->mValue.GetUnit()) {
+@@ -2145,19 +2127,16 @@ UnsetPropertiesWithoutFlags(const nsStyl
+     if ((prop->flags & aFlags) == aFlags)
+       // Don't unset the property.
+       continue;
+ 
+     switch (prop->type) {
+       case eCSSType_Value:
+         ValueAtOffset(aRuleDataStruct, prop->offset).Reset();
+         break;
+-      case eCSSType_Rect:
+-        RectAtOffset(aRuleDataStruct, prop->offset)->Reset();
+-        break;
+       case eCSSType_ValueList:
+         ValueListAtOffset(aRuleDataStruct, prop->offset) = nsnull;
+         break;
+       case eCSSType_ValuePairList:
+         ValuePairListAtOffset(aRuleDataStruct, prop->offset) = nsnull;
+         break;
+       default:
+         NS_NOTREACHED("unknown type");
+@@ -4307,72 +4286,84 @@ nsRuleNode::ComputeDisplayData(void* aSt
+       display->mOverflowY = NS_STYLE_OVERFLOW_AUTO;
+   }
+ 
+   SetDiscrete(displayData.mResize, display->mResize, canStoreInRuleTree,
+               SETDSC_ENUMERATED, parentDisplay->mResize,
+               NS_STYLE_RESIZE_NONE, 0, 0, 0, 0);
+ 
+   // clip property: length, auto, inherit
+-  if (eCSSUnit_Inherit == displayData.mClip.mTop.GetUnit()) { // if one is inherit, they all are
++  switch (displayData.mClip.GetUnit()) {
++  case eCSSUnit_Inherit:
+     canStoreInRuleTree = PR_FALSE;
+     display->mClipFlags = parentDisplay->mClipFlags;
+     display->mClip = parentDisplay->mClip;
+-  }
+-  // if one is initial or auto (rect), they all are
+-  else if (eCSSUnit_Initial == displayData.mClip.mTop.GetUnit() ||
+-           eCSSUnit_RectIsAuto == displayData.mClip.mTop.GetUnit()) {
++    break;
++
++  case eCSSUnit_Initial:
++  case eCSSUnit_Auto:
+     display->mClipFlags = NS_STYLE_CLIP_AUTO;
+     display->mClip.SetRect(0,0,0,0);
+-  }
+-  else if (eCSSUnit_Null != displayData.mClip.mTop.GetUnit()) {
+-    display->mClipFlags = 0; // clear it
+-
+-    if (eCSSUnit_Auto == displayData.mClip.mTop.GetUnit()) {
++    break;
++
++  case eCSSUnit_Null:
++    break;
++
++  case eCSSUnit_Rect: {
++    const nsCSSRect& clipRect = displayData.mClip.GetRectValue();
++
++    display->mClipFlags = NS_STYLE_CLIP_RECT;
++
++    if (clipRect.mTop.GetUnit() == eCSSUnit_Auto) {
+       display->mClip.y = 0;
+       display->mClipFlags |= NS_STYLE_CLIP_TOP_AUTO;
+     }
+-    else if (displayData.mClip.mTop.IsLengthUnit()) {
+-      display->mClip.y = CalcLength(displayData.mClip.mTop, aContext,
++    else if (clipRect.mTop.IsLengthUnit()) {
++      display->mClip.y = CalcLength(clipRect.mTop, aContext,
+                                     mPresContext, canStoreInRuleTree);
+     }
+-    if (eCSSUnit_Auto == displayData.mClip.mBottom.GetUnit()) {
++
++    if (clipRect.mBottom.GetUnit() == eCSSUnit_Auto) {
+       // Setting to NS_MAXSIZE for the 'auto' case ensures that
+       // the clip rect is nonempty. It is important that mClip be
+       // nonempty if the actual clip rect could be nonempty.
+       display->mClip.height = NS_MAXSIZE;
+       display->mClipFlags |= NS_STYLE_CLIP_BOTTOM_AUTO;
+     }
+-    else if (displayData.mClip.mBottom.IsLengthUnit()) {
+-      display->mClip.height = CalcLength(displayData.mClip.mBottom, aContext,
++    else if (clipRect.mBottom.IsLengthUnit()) {
++      display->mClip.height = CalcLength(clipRect.mBottom, aContext,
+                                          mPresContext, canStoreInRuleTree) -
+                               display->mClip.y;
+     }
+-    if (eCSSUnit_Auto == displayData.mClip.mLeft.GetUnit()) {
++
++    if (clipRect.mLeft.GetUnit() == eCSSUnit_Auto) {
+       display->mClip.x = 0;
+       display->mClipFlags |= NS_STYLE_CLIP_LEFT_AUTO;
+     }
+-    else if (displayData.mClip.mLeft.IsLengthUnit()) {
+-      display->mClip.x = CalcLength(displayData.mClip.mLeft, aContext,
++    else if (clipRect.mLeft.IsLengthUnit()) {
++      display->mClip.x = CalcLength(clipRect.mLeft, aContext,
+                                     mPresContext, canStoreInRuleTree);
+     }
+-    if (eCSSUnit_Auto == displayData.mClip.mRight.GetUnit()) {
++
++    if (clipRect.mRight.GetUnit() == eCSSUnit_Auto) {
+       // Setting to NS_MAXSIZE for the 'auto' case ensures that
+       // the clip rect is nonempty. It is important that mClip be
+       // nonempty if the actual clip rect could be nonempty.
+       display->mClip.width = NS_MAXSIZE;
+       display->mClipFlags |= NS_STYLE_CLIP_RIGHT_AUTO;
+     }
+-    else if (displayData.mClip.mRight.IsLengthUnit()) {
+-      display->mClip.width = CalcLength(displayData.mClip.mRight, aContext,
++    else if (clipRect.mRight.IsLengthUnit()) {
++      display->mClip.width = CalcLength(clipRect.mRight, aContext,
+                                         mPresContext, canStoreInRuleTree) -
+                              display->mClip.x;
+     }
+-    display->mClipFlags &= ~NS_STYLE_CLIP_TYPE_MASK;
+-    display->mClipFlags |= NS_STYLE_CLIP_RECT;
++  } break;
++
++  default:
++    NS_ABORT_IF_FALSE(false, "unrecognized clip unit");
+   }
+ 
+   if (display->mDisplay != NS_STYLE_DISPLAY_NONE) {
+     // CSS2 9.7 specifies display type corrections dealing with 'float'
+     // and 'position'.  Since generated content can't be floated or
+     // positioned, we can deal with it here.
+ 
+     if (nsCSSPseudoElements::firstLetter == aContext->GetPseudo()) {
+@@ -5445,55 +5436,62 @@ nsRuleNode::ComputeListData(void* aStart
+   }
+ 
+   // list-style-position: enum, inherit, initial
+   SetDiscrete(listData.mPosition, list->mListStylePosition, canStoreInRuleTree,
+               SETDSC_ENUMERATED, parentList->mListStylePosition,
+               NS_STYLE_LIST_STYLE_POSITION_OUTSIDE, 0, 0, 0, 0);
+ 
+   // image region property: length, auto, inherit
+-  if (eCSSUnit_Inherit == listData.mImageRegion.mTop.GetUnit()) { // if one is inherit, they all are
++  switch (listData.mImageRegion.GetUnit()) {
++  case eCSSUnit_Inherit:
+     canStoreInRuleTree = PR_FALSE;
+     list->mImageRegion = parentList->mImageRegion;
+-  }
+-  // if one is -moz-initial or auto (rect), they all are
+-  else if (eCSSUnit_Initial == listData.mImageRegion.mTop.GetUnit() ||
+-           eCSSUnit_RectIsAuto == listData.mImageRegion.mTop.GetUnit()) {
+-    list->mImageRegion.Empty();
+-  }
+-  else if (eCSSUnit_Null != listData.mImageRegion.mTop.GetUnit()) {
+-    if (eCSSUnit_Auto == listData.mImageRegion.mTop.GetUnit())
++    break;
++
++  case eCSSUnit_Initial:
++  case eCSSUnit_Auto:
++    list->mImageRegion.SetRect(0,0,0,0);
++    break;
++
++  case eCSSUnit_Null:
++    break;
++
++  case eCSSUnit_Rect: {
++    const nsCSSRect& rgnRect = listData.mImageRegion.GetRectValue();
++
++    if (rgnRect.mTop.GetUnit() == eCSSUnit_Auto)
+       list->mImageRegion.y = 0;
+-    else if (listData.mImageRegion.mTop.IsLengthUnit())
++    else if (rgnRect.mTop.IsLengthUnit())
+       list->mImageRegion.y =
+-        CalcLength(listData.mImageRegion.mTop, aContext, mPresContext,
+-                   canStoreInRuleTree);
+-
+-    if (eCSSUnit_Auto == listData.mImageRegion.mBottom.GetUnit())
++        CalcLength(rgnRect.mTop, aContext, mPresContext, canStoreInRuleTree);
++
++    if (rgnRect.mBottom.GetUnit() == eCSSUnit_Auto)
+       list->mImageRegion.height = 0;
+-    else if (listData.mImageRegion.mBottom.IsLengthUnit())
++    else if (rgnRect.mBottom.IsLengthUnit())
+       list->mImageRegion.height =
+-        CalcLength(listData.mImageRegion.mBottom, aContext, mPresContext,
+-                   canStoreInRuleTree) -
+-        list->mImageRegion.y;
+-
+-    if (eCSSUnit_Auto == listData.mImageRegion.mLeft.GetUnit())
++        CalcLength(rgnRect.mBottom, aContext, mPresContext,
++                   canStoreInRuleTree) - list->mImageRegion.y;
++
++    if (rgnRect.mLeft.GetUnit() == eCSSUnit_Auto)
+       list->mImageRegion.x = 0;
+-    else if (listData.mImageRegion.mLeft.IsLengthUnit())
++    else if (rgnRect.mLeft.IsLengthUnit())
+       list->mImageRegion.x =
+-        CalcLength(listData.mImageRegion.mLeft, aContext, mPresContext,
+-                   canStoreInRuleTree);
+-
+-    if (eCSSUnit_Auto == listData.mImageRegion.mRight.GetUnit())
++        CalcLength(rgnRect.mLeft, aContext, mPresContext, canStoreInRuleTree);
++
++    if (rgnRect.mRight.GetUnit() == eCSSUnit_Auto)
+       list->mImageRegion.width = 0;
+-    else if (listData.mImageRegion.mRight.IsLengthUnit())
++    else if (rgnRect.mRight.IsLengthUnit())
+       list->mImageRegion.width =
+-        CalcLength(listData.mImageRegion.mRight, aContext, mPresContext,
+-                   canStoreInRuleTree) -
+-        list->mImageRegion.x;
++        CalcLength(rgnRect.mRight, aContext, mPresContext,
++                   canStoreInRuleTree) - list->mImageRegion.x;
++  } break;
++
++  default:
++    NS_ABORT_IF_FALSE(false, "unrecognized image-region unit");
+   }
+ 
+   COMPUTE_END_INHERITED(List, list)
+ }
+ 
+ const void*
+ nsRuleNode::ComputePositionData(void* aStartStruct,
+                                 const nsRuleDataStruct& aData,
+diff --git a/layout/style/nsStyleAnimation.cpp b/layout/style/nsStyleAnimation.cpp
+--- a/layout/style/nsStyleAnimation.cpp
++++ b/layout/style/nsStyleAnimation.cpp
+@@ -273,19 +273,16 @@ nsStyleAnimation::ComputeDistance(nsCSSP
+         switch ((rect1->*member).GetUnit()) {
+           case eCSSUnit_Pixel:
+             diff = (rect1->*member).GetFloatValue() -
+                    (rect2->*member).GetFloatValue();
+             break;
+           case eCSSUnit_Auto:
+             diff = 0;
+             break;
+-          case eCSSUnit_RectIsAuto:
+-            // Standalone "auto" value isn't additive/interpolatable
+-            return PR_FALSE;
+           default:
+             NS_ABORT_IF_FALSE(PR_FALSE, "unexpected unit");
+             return PR_FALSE;
+         }
+         squareDistance += diff * diff;
+       }
+ 
+       aDistance = sqrt(squareDistance);
+@@ -1345,19 +1342,16 @@ nsStyleAnimation::AddWeighted(nsCSSPrope
+           case eCSSUnit_Auto:
+             if (float(aCoeff1 + aCoeff2) != 1.0f) {
+               // Interpolating between two auto values makes sense;
+               // adding in other ratios does not.
+               return PR_FALSE;
+             }
+             (result->*member).SetAutoValue();
+             break;
+-          case eCSSUnit_RectIsAuto:
+-            // Standalone "auto" value isn't interpolatable
+-            return PR_FALSE;
+           default:
+             NS_ABORT_IF_FALSE(PR_FALSE, "unexpected unit");
+             return PR_FALSE;
+         }
+       }
+ 
+       aResultValue.SetAndAdoptCSSRectValue(result.forget(), eUnit_CSSRect);
+       break;
+@@ -1813,22 +1807,21 @@ nsStyleAnimation::UncomputeValue(nsCSSPr
+       const nsCSSValuePair* pair = aComputedValue.GetCSSValuePairValue();
+       if (pair->mXValue == pair->mYValue) {
+         *static_cast<nsCSSValue*>(aSpecifiedValue) = pair->mXValue;
+       } else {
+         static_cast<nsCSSValue*>(aSpecifiedValue)->
+           SetPairValue(pair);
+       }
+     } break;
+-    case eUnit_CSSRect:
+-      NS_ABORT_IF_FALSE(nsCSSProps::kTypeTable[aProperty] ==
+-                          eCSSType_Rect, "type mismatch");
+-      *static_cast<nsCSSRect*>(aSpecifiedValue) =
+-        *aComputedValue.GetCSSRectValue();
+-      break;
++    case eUnit_CSSRect: {
++      nsCSSRect& rect = static_cast<nsCSSValue*>(aSpecifiedValue)->
++        SetRectValue();
++      rect = *aComputedValue.GetCSSRectValue();
++    } break;
+     case eUnit_Dasharray:
+     case eUnit_Shadow:
+     case eUnit_Transform:
+       NS_ABORT_IF_FALSE(nsCSSProps::kTypeTable[aProperty] ==
+                           eCSSType_ValueList, "type mismatch");
+       *static_cast<nsCSSValueList**>(aSpecifiedValue) =
+         aComputedValue.GetCSSValueListValue();
+       break;
+@@ -1853,27 +1846,23 @@ nsStyleAnimation::UncomputeValue(nsCSSPr
+   NS_ABORT_IF_FALSE(aPresContext, "null pres context");
+   aSpecifiedValue.Truncate(); // Clear outparam, if it's not already empty
+ 
+   if (aComputedValue.GetUnit() == eUnit_UnparsedString) {
+     aComputedValue.GetStringValue(aSpecifiedValue);
+     return PR_TRUE;
+   }
+   nsCSSValue val;
+-  nsCSSRect rect;
+   nsCSSValueList* vl = nsnull;
+   nsCSSValuePairList* vpl = nsnull;
+   void *storage;
+   switch (nsCSSProps::kTypeTable[aProperty]) {
+     case eCSSType_Value:
+       storage = &val;
+       break;
+-    case eCSSType_Rect:
+-      storage = &rect;
+-      break;
+     case eCSSType_ValueList:
+       storage = &vl;
+       break;
+     case eCSSType_ValuePairList:
+       storage = &vpl;
+       break;
+     default:
+       NS_ABORT_IF_FALSE(PR_FALSE, "unexpected case");
+@@ -1885,19 +1874,16 @@ nsStyleAnimation::UncomputeValue(nsCSSPr
+                                         aComputedValue, storage)) {
+     return PR_FALSE;
+   }
+ 
+   switch (nsCSSProps::kTypeTable[aProperty]) {
+     case eCSSType_Value:
+       val.AppendToString(aProperty, aSpecifiedValue);
+       break;
+-    case eCSSType_Rect:
+-      rect.AppendToString(aProperty, aSpecifiedValue);
+-      break;
+     case eCSSType_ValueList:
+       vl->AppendToString(aProperty, aSpecifiedValue);
+       break;
+     case eCSSType_ValuePairList:
+       vpl->AppendToString(aProperty, aSpecifiedValue);
+       break;
+     default:
+       NS_ABORT_IF_FALSE(PR_FALSE, "unexpected case");
+@@ -2234,20 +2220,20 @@ nsStyleAnimation::ExtractComputedValue(n
+           nscoordToCSSValue(srect.YMost(), vrect->mBottom);
+           aComputedValue.SetAndAdoptCSSRectValue(vrect, eUnit_CSSRect);
+           break;
+         }
+ 
+         case eCSSProperty_clip: {
+           const nsStyleDisplay *display =
+             static_cast<const nsStyleDisplay*>(styleStruct);
+-          nsCSSRect *vrect = new nsCSSRect;
+           if (!(display->mClipFlags & NS_STYLE_CLIP_RECT)) {
+-            vrect->SetAllSidesTo(nsCSSValue(eCSSUnit_RectIsAuto));
++            aComputedValue.SetAutoValue();
+           } else {
++            nsCSSRect *vrect = new nsCSSRect;
+             const nsRect &srect = display->mClip;
+             if (display->mClipFlags & NS_STYLE_CLIP_TOP_AUTO) {
+               vrect->mTop.SetAutoValue();
+             } else {
+               nscoordToCSSValue(srect.y, vrect->mTop);
+             }
+             if (display->mClipFlags & NS_STYLE_CLIP_RIGHT_AUTO) {
+               vrect->mRight.SetAutoValue();
+@@ -2259,18 +2245,18 @@ nsStyleAnimation::ExtractComputedValue(n
+             } else {
+               nscoordToCSSValue(srect.YMost(), vrect->mBottom);
+             }
+             if (display->mClipFlags & NS_STYLE_CLIP_LEFT_AUTO) {
+               vrect->mLeft.SetAutoValue();
+             } else {
+               nscoordToCSSValue(srect.x, vrect->mLeft);
+             }
++            aComputedValue.SetAndAdoptCSSRectValue(vrect, eUnit_CSSRect);
+           }
+-          aComputedValue.SetAndAdoptCSSRectValue(vrect, eUnit_CSSRect);
+           break;
+         }
+ 
+         case eCSSProperty_background_position: {
+           const nsStyleBackground *bg =
+             static_cast<const nsStyleBackground*>(styleStruct);
+           nsCSSValuePairList *result = nsnull;
+           nsCSSValuePairList **resultTail = &result;

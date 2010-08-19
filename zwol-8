@@ -1,0 +1,275 @@
+From: Zack Weinberg <zweinberg@mozilla.com>
+
+Bug 576044 (8/12): remove the last MoveValue call from the CSS parser.  r=dbaron  a2.0=dbaron
+
+diff --git a/layout/style/Declaration.h b/layout/style/Declaration.h
+--- a/layout/style/Declaration.h
++++ b/layout/style/Declaration.h
+@@ -148,45 +148,52 @@ public:
+   }
+   void MapImportantRuleInfoInto(nsRuleData *aRuleData) const {
+     NS_ABORT_IF_FALSE(mData, "called while expanded");
+     NS_ABORT_IF_FALSE(mImportantData, "must have important data");
+     mImportantData->MapRuleInfoInto(aRuleData);
+   }
+ 
+   /**
+-   * Return a pointer to our current value for this property.
+-   * Only returns non-null if the property is longhand, set, and
+-   * has the indicated importance level.
+-   *
+-   * May only be called when not expanded, and the caller must call
+-   * EnsureMutable first.
++   * Attempt to replace the value for |aProperty| stored in this
++   * declaration with the matching value from |aFromBlock|.
++   * This method may only be called on a mutable declaration.
++   * It will fail (returning PR_FALSE) if |aProperty| is shorthand,
++   * is not already in this declaration, or does not have the indicated
++   * importance level.  If it returns PR_TRUE, it erases the value in
++   * |aFromBlock|.  |aChanged| is set to PR_TRUE if the declaration
++   * changed as a result of the call, and to PR_FALSE otherwise.
+    */
+-  nsCSSValue* SlotForValue(nsCSSProperty aProperty, PRBool aIsImportant) {
++  PRBool TryReplaceValue(nsCSSProperty aProperty, PRBool aIsImportant,
++                         nsCSSExpandedDataBlock& aFromBlock,
++                         PRBool* aChanged)
++  {
+     AssertMutable();
+     NS_ABORT_IF_FALSE(mData, "called while expanded");
+ 
+     if (nsCSSProps::IsShorthand(aProperty)) {
+-      return nsnull;
++      *aChanged = PR_FALSE;
++      return PR_FALSE;
+     }
+     nsCSSCompressedDataBlock *block = aIsImportant ? mImportantData : mData;
+     // mImportantData might be null
+     if (!block) {
+-      return nsnull;
++      *aChanged = PR_FALSE;
++      return PR_FALSE;
+     }
+ 
+-    nsCSSValue *slot = block->SlotForValue(aProperty);
+ #ifdef DEBUG
+     {
+       nsCSSCompressedDataBlock *other = aIsImportant ? mData : mImportantData;
+-      NS_ABORT_IF_FALSE(!slot || !other || !other->ValueFor(aProperty),
++      NS_ABORT_IF_FALSE(!other || !other->ValueFor(aProperty) ||
++                        !block->ValueFor(aProperty),
+                         "Property both important and not?");
+     }
+ #endif
+-    return slot;
++    return block->TryReplaceValue(aProperty, aFromBlock, aChanged);
+   }
+ 
+   PRBool HasNonImportantValueFor(nsCSSProperty aProperty) const {
+     NS_ABORT_IF_FALSE(!nsCSSProps::IsShorthand(aProperty), "must be longhand");
+     return !!mData->ValueFor(aProperty);
+   }
+ 
+   /**
+diff --git a/layout/style/nsCSSDataBlock.cpp b/layout/style/nsCSSDataBlock.cpp
+--- a/layout/style/nsCSSDataBlock.cpp
++++ b/layout/style/nsCSSDataBlock.cpp
+@@ -82,16 +82,32 @@ inline nsCSSProperty PropertyAtCursor(co
+ inline nsCSSValue* ValueAtCursor(char *aCursor) {
+     return & reinterpret_cast<CDBValueStorage*>(aCursor)->value;
+ }
+ 
+ inline const nsCSSValue* ValueAtCursor(const char *aCursor) {
+     return & reinterpret_cast<const CDBValueStorage*>(aCursor)->value;
+ }
+ 
++/**
++ * Does a fast move of aSource to aDest.  The previous value in
++ * aDest is cleanly destroyed, and aSource is cleared.  Returns
++ * true if, before the copy, the value at aSource compared unequal
++ * to the value at aDest; false otherwise.
++ */
++static PRBool
++MoveValue(nsCSSValue* aSource, nsCSSValue* aDest)
++{
++    PRBool changed = (*aSource != *aDest);
++    aDest->~nsCSSValue();
++    memcpy(aDest, aSource, sizeof(nsCSSValue));
++    new (aSource) nsCSSValue();
++    return changed;
++}
++
+ static PRBool
+ ShouldIgnoreColors(nsRuleData *aRuleData)
+ {
+     return aRuleData->mLevel != nsStyleSet::eAgentSheet &&
+            aRuleData->mLevel != nsStyleSet::eUserSheet &&
+            !aRuleData->mPresContext->UseDocumentColors();
+ }
+ 
+@@ -227,16 +243,36 @@ nsCSSCompressedDataBlock::ValueFor(nsCSS
+         }
+         cursor += CDBValueStorage_advance;
+     }
+     NS_ASSERTION(cursor == cursor_end, "inconsistent data");
+ 
+     return nsnull;
+ }
+ 
++PRBool
++nsCSSCompressedDataBlock::TryReplaceValue(nsCSSProperty aProperty,
++                                          nsCSSExpandedDataBlock& aFromBlock,
++                                          PRBool *aChanged)
++{
++    nsCSSValue* newValue = aFromBlock.PropertyAt(aProperty);
++    NS_ABORT_IF_FALSE(newValue && newValue->GetUnit() != eCSSUnit_Null,
++                      "cannot replace with empty value");
++
++    const nsCSSValue* oldValue = ValueFor(aProperty);
++    if (!oldValue) {
++        *aChanged = PR_FALSE;
++        return PR_FALSE;
++    }
++
++    *aChanged = MoveValue(newValue, const_cast<nsCSSValue*>(oldValue));
++    aFromBlock.ClearPropertyBit(aProperty);
++    return PR_TRUE;
++}
++
+ nsCSSCompressedDataBlock*
+ nsCSSCompressedDataBlock::Clone() const
+ {
+     const char *cursor = Block(), *cursor_end = BlockEnd();
+     char *result_cursor;
+ 
+     nsAutoPtr<nsCSSCompressedDataBlock> result
+         (new(cursor_end - cursor) nsCSSCompressedDataBlock());
+@@ -285,26 +321,16 @@ nsCSSCompressedDataBlock::~nsCSSCompress
+ /* static */ nsCSSCompressedDataBlock*
+ nsCSSCompressedDataBlock::CreateEmptyBlock()
+ {
+     nsCSSCompressedDataBlock *result = new(0) nsCSSCompressedDataBlock();
+     result->mBlockEnd = result->Block();
+     return result;
+ }
+ 
+-/* static */ PRBool
+-nsCSSCompressedDataBlock::MoveValue(nsCSSValue *aSource, nsCSSValue *aDest)
+-{
+-    PRBool changed = (*aSource != *aDest);
+-    aDest->~nsCSSValue();
+-    memcpy(aDest, aSource, sizeof(nsCSSValue));
+-    new (aSource) nsCSSValue();
+-    return changed;
+-}
+-
+ /*****************************************************************************/
+ 
+ nsCSSExpandedDataBlock::nsCSSExpandedDataBlock()
+ {
+     AssertInitialState();
+ }
+ 
+ nsCSSExpandedDataBlock::~nsCSSExpandedDataBlock()
+@@ -566,18 +592,17 @@ nsCSSExpandedDataBlock::DoTransferFromBl
+   SetPropertyBit(aPropID);
+   aFromBlock.ClearPropertyBit(aPropID);
+ 
+   /*
+    * Save needless copying and allocation by calling the destructor in
+    * the destination, copying memory directly, and then using placement
+    * new.
+    */
+-  changed |= nsCSSCompressedDataBlock::MoveValue(aFromBlock.PropertyAt(aPropID),
+-                                                 PropertyAt(aPropID));
++  changed |= MoveValue(aFromBlock.PropertyAt(aPropID), PropertyAt(aPropID));
+   return changed;
+ }
+ 
+ #ifdef DEBUG
+ void
+ nsCSSExpandedDataBlock::DoAssertInitialState()
+ {
+     mPropertiesSet.AssertIsEmpty("not initial state");
+diff --git a/layout/style/nsCSSDataBlock.h b/layout/style/nsCSSDataBlock.h
+--- a/layout/style/nsCSSDataBlock.h
++++ b/layout/style/nsCSSDataBlock.h
+@@ -86,41 +86,37 @@ public:
+      *
+      * Inefficient (by design).
+      *
+      * Must not be called for shorthands.
+      */
+     const nsCSSValue* ValueFor(nsCSSProperty aProperty) const;
+ 
+     /**
+-     * As above, but provides mutable access to a value slot.
++     * Attempt to replace the value for |aProperty| stored in this block
++     * with the matching value stored in |aFromBlock|.
++     * This method will fail (returning PR_FALSE) if |aProperty| is not
++     * already in this block.  It will set |aChanged| to true if it
++     * actually made a change to the block, but regardless, if it
++     * returns PR_TRUE, the value in |aFromBlock| was erased.
+      */
+-    nsCSSValue* SlotForValue(nsCSSProperty aProperty) {
+-      return const_cast<nsCSSValue*>(ValueFor(aProperty));
+-    }
++    PRBool TryReplaceValue(nsCSSProperty aProperty,
++                           nsCSSExpandedDataBlock& aFromBlock,
++                           PRBool* aChanged);
+ 
+     /**
+      * Clone this block, or return null on out-of-memory.
+      */
+     nsCSSCompressedDataBlock* Clone() const;
+ 
+     /**
+      * Create a new nsCSSCompressedDataBlock holding no declarations.
+      */
+     static nsCSSCompressedDataBlock* CreateEmptyBlock();
+ 
+-    /**
+-     * Does a fast move of aSource to aDest.  The previous value in
+-     * aDest is cleanly destroyed, and aSource is cleared.  Returns
+-     * true if, before the copy, the value at aSource compared unequal
+-     * to the value at aDest; false otherwise.
+-     */
+-    static PRBool MoveValue(nsCSSValue* aSource, nsCSSValue* aDest);
+-
+-
+ private:
+     PRInt32 mStyleBits; // the structs for which we have data, according to
+                         // |nsCachedStyleData::GetBitForSID|.
+ 
+     enum { block_chars = 4 }; // put 4 chars in the definition of the class
+                               // to ensure size not inflated by alignment
+ 
+     void* operator new(size_t aBaseSize, size_t aDataSize) {
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -1119,22 +1119,19 @@ CSSParserImpl::ParseProperty(const nsCSS
+   } else {
+ 
+     // We know we don't need to force a ValueAppended call for the new
+     // value.  So if we are not processing a shorthand, and there's
+     // already a value for this property in the declaration at the
+     // same importance level, then we can just copy our parsed value
+     // directly into the declaration without going through the whole
+     // expand/compress thing.
+-    nsCSSValue* valueSlot = aDeclaration->SlotForValue(aPropID, aIsImportant);
+-    if (valueSlot) {
+-      *aChanged = nsCSSCompressedDataBlock::
+-        MoveValue(mTempData.PropertyAt(aPropID), valueSlot);
+-      mTempData.ClearPropertyBit(aPropID);
+-    } else {
++    if (!aDeclaration->TryReplaceValue(aPropID, aIsImportant, mTempData,
++                                       aChanged)) {
++      // Do it the slow way
+       aDeclaration->ExpandTo(&mData);
+       *aChanged = mData.TransferFromBlock(mTempData, aPropID, aIsImportant,
+                                           PR_TRUE, PR_FALSE, aDeclaration);
+       aDeclaration->CompressFrom(&mData);
+     }
+     CLEAR_ERROR();
+   }
+ 

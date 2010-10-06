@@ -1,0 +1,13 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Disable try platforms that I don't want.
+
+See https://wiki.mozilla.org/Build:TryChooser for full syntax.  Summary is:
+  Build Types: d/o/do/all stand for debug, optimized, debug+optimized, and mc-all override.
+  Platforms: all || none || --p {linux,linux64,macosx,macosx64,win32}
+  Mobile: all || none || --m {mobile-maemo5-qt, android, etc}
+  Unittest Suites: all || none || --u {crashtest,reftest,mochitests-{1/5,2/5,3/5,4/5,5/5},mochitest-other,xpcshell,etc}
+  Talos Suites: all || none || --t {tp4,tscroll,tspider,etc}
+
+try: --build do --p linux,macosx64,win32 --m none --u all --t none
+

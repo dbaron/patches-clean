@@ -1,0 +1,21 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Remove 'fails' annotation to get image results for failures.  (Bug 542595)
+
+diff --git a/layout/reftests/svg/reftest.list b/layout/reftests/svg/reftest.list
+--- a/layout/reftests/svg/reftest.list
++++ b/layout/reftests/svg/reftest.list
+@@ -190,11 +190,11 @@ random-if(gtk2Widget) != text-language-0
+ == tspan-xy-anchor-end-01.svg tspan-xy-anchor-end-ref.svg
+ == userSpaceOnUse-and-pattern-01.svg userSpaceOnUse-and-pattern-01-ref.svg
+ == viewBox-and-pattern-01.svg pass.svg
+ == viewBox-invalid-01.svg pass.svg
+ == viewBox-valid-01.svg pass.svg
+ == viewport-percent-graphic-user-01.svg pass.svg
+ 
+ == svg-effects-area-unzoomed.xhtml svg-effects-area-unzoomed-ref.xhtml
+-fails == svg-effects-area-zoomed-in.xhtml svg-effects-area-zoomed-in-ref.xhtml # Bug 541270
+-fails == svg-effects-area-zoomed-out.xhtml svg-effects-area-zoomed-out-ref.xhtml # Bug 541270
++== svg-effects-area-zoomed-in.xhtml svg-effects-area-zoomed-in-ref.xhtml
++== svg-effects-area-zoomed-out.xhtml svg-effects-area-zoomed-out-ref.xhtml
+ == href-attr-change-restyles.svg href-attr-change-restyles-ref.svg

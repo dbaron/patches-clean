@@ -1,0 +1,27 @@
+From: Dave Townsend <dtownsend@oxymoronical.com>
+
+Backing out string removal from bug 597178 so localizers don't get confused. a=backout
+
+diff --git a/toolkit/locales/en-US/chrome/mozapps/extensions/extensions.dtd b/toolkit/locales/en-US/chrome/mozapps/extensions/extensions.dtd
+--- a/toolkit/locales/en-US/chrome/mozapps/extensions/extensions.dtd
++++ b/toolkit/locales/en-US/chrome/mozapps/extensions/extensions.dtd
+@@ -6,16 +6,19 @@
+ <!ENTITY listEmpty.recentUpdates.label        "You haven't recently updated any add-ons">
+ <!ENTITY listEmpty.findUpdates.label          "Check For Updates">
+ <!ENTITY listEmpty.search.label               "Could not find any matching add-ons">
+ <!ENTITY listEmpty.button.label               "Learn more about add-ons">
+ <!ENTITY installAddonFromFile.label           "Install Add-on From File…">
+ <!ENTITY installAddonFromFile.accesskey       "I">
+ <!ENTITY toolsMenu.tooltip                    "Tools for all add-ons">
+ 
++<!ENTITY cmd.back.tooltip                     "Go back one page">
++<!ENTITY cmd.forward.tooltip                  "Go forward one page">
++
+ <!-- global warnings -->
+ <!ENTITY warning.safemode.label                    "All add-ons have been disabled by safe mode.">
+ <!ENTITY warning.checkcompatibility.label          "Add-on compatibility checking is disabled. You may have incompatible add-ons.">
+ <!ENTITY warning.checkcompatibility.enable.label   "Enable">
+ <!ENTITY warning.checkcompatibility.enable.tooltip "Enable add-on compatibility checking">
+ <!ENTITY warning.updatesecurity.label              "Add-on update security checking is disabled. You may be compromised by updates.">
+ <!ENTITY warning.updatesecurity.enable.label       "Enable">
+ <!ENTITY warning.updatesecurity.enable.tooltip     "Enable add-on update security checking">

@@ -1,0 +1,104 @@
+From: Benoit Jacob <bjacob@mozilla.com>
+
+Bug 600620 - 2/2 - Expose feature status block reason in about:support - r=jmuizelaar, a=blocking2.0-b7
+
+diff --git a/toolkit/content/aboutSupport.js b/toolkit/content/aboutSupport.js
+--- a/toolkit/content/aboutSupport.js
++++ b/toolkit/content/aboutSupport.js
+@@ -182,20 +182,39 @@ function populateGraphicsSection() {
+     trGraphics.push(createParentElement("tr", [
+       createHeader(bundle.GetStringFromName("driverVersion")),
+       createElement("td", gfxInfo.adapterDriverVersion),
+     ]));
+     trGraphics.push(createParentElement("tr", [
+       createHeader(bundle.GetStringFromName("driverDate")),
+       createElement("td", gfxInfo.adapterDriverDate),
+     ]));
++
++    var d2dEnabled = gfxInfo.D2DEnabled;
++    var d2dMessage = d2dEnabled;
++    if (!d2dEnabled) {
++      var d2dStatus = gfxInfo.getFeatureStatus(gfxgfxInfoInfo.FEATURE_DIRECT2D);
++      if (d2dStatus == gfxInfo.FEATURE_BLOCKED_DEVICE ||
++          d2dStatus == gfxInfo.FEATURE_DISCOURAGED)
++      {
++        d2dMessage = bundle.GetStringFromName("blockedGraphicsCard");
++      }
++      else if (d2dStatus == gfxInfo.FEATURE_BLOCKED_DRIVER_VERSION)
++      {
++        var d2dSuggestedDriverVersion = gfxInfo.getFeatureSuggestedDriverVersion(gfxInfo.FEATURE_DIRECT2D);
++        if (d2dSuggestedDriverVersion) {
++          d2dMessage += bundle.GetStringFromName("tryNewerDriverVersion").replace("%1", d2dSuggestedDriverVersion);
++        }
++      }
++    }
+     trGraphics.push(createParentElement("tr", [
+       createHeader(bundle.GetStringFromName("direct2DEnabled")),
+-      createElement("td", gfxInfo.D2DEnabled),
++      createElement("td", d2dMessage),
+     ]));
++
+     trGraphics.push(createParentElement("tr", [
+       createHeader(bundle.GetStringFromName("directWriteEnabled")),
+       createElement("td", gfxInfo.DWriteEnabled),
+     ]));
+ 
+     appendChildren(graphics_tbody, trGraphics);
+ 
+   } catch (e) {
+diff --git a/toolkit/locales/en-US/chrome/global/aboutSupport.properties b/toolkit/locales/en-US/chrome/global/aboutSupport.properties
+--- a/toolkit/locales/en-US/chrome/global/aboutSupport.properties
++++ b/toolkit/locales/en-US/chrome/global/aboutSupport.properties
+@@ -2,16 +2,23 @@
+ # Feel free to leave english strings if there are no good translations, these are only used in about:support
+ 
+ # LOCALIZATION NOTE: This can be localized with a more generic term, like
+ # "Graphics-accelerated Windows". It describes a number of windows, e.g.:
+ # "GPU Accelerated Windows: 2/2 (Direct3D 9)"
+ # "GPU Accelerated Windows: 0/2"
+ acceleratedWindows = GPU Accelerated Windows
+ 
++# LOCALIZATION NOTE The verb "blocked" here refers to a graphics feature such as "Direct2D" or "OpenGL layers".
++# The %1 here is a placeholder, leave unchanged, it will get replaced by the driver version string.
++tryNewerDriverVersion = Blocked on your graphics driver. Try updating your graphics driver to version %1 or newer.
++
++# LOCALIZATION NOTE The verb "blocked" here refers to a graphics feature such as "Direct2D" or "OpenGL layers".
++blockedGraphicsCard = Blocked on your graphics card because of unresolved driver issues.
++
+ direct2DEnabled = Direct2D Enabled
+ directWriteEnabled = DirectWrite Enabled
+ adapterDescription = Adapter Description
+ adapterVendorID = Vendor ID
+ adapterDeviceID = Device ID
+ adapterDrivers = Adapter Drivers
+ adapterRAM = Adapter RAM
+ driverVersion = Driver Version
+diff --git a/widget/src/cocoa/GfxInfo.mm b/widget/src/cocoa/GfxInfo.mm
+--- a/widget/src/cocoa/GfxInfo.mm
++++ b/widget/src/cocoa/GfxInfo.mm
+@@ -177,23 +177,23 @@ GfxInfo::AddCrashReportAnnotations()
+ 
+   CrashReporter::AppendAppNotesToCrashReport(note);
+ #endif
+ }
+ 
+ NS_IMETHODIMP
+ GfxInfo::GetFeatureStatus(PRInt32 aFeature, PRInt32 *aStatus)
+ {
+-  PRInt32 status = nsIGfxInfo::FEATURE_STATUS_UNKNOWN;
++  PRInt32 status = nsIGfxInfo::FEATURE_NO_INFO;
+ 
+   for (PRUint32 i = 0; i < NS_ARRAY_LENGTH(mRendererIDs); ++i) {
+     PRUint32 r = mRendererIDs[i];
+ 
+     if (aFeature == nsIGfxInfo::FEATURE_OPENGL_LAYERS) {
+       if (r == kCGLRendererATIRadeonX1000ID)
+-        status = nsIGfxInfo::FEATURE_BLOCKED;
++        status = nsIGfxInfo::FEATURE_BLOCKED_DEVICE;
+     }
+   }
+ 
+   *aStatus = status;
+   return NS_OK;
+ }
+ 

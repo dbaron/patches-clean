@@ -1,0 +1,25 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+GC between mochitests.
+
+diff --git a/testing/mochitest/tests/SimpleTest/TestRunner.js b/testing/mochitest/tests/SimpleTest/TestRunner.js
+--- a/testing/mochitest/tests/SimpleTest/TestRunner.js
++++ b/testing/mochitest/tests/SimpleTest/TestRunner.js
+@@ -322,16 +322,17 @@ TestRunner.loopTest = function(testPath)
+   }
+ }
+ 
+ /**
+  * Run the next test. If no test remains, calls onComplete().
+  **/
+ TestRunner._haltTests = false;
+ TestRunner.runNextTest = function() {
++    SpecialPowers.gc();
+     if (TestRunner._currentTest < TestRunner._urls.length &&
+         !TestRunner._haltTests)
+     {
+         var url = TestRunner._urls[TestRunner._currentTest];
+         TestRunner.currentTestURL = url;
+ 
+         $("current-test-path").innerHTML = url;
+ 

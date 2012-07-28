@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-GC between mochitests.
+GC between mochitests.  (Bug 772740, Bug 775227)
 
 diff --git a/testing/mochitest/tests/SimpleTest/TestRunner.js b/testing/mochitest/tests/SimpleTest/TestRunner.js
 --- a/testing/mochitest/tests/SimpleTest/TestRunner.js

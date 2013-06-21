@@ -1,5 +1,4 @@
-bug-829816-att-765692
-gc-between-mochitests
 disable-try-platforms
+gc-between-mochitests
 css21-contribute-temp-pseudo-element-syntax
 css21-contribute-temp-manifests

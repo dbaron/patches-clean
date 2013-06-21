@@ -25,7 +25,7 @@ See https://wiki.mozilla.org/Build:TryChooser for full syntax.  Summary is:
 
   -t --talos LIST
       Choose which talos suites you'd like to run:
-        tp,tscroll,tspider,etc.
+        tpn,chromez,nochromer,other,dirtypaint,svgr,dromaeojs,xperf,remote-ts,remote-tdhtml,remote-tsvg,remote-tpan,remote-trobopan,remote-trobocheck,remote-troboprovider,remote-trobocheck2,remote-trobocheck3,remote-tp4m_nochrome
       or specify 'none' or 'all'.
 
   Email notification control: (these are optional, default is to get emails on non-success)
@@ -42,5 +42,6 @@ See https://wiki.mozilla.org/Build:TryChooser for full syntax.  Summary is:
       Get a comment in your specified BUGNUMBER at the end of the try run with a tally of the results and a tbpl link
 
 
-try: --build d --platform linux,macosx64,win32 --unittests all --talos none --all-emails
+try: --build d --platform linux64,macosx64,win32 --unittests crashtest,reftest,mochitests --talos none --no-emails
+try: --build d --platform macosx64 --unittests crashtest[10.8],reftest[10.8],mochitests[10.8] --talos none --no-emails
 

@@ -1,0 +1,189 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Backout changeset 5efda3c30be3 and changeset 4c89002460da (bug 873378), on top of different heads, to bisect tree-is-closed orange bug 898713 that was covered up by bug 873378.  try: --build d --platform macosx64 --unittests mochitest-3[10.7] --talos none --no-emails
+
+diff --git a/layout/base/FrameLayerBuilder.cpp b/layout/base/FrameLayerBuilder.cpp
+--- a/layout/base/FrameLayerBuilder.cpp
++++ b/layout/base/FrameLayerBuilder.cpp
+@@ -2036,19 +2036,16 @@ ContainerState::ProcessDisplayItems(cons
+   if (aFlags & NO_COMPONENT_ALPHA) {
+     if (!ChooseActiveScrolledRoot(aList, &lastActiveScrolledRoot)) {
+       lastActiveScrolledRoot = mContainerReferenceFrame;
+     }
+ 
+     topLeft = lastActiveScrolledRoot->GetOffsetToCrossDoc(mContainerReferenceFrame);
+   }
+ 
+-  int32_t maxLayers = nsDisplayItem::MaxActiveLayers();
+-  int layerCount = 0;
+-
+   for (nsDisplayItem* item = aList.GetBottom(); item; item = item->GetAbove()) {
+     NS_ASSERTION(mAppUnitsPerDevPixel == AppUnitsPerDevPixel(item),
+       "items in a container layer should all have the same app units per dev pixel");
+ 
+     nsIntRect itemVisibleRect =
+       ScaleToOutsidePixels(item->GetVisibleRect(), false);
+     bool snap;
+     nsRect itemContent = item->GetBounds(mBuilder, &snap);
+@@ -2081,29 +2078,23 @@ ContainerState::ProcessDisplayItems(cons
+       forceInactive = false;
+       isFixed = mBuilder->IsFixedItem(item, &activeScrolledRoot);
+       if (activeScrolledRoot != lastActiveScrolledRoot) {
+         lastActiveScrolledRoot = activeScrolledRoot;
+         topLeft = activeScrolledRoot->GetOffsetToCrossDoc(mContainerReferenceFrame);
+       }
+     }
+ 
+-    if (maxLayers != -1 && layerCount >= maxLayers) {
+-      forceInactive = true;
+-    }
+-
+     // Assign the item to a layer
+     if (layerState == LAYER_ACTIVE_FORCE ||
+         (layerState == LAYER_INACTIVE && !mManager->IsWidgetLayerManager()) ||
+         (!forceInactive &&
+          (layerState == LAYER_ACTIVE_EMPTY ||
+           layerState == LAYER_ACTIVE))) {
+ 
+-      layerCount++;
+-
+       // LAYER_ACTIVE_EMPTY means the layer is created just for its metadata.
+       // We should never see an empty layer with any visible content!
+       NS_ASSERTION(layerState != LAYER_ACTIVE_EMPTY ||
+                    itemVisibleRect.IsEmpty(),
+                    "State is LAYER_ACTIVE_EMPTY but visible rect is not.");
+ 
+       // As long as the new layer isn't going to be a ThebesLayer, 
+       // InvalidateForLayerChange doesn't need the new layer pointer.
+diff --git a/layout/base/nsDisplayList.cpp b/layout/base/nsDisplayList.cpp
+--- a/layout/base/nsDisplayList.cpp
++++ b/layout/base/nsDisplayList.cpp
+@@ -1492,30 +1492,16 @@ nsDisplayItem::ForceActiveLayers()
+   if (!sForceCached) {
+     Preferences::AddBoolVarCache(&sForce, "layers.force-active", false);
+     sForceCached = true;
+   }
+ 
+   return sForce;
+ }
+ 
+-/* static */ int32_t
+-nsDisplayItem::MaxActiveLayers()
+-{
+-  static int32_t sMaxLayers = false;
+-  static bool sMaxLayersCached = false;
+-
+-  if (!sMaxLayersCached) {
+-    Preferences::AddIntVarCache(&sMaxLayers, "layers.max-active", -1);
+-    sMaxLayersCached = true;
+-  }
+-
+-  return sMaxLayersCached;
+-}
+-
+ bool
+ nsDisplayItem::RecomputeVisibility(nsDisplayListBuilder* aBuilder,
+                                    nsRegion* aVisibleRegion) {
+   nsRect bounds = GetClippedBounds(aBuilder);
+ 
+   nsRegion itemVisible;
+   if (ForceVisiblityForFixedItem(aBuilder, this)) {
+     itemVisible.And(GetDisplayPortBounds(aBuilder, this), bounds);
+diff --git a/layout/base/nsDisplayList.h b/layout/base/nsDisplayList.h
+--- a/layout/base/nsDisplayList.h
++++ b/layout/base/nsDisplayList.h
+@@ -999,22 +999,16 @@ public:
+ 
+   /**
+    * Returns true if all layers that can be active should be forced to be
+    * active. Requires setting the pref layers.force-active=true.
+    */
+   static bool ForceActiveLayers();
+ 
+   /**
+-   * Returns the maximum number of layers that should be created
+-   * or -1 for no limit. Requires setting the pref layers.max-acitve.
+-   */
+-  static int32_t MaxActiveLayers();
+-
+-  /**
+    * @return LAYER_NONE if BuildLayer will return null. In this case
+    * there is no layer for the item, and Paint should be called instead
+    * to paint the content using Thebes.
+    * Return LAYER_INACTIVE if there is a layer --- BuildLayer will
+    * not return null (unless there's an error) --- but the layer contents
+    * are not changing frequently. In this case it makes sense to composite
+    * the layer into a ThebesLayer with other content, so we don't have to
+    * recomposite it every time we paint.
+diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.list
+--- a/layout/reftests/bugs/reftest.list
++++ b/layout/reftests/bugs/reftest.list
+@@ -1123,17 +1123,17 @@ skip-if(B2G) == 430412-1.html 430412-1-r
+ == 430813-1.html 430813-1-ref.html
+ == 430813-2.html 430813-2-ref.html
+ == 430813-3.html 430813-3-ref.html
+ == 431341-1.html 431341-1-ref.html
+ == 431341-2.html 431341-2-ref.html
+ == 431520-1.html 431520-1-ref.html
+ == 431948-1.html 431948-1-ref.html
+ == 433640-1.html 433640-1-ref.html
+-== 433700.html 433700-ref.html
++fails-if(Android) == 433700.html 433700-ref.html
+ == 436356-1.html 436356-1-ref.html
+ == 436356-2.html 436356-2-ref.html
+ == 438537-1.html 438537-1-ref.html
+ == 438981-1.xhtml about:blank
+ == 438987-1.html 438987-1-ref.html
+ == 438987-2a.html 438987-2-ref.html
+ == 438987-2b.html 438987-2-ref.html
+ == 438987-2c.html 438987-2-ref.html
+diff --git a/mobile/android/app/mobile.js b/mobile/android/app/mobile.js
+--- a/mobile/android/app/mobile.js
++++ b/mobile/android/app/mobile.js
+@@ -541,22 +541,16 @@ pref("ui.dragThresholdX", 25);
+ pref("ui.dragThresholdY", 25);
+ 
+ pref("layers.acceleration.disabled", false);
+ pref("layers.offmainthreadcomposition.enabled", true);
+ pref("layers.async-video.enabled", true);
+ pref("layers.progressive-paint", true);
+ pref("layers.low-precision-buffer", true);
+ pref("layers.low-precision-resolution", 250);
+-// We want to limit layers for two reasons:
+-// 1) We can't scroll smoothly if we have to many draw calls
+-// 2) Pages that have too many layers consume too much memory and crash.
+-// By limiting the number of layers on mobile we're making the main thread
+-// work harder keep scrolling smooth and memory low.
+-pref("layers.max-active", 20);
+ 
+ pref("notification.feature.enabled", true);
+ pref("dom.webnotifications.enabled", true);
+ 
+ // prevent tooltips from showing up
+ pref("browser.chrome.toolbar_tips", false);
+ pref("indexedDB.feature.enabled", true);
+ pref("dom.indexedDB.warningQuota", 5);
+diff --git a/modules/libpref/src/init/all.js b/modules/libpref/src/init/all.js
+--- a/modules/libpref/src/init/all.js
++++ b/modules/libpref/src/init/all.js
+@@ -4048,20 +4048,16 @@ pref("layers.acceleration.force-enabled"
+ pref("layers.acceleration.force-enabled", false);
+ #endif
+ 
+ pref("layers.acceleration.draw-fps", false);
+ 
+ pref("layers.draw-borders", false);
+ pref("layers.frame-counter", false);
+ 
+-// Max number of layers per container. See Overwrite in mobile prefs.
+-pref("layers.max-active", -1);
+-
+-
+ #ifdef XP_MACOSX
+ pref("layers.offmainthreadcomposition.enabled", true);
+ #else
+ pref("layers.offmainthreadcomposition.enabled", false);
+ #endif
+ // same effect as layers.offmainthreadcomposition.enabled, but specifically for
+ // use with tests.
+ pref("layers.offmainthreadcomposition.testing.enabled", false);

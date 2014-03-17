@@ -3,7 +3,7 @@
 # User Simon Montagu <smontagu@smontagu.org>
 # Date 1394921898 25200
 # Node ID 5ecf77831b19a01aba9a9da974a3191bf8de2e2b
-# Parent  c41d3898b1c301c8ee698ba4563f848991ee5b57
+# Parent 25cfa01ba05440e5abe1b06f4b73cb104e224a82
 Bug 983691: Correct a typo from bug 789096, try: -b do -p linux,macosx64,win32 -u all -t none
 
 diff --git a/layout/generic/nsLineLayout.cpp b/layout/generic/nsLineLayout.cpp
@@ -42,7 +42,7 @@ new file mode 100644
 +       src: url(../fonts/Ahem.ttf);
 +       font-family: Ahem;
 +      }
-+      body { font-family: Ahem;}
++      body { font-family: Ahem; line-height: 1.0; }
 +    </style>
 +  </head>
 +  <body>
@@ -65,14 +65,14 @@ new file mode 100644
 +       src: url(../fonts/Ahem.ttf);
 +       font-family: Ahem;
 +      }
-+      body { font-family: Ahem;}
++      body { font-family: Ahem; line-height: 1.0; }
 +    </style>
 +  </head>
 +  <body>
 +    <div>
 +      <span>XXX
-+	<span style="vertical-align:text-bottom">XXX</span>
-+	<span style="vertical-align:text-top">XXX</span>
++        <span style="vertical-align:text-bottom">XXX</span>
++        <span style="vertical-align:text-top">XXX</span>
 +      </span>
 +    </div>
 +  </body>

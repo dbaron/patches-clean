@@ -1,6 +1,7 @@
 # HG changeset patch
 # Parent 33c0181c4a25b043147ba574cf7f6ee74b9c707b
 # User Bruno Peres <brunomperes1@gmail.com>
+Bug 949651 - Serialize all pseudo-elements with the two-colon syntax, even those that allow one colon.  r=dbaron
 
 diff --git a/browser/devtools/styleinspector/test/browser_ruleview_edit-selector_02.js b/browser/devtools/styleinspector/test/browser_ruleview_edit-selector_02.js
 --- a/browser/devtools/styleinspector/test/browser_ruleview_edit-selector_02.js

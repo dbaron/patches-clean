@@ -1,0 +1,136 @@
+# HG changeset patch
+# Parent 1e772ae043965e664f99aaa6927654a3d7619ae6
+# User Bruno Peres <brunomperes1@gmail.com>
+diff --git a/browser/devtools/styleinspector/test/browser_ruleview_edit-selector_02.js b/browser/devtools/styleinspector/test/browser_ruleview_edit-selector_02.js
+--- a/browser/devtools/styleinspector/test/browser_ruleview_edit-selector_02.js
++++ b/browser/devtools/styleinspector/test/browser_ruleview_edit-selector_02.js
+@@ -36,21 +36,21 @@ let test = asyncTest(function*() {
+   yield testEditSelector(view, "div:nth-child(2)");
+ 
+   info("Selecting the modified element");
+   yield selectNode("#testid", inspector);
+   yield checkModifiedElement(view, "div:nth-child(2)");
+ 
+   info("Selecting the test element");
+   yield selectNode("#testid3", inspector);
+-  yield testEditSelector(view, ".testclass2:first-letter");
++  yield testEditSelector(view, ".testclass2::first-letter");
+ 
+   info("Selecting the modified element");
+   yield selectNode(".testclass2", inspector);
+-  yield checkModifiedElement(view, ".testclass2:first-letter");
++  yield checkModifiedElement(view, ".testclass2::first-letter");
+ });
+ 
+ function* testEditSelector(view, name) {
+   info("Test editing existing selector fields");
+ 
+   let idRuleEditor = getRuleViewRuleEditor(view, 1) ||
+     getRuleViewRuleEditor(view, 1, 0);
+ 
+diff --git a/layout/inspector/tests/test_bug557726.html b/layout/inspector/tests/test_bug557726.html
+--- a/layout/inspector/tests/test_bug557726.html
++++ b/layout/inspector/tests/test_bug557726.html
+@@ -29,17 +29,17 @@ https://bugzilla.mozilla.org/show_bug.cg
+     }
+   </style>
+ </head>
+ <body>
+ 
+ <a target="_blank" href="https://bugzilla.mozilla.org/show_bug.cgi?id=557726">Mozilla Bug 557726</a>
+ 
+ <div id="div1">
+-  text with :before, :after, and :first-letter pseudo-elements
++  text with ::before, ::after, and ::first-letter pseudo-elements
+ </div>
+ 
+ <script type="application/javascript">
+ 
+ /** Test for Bug 557726 **/
+ 
+ function getSelectors (rules) {
+   var styleElement = document.getElementById("pseudo-style");
+@@ -74,22 +74,22 @@ is(selectors[0], "#div1", "should only h
+ /* invalid pseudo-element argument */
+ var rules = domUtils.getCSSStyleRules(div, "not a valid pseudo element");
+ is(rules, null, "invalid pseudo-element returns no rules list");
+ 
+ 
+ /* valid pseudo-element argument */
+ selectors = getSelectors(domUtils.getCSSStyleRules(div, ":first-letter"));
+ is(selectors.length, 1, "pseudo-element argument can be used");
+-is(selectors[0], "#div1:first-letter", "should only have the :first-letter rule");
++is(selectors[0], "#div1::first-letter", "should only have the ::first-letter rule");
+ 
+ selectors = getSelectors(domUtils.getCSSStyleRules(div, ":before"));
+-is(selectors.length, 2, ":before pseudo-element has two matching rules");
+-isnot(selectors.indexOf("#div1:after, #div1:before"), -1, "fetched rule for :before")
+-isnot(selectors.indexOf("#div1:before"), -1, "fetched rule for :before")
++is(selectors.length, 2, "::before pseudo-element has two matching rules");
++isnot(selectors.indexOf("#div1::after, #div1::before"), -1, "fetched rule for ::before")
++isnot(selectors.indexOf("#div1::before"), -1, "fetched rule for ::before")
+ 
+ selectors = getSelectors(domUtils.getCSSStyleRules(div, ":first-line"));
+ is(selectors.length, 0, "valid pseudo-element but no matching rules");
+ 
+ </script>
+ </pre>
+ </body>
+ </html>
+diff --git a/layout/style/StyleRule.cpp b/layout/style/StyleRule.cpp
+--- a/layout/style/StyleRule.cpp
++++ b/layout/style/StyleRule.cpp
+@@ -672,20 +672,20 @@ nsCSSSelector::AppendToStringWithoutComb
+     nsAutoString tag;
+     (isPseudoElement ? mLowercaseTag : mCasedTag)->ToString(tag);
+     if (isPseudoElement) {
+       if (!mNext) {
+         // Lone pseudo-element selector -- toss in a wildcard type selector
+         // XXXldb Why?
+         aString.Append(char16_t('*'));
+       }
++      // While our atoms use one colon, most pseudo-elements require two
++      // colons (those not in CSS level 2) and all pseudo-elements allow
++      // two colons. So serialize to the non-deprecated two colon syntax.
+       aString.Append(char16_t(':'));
+-      if (!nsCSSPseudoElements::IsCSS2PseudoElement(mLowercaseTag)) {
+-        aString.Append(char16_t(':'));
+-      }
+       // This should not be escaped since (a) the pseudo-element string
+       // has a ":" that can't be escaped and (b) all pseudo-elements at
+       // this point are known, and therefore we know they don't need
+       // escaping.
+       aString.Append(tag);
+     } else {
+       nsStyleUtil::AppendEscapedCSSIdent(tag, aString);
+     }
+diff --git a/layout/style/test/test_selectors.html b/layout/style/test/test_selectors.html
+--- a/layout/style/test/test_selectors.html
++++ b/layout/style/test/test_selectors.html
+@@ -862,19 +862,23 @@ function run() {
+     test_selector_in_html(".a > .b ~ .nomatch", '<div class="a"><div><div class="b"></div><div class="nomatch"></div></div><div class="nomatch"></div></div>',
+                          emptyset, classset(["a", "b", "nomatch"]));
+     test_selector_in_html(".a > .b ~ .nomatch", '<div class="a"><div class="b"></div><div><div class="nomatch"></div></div><div></div></div>',
+                          emptyset, classset(["a", "b", "nomatch"]));
+     test_selector_in_html(".a > .b ~ .nomatch", '<div class="a"><div class="b"></div></div><div class="nomatch"></div>',
+                          emptyset, classset(["a", "b", "nomatch"]));
+ 
+     // Test serialization of pseudo-elements.
+-    should_serialize_to("p:first-letter", "p:first-letter");
+-    should_serialize_to("div>p:first-letter", "div > p:first-letter");
+-    should_serialize_to("span +div:first-line", "span + div:first-line");
++    should_serialize_to("p::first-letter", "p::first-letter");
++    should_serialize_to("p:first-letter", "p::first-letter");
++    should_serialize_to("div>p:first-letter", "div > p::first-letter");
++    should_serialize_to("span +div:first-line", "span + div::first-line");
++
++    // Test serialization of non CSS2 pseudo-element.
++    should_serialize_to("input::-moz-placeholder", "input::-moz-placeholder");
+ 
+     // Test default namespaces, including inside :not().
+     var html_default_ns = "@namespace url(http://www.w3.org/1999/xhtml);";
+     var html_ns = "@namespace html url(http://www.w3.org/1999/xhtml);";
+     var xul_default_ns = "@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);";
+     var single_a = "<a id='a' href='data:text/plain,this_better_be_unvisited'></a>";
+     var set_single = idset(['a']);
+     var empty_set = idset([]);

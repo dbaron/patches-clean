@@ -1,0 +1,116 @@
+# HG changeset patch
+# User Brian Marshall <bmarsd@gmail.com>
+# Date 1415685012 28800
+#      Mon Nov 10 21:50:12 2014 -0800
+# Node ID f2de108253edccfac49c2f27609343078510dd40
+# Parent  30eeb4f038a01c7b27b8715db812f39a0cf3b458
+Bug 783213 - Part 3: Tests. r=dbaron
+
+diff --git a/layout/style/test/mochitest.ini b/layout/style/test/mochitest.ini
+--- a/layout/style/test/mochitest.ini
++++ b/layout/style/test/mochitest.ini
+@@ -142,16 +142,17 @@ support-files = flexbox_layout_testcases
+ [test_font_feature_values_parsing.html]
+ [test_font_loading_api.html]
+ support-files = BitPattern.woff
+ [test_garbage_at_end_of_declarations.html]
+ [test_grid_item_shorthands.html]
+ [test_grid_container_shorthands.html]
+ [test_grid_shorthand_serialization.html]
+ [test_group_insertRule.html]
++[test_hover_quirk.html]
+ [test_html_attribute_computed_values.html]
+ [test_ident_escaping.html]
+ [test_inherit_computation.html]
+ skip-if = toolkit == 'android'
+ [test_inherit_storage.html]
+ [test_initial_computation.html]
+ skip-if = toolkit == 'android'
+ [test_initial_storage.html]
+diff --git a/layout/style/test/test_hover_quirk.html b/layout/style/test/test_hover_quirk.html
+new file mode 100644
+--- /dev/null
++++ b/layout/style/test/test_hover_quirk.html
+@@ -0,0 +1,82 @@
++<html>
++<!--
++https://bugzilla.mozilla.org/show_bug.cgi?id=783213
++-->
++<head>
++  <meta charset="utf-8">
++  <title>Test for the :active and :hover quirk</title>
++  <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css">
++  <style type="text/css">
++    /* Should apply to all elements: */
++    #content :hover:first-of-type {
++      color: rgb(255, 0, 0);
++    }
++    #content :-moz-any(:hover) {
++      text-transform: lowercase;
++    }
++    #content :hover::after {
++      content: "any element";
++    }
++    #content :hover:first-of-type .child::after {
++      content: "any child";
++    }
++
++    /* Should apply only to links: */
++    #content :hover {
++      color: rgb(0, 255, 0) !important;
++      text-transform: uppercase !important;
++    }
++    #content :hover .child::after {
++      content: "link child" !important;
++    }
++  </style>
++  <script type="application/javascript" src="/tests/SimpleTest/SimpleTest.js"></script>
++  <script type="application/javascript" src="/tests/SimpleTest/EventUtils.js"></script>
++  <script type="application/javascript">
++    /** Test for the :active and :hover quirk **/
++    function test(element, isLink) {
++      if (!isLink)
++        var styles = {color: "rgb(255, 0, 0)", textTransform: "lowercase",
++                      childContent: '"any child"'};
++      else
++        var styles = {color: "rgb(0, 255, 0)", textTransform: "uppercase",
++                      childContent: '"link child"'};
++
++      // Trigger the :hover pseudo-class.
++      synthesizeMouseAtCenter(element, {type: "mousemove"});
++
++      var computedStyle = getComputedStyle(element);
++      is(computedStyle.color, styles.color, "Unexpected color value");
++      is(computedStyle.textTransform, styles.textTransform,
++         "Unexpected text-transform value");
++
++      computedStyle = getComputedStyle(element, "::after");
++      is(computedStyle.content, '"any element"',
++         "Unexpected pseudo-element content");
++
++      computedStyle = getComputedStyle(
++          element.getElementsByClassName("child")[0], "::after");
++      is(computedStyle.content, styles.childContent,
++         "Unexpected pseudo-element content for child");
++    }
++
++    SimpleTest.waitForExplicitFinish();
++    SimpleTest.waitForFocus(function() {
++      test(document.getElementById("span"), false);
++      test(document.getElementById("label"), false);
++      test(document.getElementById("link"), true);
++      SimpleTest.finish();
++    });
++  </script>
++</head>
++<body>
++  <a target="_blank" href="https://bugzilla.mozilla.org/show_bug.cgi?id=783213">Mozilla Bug 783213</a>
++  <p id="display"></p>
++  <div id="content">
++    <span id="span">Span<span class="child"></span></span><br>
++    <label id="label">Label<span class="child"></span></label><br>
++    <a id="link" href="#">Link<span class="child"></span></a>
++  </div>
++  <pre id="test"></pre>
++</body>
++</html>

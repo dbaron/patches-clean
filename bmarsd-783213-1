@@ -1,0 +1,96 @@
+# HG changeset patch
+# User Brian Marshall <bmarsd@gmail.com>
+# Date 1415495799 28800
+#      Sat Nov 08 17:16:39 2014 -0800
+# Node ID 2dd0e1b4537cc4b95751e7f0d76d2c5055fe8c93
+# Parent  d380166816ddb0cb2a17c4acdc1625dc17821906
+Bug 783213 - Part 1: Only apply the :active and :hover quirk to links, and not when the selector uses other pseudo-classes. r=dbaron
+
+diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcessor.cpp
+--- a/layout/style/nsCSSRuleProcessor.cpp
++++ b/layout/style/nsCSSRuleProcessor.cpp
+@@ -1453,28 +1453,35 @@ static bool ValueIncludes(const nsSubstr
+         aValue.Equals(Substring(val_start, val_end), aComparator))
+       return true;
+ 
+     ++p; // we know the next character is not whitespace
+   }
+   return false;
+ }
+ 
+-// Return whether we should apply a "global" (i.e., universal-tag)
+-// selector for event states in quirks mode.  Note that
+-// |IsLink()| is checked separately by the caller, so we return
+-// false for |nsGkAtoms::a|, which here means a named anchor.
+-inline bool IsQuirkEventSensitive(nsIAtom *aContentTag)
++// Return whether the selector matches conditions for the :active and
++// :hover quirk.
++static inline bool ActiveHoverQuirkMatches(nsCSSSelector* aSelector)
+ {
+-  return bool ((nsGkAtoms::button == aContentTag) ||
+-                 (nsGkAtoms::img == aContentTag)    ||
+-                 (nsGkAtoms::input == aContentTag)  ||
+-                 (nsGkAtoms::label == aContentTag)  ||
+-                 (nsGkAtoms::select == aContentTag) ||
+-                 (nsGkAtoms::textarea == aContentTag));
++  if (aSelector->HasTagSelector() || aSelector->mAttrList ||
++      aSelector->mIDList || aSelector->mClassList) {
++    return false;
++  }
++
++  // No pseudo-class other than :active and :hover.
++  for (nsPseudoClassList* pseudoClass = aSelector->mPseudoClassList;
++       pseudoClass; pseudoClass = pseudoClass->mNext) {
++    if (pseudoClass->mType != nsCSSPseudoClasses::ePseudoClass_hover &&
++        pseudoClass->mType != nsCSSPseudoClasses::ePseudoClass_active) {
++      return false;
++    }
++  }
++
++  return true;
+ }
+ 
+ 
+ static inline bool
+ IsSignificantChild(nsIContent* aChild, bool aTextIsSignificant,
+                    bool aWhitespaceIsSignificant)
+ {
+   return nsStyleUtil::IsSignificantChild(aChild, aTextIsSignificant,
+@@ -1671,31 +1678,28 @@ StateSelectorMatches(Element* aElement,
+ {
+   NS_PRECONDITION(!aStatesToCheck.IsEmpty(),
+                   "should only need to call StateSelectorMatches if "
+                   "aStatesToCheck is not empty");
+ 
+   const bool isNegated = aDependence != nullptr;
+ 
+   // Bit-based pseudo-classes
+-  if (aStatesToCheck.HasAtLeastOneOfStates(NS_EVENT_STATE_HOVER | NS_EVENT_STATE_ACTIVE) &&
++  if (aStatesToCheck.HasAtLeastOneOfStates(NS_EVENT_STATE_ACTIVE |
++                                           NS_EVENT_STATE_HOVER) &&
+       aTreeMatchContext.mCompatMode == eCompatibility_NavQuirks &&
+-      // global selector:
+-      !aSelector->HasTagSelector() && !aSelector->mIDList &&
+-      !aSelector->mClassList && !aSelector->mAttrList &&
++      ActiveHoverQuirkMatches(aSelector) &&
+       // This (or the other way around) both make :not() asymmetric
+       // in quirks mode (and it's hard to work around since we're
+       // testing the current mNegations, not the first
+       // (unnegated)). This at least makes it closer to the spec.
+       !isNegated &&
+-      // important for |IsQuirkEventSensitive|:
+-      aElement->IsHTML() && !nsCSSRuleProcessor::IsLink(aElement) &&
+-      !IsQuirkEventSensitive(aElement->Tag())) {
+-    // In quirks mode, only make certain elements sensitive to
+-    // selectors ":hover" and ":active".
++      aElement->IsHTML() && !nsCSSRuleProcessor::IsLink(aElement)) {
++    // In quirks mode, only make links sensitive to selectors ":active"
++    // and ":hover".
+     return false;
+   }
+ 
+   if (aTreeMatchContext.mForStyling &&
+       aStatesToCheck.HasAtLeastOneOfStates(NS_EVENT_STATE_HOVER)) {
+     // Mark the element as having :hover-dependent style
+     aElement->SetHasRelevantHoverRules();
+   }

@@ -1,0 +1,384 @@
+# HG changeset patch
+# User Brian Marshall <bmarsd@gmail.com>
+# Date 1415943462 28800
+#      Thu Nov 13 21:37:42 2014 -0800
+# Node ID 42a4e0392aa587e13814c1532f73163738812ba1
+# Parent  2dd0e1b4537cc4b95751e7f0d76d2c5055fe8c93
+Bug 783213 - Part 2: Don't apply the quirk to selectors that use a pseudo-element or are part of a pseudo-class argument. r=dbaron
+
+diff --git a/layout/style/nsCSSRuleProcessor.cpp b/layout/style/nsCSSRuleProcessor.cpp
+--- a/layout/style/nsCSSRuleProcessor.cpp
++++ b/layout/style/nsCSSRuleProcessor.cpp
+@@ -48,16 +48,18 @@
+ #include "nsStyleSet.h"
+ #include "mozilla/dom/Element.h"
+ #include "nsNthIndexCache.h"
+ #include "mozilla/ArrayUtils.h"
+ #include "mozilla/EventStates.h"
+ #include "mozilla/Preferences.h"
+ #include "mozilla/LookAndFeel.h"
+ #include "mozilla/Likely.h"
++#include "mozilla/TypedEnum.h"
++#include "mozilla/TypedEnumBits.h"
+ 
+ using namespace mozilla;
+ using namespace mozilla::dom;
+ 
+ #define VISITED_PSEUDO_PREF "layout.css.visited_links_enabled"
+ 
+ static bool gSupportVisitedPseudo = true;
+ 
+@@ -1424,16 +1426,40 @@ struct NodeMatchContext {
+ 
+   NodeMatchContext(EventStates aStateMask, bool aIsRelevantLink)
+     : mStateMask(aStateMask)
+     , mIsRelevantLink(aIsRelevantLink)
+   {
+   }
+ };
+ 
++/**
++ * Additional information about a selector (without combinators) that is
++ * being matched.
++ */
++MOZ_BEGIN_ENUM_CLASS(SelectorMatchesFlags, uint8_t)
++  NONE = 0,
++
++  // The selector's flags are unknown.  This happens when you don't know
++  // if you're starting from the top of a selector.  Only used in cases
++  // where it's acceptable for matching to return a false positive.
++  // (It's not OK to return a false negative.)
++  UNKNOWN = 1 << 0,
++
++  // The selector is part of a compound selector which has been split in
++  // half, where the other half is a pseudo-element.  The current
++  // selector is not a pseudo-element itself.
++  HAS_PSEUDO_ELEMENT = 1 << 1,
++
++  // The selector is part of an argument to a functional pseudo-class or
++  // pseudo-element.
++  IS_PSEUDO_CLASS_ARGUMENT = 1 << 2
++MOZ_END_ENUM_CLASS(SelectorMatchesFlags)
++MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(SelectorMatchesFlags)
++
+ static bool ValueIncludes(const nsSubstring& aValueList,
+                             const nsSubstring& aValue,
+                             const nsStringComparator& aComparator)
+ {
+   const char16_t *p = aValueList.BeginReading(),
+               *p_end = aValueList.EndReading();
+ 
+   while (p < p_end) {
+@@ -1455,20 +1481,28 @@ static bool ValueIncludes(const nsSubstr
+ 
+     ++p; // we know the next character is not whitespace
+   }
+   return false;
+ }
+ 
+ // Return whether the selector matches conditions for the :active and
+ // :hover quirk.
+-static inline bool ActiveHoverQuirkMatches(nsCSSSelector* aSelector)
++static inline bool ActiveHoverQuirkMatches(nsCSSSelector* aSelector,
++                                           SelectorMatchesFlags aSelectorFlags)
+ {
+   if (aSelector->HasTagSelector() || aSelector->mAttrList ||
+-      aSelector->mIDList || aSelector->mClassList) {
++      aSelector->mIDList || aSelector->mClassList ||
++      aSelector->IsPseudoElement() ||
++      // Having this quirk means that some selectors will no longer match,
++      // so it's better to return false when we aren't sure (i.e., the
++      // flags are unknown).
++      aSelectorFlags & (SelectorMatchesFlags::UNKNOWN |
++                        SelectorMatchesFlags::HAS_PSEUDO_ELEMENT |
++                        SelectorMatchesFlags::IS_PSEUDO_CLASS_ARGUMENT)) {
+     return false;
+   }
+ 
+   // No pseudo-class other than :active and :hover.
+   for (nsPseudoClassList* pseudoClass = aSelector->mPseudoClassList;
+        pseudoClass; pseudoClass = pseudoClass->mNext) {
+     if (pseudoClass->mType != nsCSSPseudoClasses::ePseudoClass_hover &&
+         pseudoClass->mType != nsCSSPseudoClasses::ePseudoClass_active) {
+@@ -1668,35 +1702,29 @@ static_assert(MOZ_ARRAY_LENGTH(sPseudoCl
+               "ePseudoClass_NotPseudoClass is no longer at the end of"
+               "sPseudoClassStates");
+ 
+ static bool
+ StateSelectorMatches(Element* aElement,
+                      nsCSSSelector* aSelector,
+                      NodeMatchContext& aNodeMatchContext,
+                      TreeMatchContext& aTreeMatchContext,
++                     SelectorMatchesFlags aSelectorFlags,
+                      bool* const aDependence,
+                      EventStates aStatesToCheck)
+ {
+   NS_PRECONDITION(!aStatesToCheck.IsEmpty(),
+                   "should only need to call StateSelectorMatches if "
+                   "aStatesToCheck is not empty");
+ 
+-  const bool isNegated = aDependence != nullptr;
+-
+   // Bit-based pseudo-classes
+   if (aStatesToCheck.HasAtLeastOneOfStates(NS_EVENT_STATE_ACTIVE |
+                                            NS_EVENT_STATE_HOVER) &&
+       aTreeMatchContext.mCompatMode == eCompatibility_NavQuirks &&
+-      ActiveHoverQuirkMatches(aSelector) &&
+-      // This (or the other way around) both make :not() asymmetric
+-      // in quirks mode (and it's hard to work around since we're
+-      // testing the current mNegations, not the first
+-      // (unnegated)). This at least makes it closer to the spec.
+-      !isNegated &&
++      ActiveHoverQuirkMatches(aSelector, aSelectorFlags) &&
+       aElement->IsHTML() && !nsCSSRuleProcessor::IsLink(aElement)) {
+     // In quirks mode, only make links sensitive to selectors ":active"
+     // and ":hover".
+     return false;
+   }
+ 
+   if (aTreeMatchContext.mForStyling &&
+       aStatesToCheck.HasAtLeastOneOfStates(NS_EVENT_STATE_HOVER)) {
+@@ -1722,41 +1750,43 @@ StateSelectorMatches(Element* aElement,
+ 
+   return true;
+ }
+ 
+ static bool
+ StateSelectorMatches(Element* aElement,
+                      nsCSSSelector* aSelector,
+                      NodeMatchContext& aNodeMatchContext,
+-                     TreeMatchContext& aTreeMatchContext)
++                     TreeMatchContext& aTreeMatchContext,
++                     SelectorMatchesFlags aSelectorFlags)
+ {
+   for (nsPseudoClassList* pseudoClass = aSelector->mPseudoClassList;
+        pseudoClass; pseudoClass = pseudoClass->mNext) {
+     EventStates statesToCheck = sPseudoClassStates[pseudoClass->mType];
+     if (!statesToCheck.IsEmpty() &&
+         !StateSelectorMatches(aElement, aSelector, aNodeMatchContext,
+-                              aTreeMatchContext, nullptr, statesToCheck)) {
++                              aTreeMatchContext, aSelectorFlags, nullptr,
++                              statesToCheck)) {
+       return false;
+     }
+   }
+   return true;
+ }
+ 
+ // |aDependence| has two functions:
+ //  * when non-null, it indicates that we're processing a negation,
+ //    which is done only when SelectorMatches calls itself recursively
+ //  * what it points to should be set to true whenever a test is skipped
+ //    because of aNodeMatchContent.mStateMask
+ static bool SelectorMatches(Element* aElement,
+-                              nsCSSSelector* aSelector,
+-                              NodeMatchContext& aNodeMatchContext,
+-                              TreeMatchContext& aTreeMatchContext,
+-                              bool* const aDependence = nullptr)
+-
++                            nsCSSSelector* aSelector,
++                            NodeMatchContext& aNodeMatchContext,
++                            TreeMatchContext& aTreeMatchContext,
++                            SelectorMatchesFlags aSelectorFlags,
++                            bool* const aDependence = nullptr)
+ {
+   NS_PRECONDITION(!aSelector->IsPseudoElement(),
+                   "Pseudo-element snuck into SelectorMatches?");
+   NS_ABORT_IF_FALSE(aTreeMatchContext.mForStyling ||
+                     !aNodeMatchContext.mIsRelevantLink,
+                     "mIsRelevantLink should be set to false when mForStyling "
+                     "is false since we don't know how to set it correctly in "
+                     "Has(Attribute|State)DependentStyle");
+@@ -1961,18 +1991,19 @@ static bool SelectorMatches(Element* aEl
+ 
+       case nsCSSPseudoClasses::ePseudoClass_any:
+         {
+           nsCSSSelectorList *l;
+           for (l = pseudoClass->u.mSelectors; l; l = l->mNext) {
+             nsCSSSelector *s = l->mSelectors;
+             NS_ABORT_IF_FALSE(!s->mNext && !s->IsPseudoElement(),
+                               "parser failed");
+-            if (SelectorMatches(aElement, s, aNodeMatchContext,
+-                                aTreeMatchContext)) {
++            if (SelectorMatches(
++                  aElement, s, aNodeMatchContext, aTreeMatchContext,
++                  SelectorMatchesFlags::IS_PSEUDO_CLASS_ARGUMENT)) {
+               break;
+             }
+           }
+           if (!l) {
+             return false;
+           }
+         }
+         break;
+@@ -2224,17 +2255,17 @@ static bool SelectorMatches(Element* aEl
+         }
+         break;
+ 
+       default:
+         NS_ABORT_IF_FALSE(false, "How did that happen?");
+       }
+     } else {
+       if (!StateSelectorMatches(aElement, aSelector, aNodeMatchContext,
+-                                aTreeMatchContext, aDependence,
++                                aTreeMatchContext, aSelectorFlags, aDependence,
+                                 statesToCheck)) {
+         return false;
+       }
+     }
+   }
+ 
+   bool result = true;
+   if (aSelector->mAttrList) {
+@@ -2314,17 +2345,19 @@ static bool SelectorMatches(Element* aEl
+   }
+ 
+   // apply SelectorMatches to the negated selectors in the chain
+   if (!isNegated) {
+     for (nsCSSSelector *negation = aSelector->mNegations;
+          result && negation; negation = negation->mNegations) {
+       bool dependence = false;
+       result = !SelectorMatches(aElement, negation, aNodeMatchContext,
+-                                aTreeMatchContext, &dependence);
++                                aTreeMatchContext,
++                                SelectorMatchesFlags::IS_PSEUDO_CLASS_ARGUMENT,
++                                &dependence);
+       // If the selector does match due to the dependence on
+       // aNodeMatchContext.mStateMask, then we want to keep result true
+       // so that the final result of SelectorMatches is true.  Doing so
+       // tells StateEnumFunc that there is a dependence on the state.
+       result = result || dependence;
+     }
+   }
+   return result;
+@@ -2422,17 +2455,18 @@ static bool SelectorMatchesTree(Element*
+       // constructor call above).
+       // Since we are still matching against selectors that contain
+       // :visited (they'll just fail), we will always find such a node
+       // during the selector matching process if there is a relevant
+       // link that can influence selector matching.
+       aLookForRelevantLink = false;
+       aTreeMatchContext.SetHaveRelevantLink();
+     }
+-    if (SelectorMatches(element, selector, nodeContext, aTreeMatchContext)) {
++    if (SelectorMatches(element, selector, nodeContext, aTreeMatchContext,
++                        SelectorMatchesFlags::NONE)) {
+       // to avoid greedy matching, we need to recur if this is a
+       // descendant or general sibling combinator and the next
+       // combinator is different, but we can make an exception for
+       // sibling, then parent, since a sibling's parent is always the
+       // same.
+       if (NS_IS_GREEDY_OPERATOR(selector->mOperator) &&
+           selector->mNext &&
+           selector->mNext->mOperator != selector->mOperator &&
+@@ -2504,23 +2538,29 @@ void ContentEnumFunc(const RuleValue& va
+       //     pseudo-element in the document, like ::-moz-placeholder:hover; and
+       //   * aElt does not have such a pseudo-element.
+       //
+       // We know that the selector can't match, since there is no element for
+       // the user action pseudo-class to match against.
+       return;
+     }
+     if (!StateSelectorMatches(pdata->mPseudoElement, aSelector, nodeContext,
+-                              data->mTreeMatchContext)) {
++                              data->mTreeMatchContext,
++                              SelectorMatchesFlags::NONE)) {
+       return;
+     }
+     selector = selector->mNext;
+   }
++
++  SelectorMatchesFlags selectorFlags = SelectorMatchesFlags::NONE;
++  if (aSelector->IsPseudoElement()) {
++    selectorFlags |= SelectorMatchesFlags::HAS_PSEUDO_ELEMENT;
++  }
+   if (SelectorMatches(data->mElement, selector, nodeContext,
+-                      data->mTreeMatchContext)) {
++                      data->mTreeMatchContext, selectorFlags)) {
+     nsCSSSelector *next = selector->mNext;
+     if (!next || SelectorMatchesTree(data->mElement, next,
+                                      data->mTreeMatchContext,
+                                      !nodeContext.mIsRelevantLink)) {
+       css::StyleRule *rule = value.mRule;
+       rule->RuleMatched();
+       data->mRuleWalker->Forward(rule);
+       // nsStyleSet will deal with the !important rule
+@@ -2655,16 +2695,17 @@ nsCSSRuleProcessor::HasStateDependentSty
+         if (selector->PseudoType() != aPseudoType) {
+           continue;
+         }
+         selectorForPseudo = selector;
+         selector = selector->mNext;
+       }
+ 
+       nsRestyleHint possibleChange = RestyleHintForOp(selector->mOperator);
++      SelectorMatchesFlags selectorFlags = SelectorMatchesFlags::UNKNOWN;
+ 
+       // If hint already includes all the bits of possibleChange,
+       // don't bother calling SelectorMatches, since even if it returns false
+       // hint won't change.
+       // Also don't bother calling SelectorMatches if none of the
+       // states passed in are relevant here.
+       if ((possibleChange & ~hint) &&
+           states.HasAtLeastOneOfStates(aStateMask) &&
+@@ -2684,19 +2725,19 @@ nsCSSRuleProcessor::HasStateDependentSty
+            (selector->mPseudoClassList &&
+             (selector->mPseudoClassList->mNext ||
+              selector->mPseudoClassList->mType !=
+                nsCSSPseudoClasses::ePseudoClass_hover)) ||
+            selector->mAttrList || selector->mNegations) &&
+           (!isPseudoElement ||
+            StateSelectorMatches(aStatefulElement, selectorForPseudo,
+                                 nodeContext, aData->mTreeMatchContext,
+-                                nullptr, aStateMask)) &&
++                                selectorFlags, nullptr, aStateMask)) &&
+           SelectorMatches(aData->mElement, selector, nodeContext,
+-                          aData->mTreeMatchContext) &&
++                          aData->mTreeMatchContext, selectorFlags) &&
+           SelectorMatchesTree(aData->mElement, selector->mNext,
+                               aData->mTreeMatchContext,
+                               false))
+       {
+         hint = nsRestyleHint(hint | possibleChange);
+       }
+     }
+   }
+@@ -2753,17 +2794,17 @@ AttributeEnumFunc(nsCSSSelector* aSelect
+   nsRestyleHint possibleChange = RestyleHintForOp(aSelector->mOperator);
+ 
+   // If enumData->change already includes all the bits of possibleChange, don't
+   // bother calling SelectorMatches, since even if it returns false
+   // enumData->change won't change.
+   NodeMatchContext nodeContext(EventStates(), false);
+   if ((possibleChange & ~(aData->change)) &&
+       SelectorMatches(data->mElement, aSelector, nodeContext,
+-                      data->mTreeMatchContext) &&
++                      data->mTreeMatchContext, SelectorMatchesFlags::UNKNOWN) &&
+       SelectorMatchesTree(data->mElement, aSelector->mNext,
+                           data->mTreeMatchContext, false)) {
+     aData->change = nsRestyleHint(aData->change | possibleChange);
+   }
+ }
+ 
+ static MOZ_ALWAYS_INLINE void
+ EnumerateSelectors(nsTArray<nsCSSSelector*>& aSelectors, AttributeEnumData* aData)
+@@ -3570,17 +3611,18 @@ nsCSSRuleProcessor::SelectorListMatches(
+              "mCurrentStyleScope will need to be saved and restored after the "
+              "SelectorMatchesTree call");
+ 
+   while (aSelectorList) {
+     nsCSSSelector* sel = aSelectorList->mSelectors;
+     NS_ASSERTION(sel, "Should have *some* selectors");
+     NS_ASSERTION(!sel->IsPseudoElement(), "Shouldn't have been called");
+     NodeMatchContext nodeContext(EventStates(), false);
+-    if (SelectorMatches(aElement, sel, nodeContext, aTreeMatchContext)) {
++    if (SelectorMatches(aElement, sel, nodeContext, aTreeMatchContext,
++                        SelectorMatchesFlags::NONE)) {
+       nsCSSSelector* next = sel->mNext;
+       if (!next ||
+           SelectorMatchesTree(aElement, next, aTreeMatchContext, false)) {
+         return true;
+       }
+     }
+ 
+     aSelectorList = aSelectorList->mNext;

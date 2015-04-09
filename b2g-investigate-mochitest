@@ -1,0 +1,69 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+NOT FOR LANDING: Test changes to investigate why we didn't see B2G orange for 980770/1149906/1150288.
+
+diff --git a/layout/style/test/animation_utils.js b/layout/style/test/animation_utils.js
+--- a/layout/style/test/animation_utils.js
++++ b/layout/style/test/animation_utils.js
+@@ -188,20 +188,17 @@ function findKeyframesRule(name) {
+ // function only a single failure is produced.
+ //
+ // Since this function relies on various asynchronous operations, the caller is
+ // responsible for calling SimpleTest.waitForExplicitFinish() before calling
+ // this and SimpleTest.finish() within aTestFunction and aOnSkip.
+ function runOMTATest(aTestFunction, aOnSkip) {
+   const OMTAPrefKey = "layers.offmainthreadcomposition.async-animations";
+   var utils      = SpecialPowers.DOMWindowUtils;
+-  var expectOMTA = utils.layerManagerRemote &&
+-                   // ^ Off-main thread animation cannot be used if off-main
+-                   // thread composition (OMTC) is not available
+-                   SpecialPowers.getBoolPref(OMTAPrefKey);
++  var expectOMTA = true;
+ 
+   isOMTAWorking().then(function(isWorking) {
+     if (expectOMTA) {
+       if (isWorking) {
+         aTestFunction();
+       } else {
+         // We only call this when we know it will fail as otherwise in the
+         // regular success case we will end up inflating the "passed tests"
+diff --git a/layout/style/test/test_animations_omta.html b/layout/style/test/test_animations_omta.html
+--- a/layout/style/test/test_animations_omta.html
++++ b/layout/style/test/test_animations_omta.html
+@@ -2010,17 +2010,17 @@ addAsyncAnimTest(function *() {
+   done_div();
+ });
+ 
+ // Bug 996796 patch 12 - test for correct visited styles during
+ // animation-only style flush.
+ addAsyncAnimTest(function *() {
+   var isb2g = SpecialPowers.Services.appinfo.name == "B2G";
+   if (isb2g) {
+-    todo(false, "no global history on B2G; can't run test");
++    ok(false, "no global history on B2G; can't run test");
+     return;
+   }
+ 
+   var div1 = document.createElement("div");
+   div1.classList.add("target");
+   div1.style.height = "10px";
+   div1.style.animation = "anim2 linear 1s";
+ 
+@@ -2230,16 +2230,17 @@ addAsyncAnimTest(function *() {
+ 
+   // Exactly the same as the previous test, except with an extra
+   // waitForPaintsFlushed(), since that extra one exposes other bugs.
+   new_div("animation: anim2 1s steps(8, end)");
+   yield waitForPaintsFlushed();
+   omta_is("opacity", 0, RunningOn.Compositor,
+           "anim2 at start (0s)");
+   advance_clock(300);
++  ok(false, "this should fail");
+   omta_is("opacity", 0.25, RunningOn.Compositor,
+           "anim2 at 300ms");
+   gDiv.style.animation = "anim2 1s steps(8, end), anim3 500ms steps(4, end)";
+   yield waitForPaintsFlushed();
+   omta_is("opacity", 0, RunningOn.Compositor,
+           "anim3 overriding anim2 at 300ms");
+   advance_clock(475);
+   omta_is("opacity", 0.75, RunningOn.Compositor,

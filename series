@@ -1,6 +1,3 @@
-charset-1
-charset-2
-charset-3
 b2g-investigate-mochitest
 disable-try-platforms
 gc-between-mochitests

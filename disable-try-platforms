@@ -2,54 +2,18 @@ From: L. David Baron <dbaron@dbaron.org>
 
 Disable try platforms that I don't want.
 
-See https://wiki.mozilla.org/Build:TryChooser for full syntax.  Summary is:
-
-  -b --build TYPE
-      Choose what type of builds you'd like made:
-        --build d   gives debug builds only
-        --build o   gives optimized builds only
-        --build do  gives both debug and optimized builds
-
-  -p --platform LIST
-      Choose which platform(s) you'd like to build for with a
-      comma-separated list:
-        linux,linux64,macosx,macosx64,win32,android,android-xul,maemo5-gtk,maemo5-qt
-      or specify 'none' or 'all'.
-
-  -u --unittests LIST
-      Choose which unittests you'd like run:
-        crashtest,reftest,mochitests
-      or give a subset of tests:
-        mochitest-{1,2,3,4,5,o},xpcshell,opengl,jsreftest,mozmill-all
-      or specify 'none' or 'all'.
-
-  -t --talos LIST
-      Choose which talos suites you'd like to run:
-        tpn,chromez,nochromer,other,dirtypaint,svgr,dromaeojs,xperf,remote-ts,remote-tdhtml,remote-tsvg,remote-tpan,remote-trobopan,remote-trobocheck,remote-troboprovider,remote-trobocheck2,remote-trobocheck3,remote-tp4m_nochrome
-      or specify 'none' or 'all'.
-
-  Email notification control: (these are optional, default is to get emails on non-success)
-
-  -e --all-emails (optional)
-      Get notified by email of each builder in the try run's results
-
-  -n --no-emails (optional)
-      Get no email notifications of each builder's results
-
-  Bugzilla commenting:
-
-  --post-to-bugzilla Bug BUGNUMBER (optional)
-      Get a comment in your specified BUGNUMBER at the end of the try run with a tally of the results and a tbpl link
-
+For full syntax, see:
+https://wiki.mozilla.org/Build:TryChooser
+http://trychooser.pub.build.mozilla.org/
 
 try: --build d --platform linux64 --unittests crashtest,reftest,mochitests,marionette --talos none --no-emails
 try: --build do --platform all --unittests crashtest[x64,10.6,b2g],reftest[x64,10.6,b2g],mochitests[x64,10.6,b2g],marionette[x64,10.6,b2g] --talos none --no-emails
-try: --build o --platform android,emulator --unittests reftest --talos none --no-emails
-try: --build o --platform android,linux_gecko --unittests all --talos none --no-emails
+try: --build o --platform android-api-11,emulator --unittests reftest --talos none --no-emails
+try: --build o --platform android-api-11,linux_gecko --unittests all --talos none --no-emails
 try: --build d --platform linux64,macosx64,win32 --unittests crashtest,reftest,mochitests,marionette --talos none --no-emails
 try: --build d --platform win32 --unittests crashtest[Windows 7],reftest[Windows 7],mochitests[Windows 7],marionette[Windows 7] --talos none --no-emails
 # This one gives all reftests that we run on Android and B2G:
-try: --build o --platform android,android-armv6,emulator,linux_gecko,linux64_gecko --unittests reftest --talos none
+try: --build o --platform android-api-11,emulator,linux_gecko,linux64_gecko --unittests reftest --talos none
 
 diff --git a/build/mozconfig.common.override b/build/mozconfig.common.override
 --- a/build/mozconfig.common.override

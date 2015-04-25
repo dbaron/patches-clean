@@ -1,14 +1,19 @@
 # HG changeset patch
 # User Kevin Wern <kevin.m.wern@gmail.com>
 # Date Mon, 20 Apr 2015 23:38:13 -0700
+# Parent  99fcdda7ccafe1969e696c7399438a7c2eb66ece
 
 Bug 1148694 patch 3 - remove tests affected by removal of CSSCharsetRule. r=dbaron, r=khuey
 
 diff --git a/dom/tests/mochitest/general/test_interfaces.html b/dom/tests/mochitest/general/test_interfaces.html
-index 3a8f5df..dc30427 100644
 --- a/dom/tests/mochitest/general/test_interfaces.html
 +++ b/dom/tests/mochitest/general/test_interfaces.html
-@@ -271,8 +271,6 @@ var interfaceNamesInGlobalScope =
+@@ -266,18 +266,16 @@ var interfaceNamesInGlobalScope =
+     "Crypto",
+ // IMPORTANT: Do not change this list without review from a DOM peer!
+     "CryptoKey",
+ // IMPORTANT: Do not change this list without review from a DOM peer!
+     "CSS",
  // IMPORTANT: Do not change this list without review from a DOM peer!
      "CSS2Properties",
  // IMPORTANT: Do not change this list without review from a DOM peer!
@@ -17,11 +22,20 @@ index 3a8f5df..dc30427 100644
      "CSSConditionRule",
  // IMPORTANT: Do not change this list without review from a DOM peer!
      "CSSCounterStyleRule",
+ // IMPORTANT: Do not change this list without review from a DOM peer!
+     {name: "CSSFontFaceLoadEvent", pref: "layout.css.font-loading-api.enabled"},
+ // IMPORTANT: Do not change this list without review from a DOM peer!
+     "CSSFontFaceRule",
+ // IMPORTANT: Do not change this list without review from a DOM peer!
 diff --git a/layout/style/test/test_css_eof_handling.html b/layout/style/test/test_css_eof_handling.html
-index 3d09b95d..b54b031d 100644
 --- a/layout/style/test/test_css_eof_handling.html
 +++ b/layout/style/test/test_css_eof_handling.html
-@@ -129,16 +129,6 @@ const tests = [
+@@ -124,26 +124,16 @@ const tests = [
+   {
+       todo: 1,  /* bug 446226 */
+       name: "selector 3",
+       ref: "td:lang(en) {}",
+       tst: "td:lang(en"
    },
    
    {
@@ -38,11 +52,20 @@ index 3d09b95d..b54b031d 100644
        name: "@media 3",
        ref: "@media all {}",
        tst: "@media all {",
+   },
+   {
+       name: "@namespace 1a",
+       ref: "@namespace foo url('http://foo.example.com/');",
+       tst: "@namespace foo url('http://foo.example.com/')"
 diff --git a/layout/style/test/test_rule_insertion.html b/layout/style/test/test_rule_insertion.html
-index c4aefd9..a55ec08 100644
 --- a/layout/style/test/test_rule_insertion.html
 +++ b/layout/style/test/test_rule_insertion.html
-@@ -107,11 +107,6 @@ var innerRuleInfo = [
+@@ -102,21 +102,16 @@ var innerRuleInfo = [
+      if (navigator.oscpu.match(/Linux/) ||
+          navigator.oscpu.match(/Android/) ||
+          SpecialPowers.Services.appinfo.name == "B2G") {
+        return true;
+     }
      return Math.abs(width - (aApplied ? monospaceWidth : serifWidth)) <= 1; // bug 769194 prevents local()
                                               // fonts working on Android
     }],
@@ -52,5 +75,10 @@ index c4aefd9..a55ec08 100644
 -     return aParent instanceof CSSRule ? aException : !aException;
 -   }],
    ["@import url(nothing.css);",
+    function(aApplied, aParent, aException) {
+      // just test whether it threw
+      return aParent instanceof CSSRule ? aException : !aException;
+    }],
+   ["@namespace test url(http://example.org);",
     function(aApplied, aParent, aException) {
       // just test whether it threw

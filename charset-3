@@ -1,7 +1,7 @@
 # User Kevin Wern <kevin.m.wern@gmail.com>
 # Date Mon, 20 Apr 2015 23:38:13 -0700
 
-Bug 1148694 patch 3 - remove tests affected by removal of CSSCharsetRule. r=dbaron
+Bug 1148694 patch 3 - remove tests affected by removal of CSSCharsetRule. r=dbaron, r=khuey
 
 diff --git a/dom/tests/mochitest/general/test_interfaces.html b/dom/tests/mochitest/general/test_interfaces.html
 index 3a8f5df..dc30427 100644

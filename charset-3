@@ -1,0 +1,65 @@
+From 2848c1782e9e4e46a184b2b085c12c14b9b93536 Mon Sep 17 00:00:00 2001
+From: Kevin Wern <kevin.m.wern@gmail.com>
+Date: Mon, 20 Apr 2015 23:38:13 -0700
+Subject: [PATCH] Bug 1148694 patch 3 - remove tests affected by removal of
+ CSSCharsetRule. r=dbaron
+
+---
+ dom/tests/mochitest/general/test_interfaces.html |  2 --
+ layout/style/test/test_css_eof_handling.html     | 10 ----------
+ layout/style/test/test_rule_insertion.html       |  5 -----
+ 3 files changed, 17 deletions(-)
+
+diff --git a/dom/tests/mochitest/general/test_interfaces.html b/dom/tests/mochitest/general/test_interfaces.html
+index 3a8f5df..dc30427 100644
+--- a/dom/tests/mochitest/general/test_interfaces.html
++++ b/dom/tests/mochitest/general/test_interfaces.html
+@@ -271,8 +271,6 @@ var interfaceNamesInGlobalScope =
+ // IMPORTANT: Do not change this list without review from a DOM peer!
+     "CSS2Properties",
+ // IMPORTANT: Do not change this list without review from a DOM peer!
+-    "CSSCharsetRule",
+-// IMPORTANT: Do not change this list without review from a DOM peer!
+     "CSSConditionRule",
+ // IMPORTANT: Do not change this list without review from a DOM peer!
+     "CSSCounterStyleRule",
+diff --git a/layout/style/test/test_css_eof_handling.html b/layout/style/test/test_css_eof_handling.html
+index 3d09b95d..b54b031d 100644
+--- a/layout/style/test/test_css_eof_handling.html
++++ b/layout/style/test/test_css_eof_handling.html
+@@ -129,16 +129,6 @@ const tests = [
+   },
+   
+   {
+-      name: "@charset 1",
+-      ref: "@charset 'utf-8';",
+-      tst: "@charset 'utf-8"
+-  },
+-  {
+-      name: "@charset 2",
+-      ref: "@charset 'utf-8';",
+-      tst: "@charset 'utf-8'"
+-  },
+-  {
+       name: "@media 3",
+       ref: "@media all {}",
+       tst: "@media all {",
+diff --git a/layout/style/test/test_rule_insertion.html b/layout/style/test/test_rule_insertion.html
+index c4aefd9..a55ec08 100644
+--- a/layout/style/test/test_rule_insertion.html
++++ b/layout/style/test/test_rule_insertion.html
+@@ -107,11 +107,6 @@ var innerRuleInfo = [
+     return Math.abs(width - (aApplied ? monospaceWidth : serifWidth)) <= 1; // bug 769194 prevents local()
+                                              // fonts working on Android
+    }],
+-  ["@charset 'UTF-8';",
+-   function(aApplied, aParent, aException) {
+-     // just test whether it threw
+-     return aParent instanceof CSSRule ? aException : !aException;
+-   }],
+   ["@import url(nothing.css);",
+    function(aApplied, aParent, aException) {
+      // just test whether it threw
+-- 
+1.7.12.4 (Apple Git-37)
+

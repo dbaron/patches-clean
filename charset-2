@@ -1,0 +1,293 @@
+From b8929cdb2ec231062b65551ecc6bc2c0db854bce Mon Sep 17 00:00:00 2001
+From: Kevin Wern <kevin.m.wern@gmail.com>
+Date: Tue, 21 Apr 2015 00:08:36 -0700
+Subject: [PATCH] Bug 1148694 patch 2 - Remove interface and implementation of
+ CSSCharsetRule. r=dbaron
+
+---
+ dom/base/nsDOMClassInfo.cpp                 |   7 --
+ dom/base/nsDOMClassInfoClasses.h            |   1 -
+ dom/interfaces/css/moz.build                |   1 -
+ dom/interfaces/css/nsIDOMCSSCharsetRule.idl |  13 ---
+ layout/style/nsCSSRules.cpp                 | 125 ----------------------------
+ layout/style/nsCSSRules.h                   |  45 ----------
+ 6 files changed, 192 deletions(-)
+ delete mode 100644 dom/interfaces/css/nsIDOMCSSCharsetRule.idl
+
+diff --git a/dom/base/nsDOMClassInfo.cpp b/dom/base/nsDOMClassInfo.cpp
+index e1c2cfc..f114e0b 100644
+--- a/dom/base/nsDOMClassInfo.cpp
++++ b/dom/base/nsDOMClassInfo.cpp
+@@ -72,7 +72,6 @@
+ #include "nsMemory.h"
+ 
+ // includes needed for the prototype chain interfaces
+-#include "nsIDOMCSSCharsetRule.h"
+ #include "nsIDOMCSSImportRule.h"
+ #include "nsIDOMCSSMediaRule.h"
+ #include "nsIDOMCSSFontFaceRule.h"
+@@ -208,8 +207,6 @@ static nsDOMClassInfoData sClassInfoData[] = {
+   // CSS classes
+   NS_DEFINE_CLASSINFO_DATA(CSSStyleRule, nsDOMGenericSH,
+                            DOM_DEFAULT_SCRIPTABLE_FLAGS)
+-  NS_DEFINE_CLASSINFO_DATA(CSSCharsetRule, nsDOMGenericSH,
+-                           DOM_DEFAULT_SCRIPTABLE_FLAGS)
+   NS_DEFINE_CLASSINFO_DATA(CSSImportRule, nsDOMGenericSH,
+                            DOM_DEFAULT_SCRIPTABLE_FLAGS)
+   NS_DEFINE_CLASSINFO_DATA(CSSMediaRule, nsDOMGenericSH,
+@@ -600,10 +597,6 @@ nsDOMClassInfo::Init()
+     DOM_CLASSINFO_MAP_ENTRY(nsIDOMCSSStyleRule)
+   DOM_CLASSINFO_MAP_END
+ 
+-  DOM_CLASSINFO_MAP_BEGIN(CSSCharsetRule, nsIDOMCSSCharsetRule)
+-    DOM_CLASSINFO_MAP_ENTRY(nsIDOMCSSCharsetRule)
+-  DOM_CLASSINFO_MAP_END
+-
+   DOM_CLASSINFO_MAP_BEGIN(CSSImportRule, nsIDOMCSSImportRule)
+     DOM_CLASSINFO_MAP_ENTRY(nsIDOMCSSImportRule)
+   DOM_CLASSINFO_MAP_END
+diff --git a/dom/base/nsDOMClassInfoClasses.h b/dom/base/nsDOMClassInfoClasses.h
+index a69e70d..a0a1de7 100644
+--- a/dom/base/nsDOMClassInfoClasses.h
++++ b/dom/base/nsDOMClassInfoClasses.h
+@@ -9,7 +9,6 @@ DOMCI_CLASS(DOMConstructor)
+ 
+ // CSS classes
+ DOMCI_CLASS(CSSStyleRule)
+-DOMCI_CLASS(CSSCharsetRule)
+ DOMCI_CLASS(CSSImportRule)
+ DOMCI_CLASS(CSSMediaRule)
+ DOMCI_CLASS(CSSNameSpaceRule)
+diff --git a/dom/interfaces/css/moz.build b/dom/interfaces/css/moz.build
+index 3846ceb..405f48a8 100644
+--- a/dom/interfaces/css/moz.build
++++ b/dom/interfaces/css/moz.build
+@@ -6,7 +6,6 @@
+ 
+ XPIDL_SOURCES += [
+     'nsIDOMCounter.idl',
+-    'nsIDOMCSSCharsetRule.idl',
+     'nsIDOMCSSConditionRule.idl',
+     'nsIDOMCSSCounterStyleRule.idl',
+     'nsIDOMCSSFontFaceRule.idl',
+diff --git a/dom/interfaces/css/nsIDOMCSSCharsetRule.idl b/dom/interfaces/css/nsIDOMCSSCharsetRule.idl
+deleted file mode 100644
+index 27c93e8..0000000
+--- a/dom/interfaces/css/nsIDOMCSSCharsetRule.idl
++++ /dev/null
+@@ -1,13 +0,0 @@
+-/* -*- Mode: IDL; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+-/* This Source Code Form is subject to the terms of the Mozilla Public
+- * License, v. 2.0. If a copy of the MPL was not distributed with this
+- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+-
+-#include "nsIDOMCSSRule.idl"
+-
+-[scriptable, uuid(756c326c-eb38-4342-95e5-5eabea809174)]
+-interface nsIDOMCSSCharsetRule : nsIDOMCSSRule
+-{
+-  attribute DOMString        encoding;
+-                                        // raises(DOMException) on setting
+-};
+diff --git a/layout/style/nsCSSRules.cpp b/layout/style/nsCSSRules.cpp
+index 646cc31..4349db6 100644
+--- a/layout/style/nsCSSRules.cpp
++++ b/layout/style/nsCSSRules.cpp
+@@ -205,131 +205,6 @@ GroupRuleRuleList::IndexedGetter(uint32_t aIndex, bool& aFound)
+ }
+ 
+ // -------------------------------------------
+-// CharsetRule
+-//
+-
+-CharsetRule::CharsetRule(const nsAString& aEncoding,
+-                         uint32_t aLineNumber, uint32_t aColumnNumber)
+-  : Rule(aLineNumber, aColumnNumber),
+-    mEncoding(aEncoding)
+-{
+-}
+-
+-CharsetRule::CharsetRule(const CharsetRule& aCopy)
+-  : Rule(aCopy),
+-    mEncoding(aCopy.mEncoding)
+-{
+-}
+-
+-NS_IMPL_ADDREF(CharsetRule)
+-NS_IMPL_RELEASE(CharsetRule)
+-
+-// QueryInterface implementation for CharsetRule
+-NS_INTERFACE_MAP_BEGIN(CharsetRule)
+-  NS_INTERFACE_MAP_ENTRY(nsIStyleRule)
+-  NS_INTERFACE_MAP_ENTRY(nsIDOMCSSRule)
+-  NS_INTERFACE_MAP_ENTRY(nsIDOMCSSCharsetRule)
+-  NS_INTERFACE_MAP_ENTRY_AMBIGUOUS(nsISupports, nsIStyleRule)
+-  NS_DOM_INTERFACE_MAP_ENTRY_CLASSINFO(CSSCharsetRule)
+-NS_INTERFACE_MAP_END
+-
+-IMPL_STYLE_RULE_INHERIT(CharsetRule, Rule)
+-
+-#ifdef DEBUG
+-/* virtual */ void
+-CharsetRule::List(FILE* out, int32_t aIndent) const
+-{
+-  nsAutoCString str;
+-  // Indent
+-  for (int32_t indent = aIndent; --indent >= 0; ) {
+-    str.AppendLiteral("  ");
+-  }
+-
+-  str.AppendLiteral("@charset \"");
+-  AppendUTF16toUTF8(mEncoding, str);
+-  str.AppendLiteral("\"\n");
+-  fprintf_stderr(out, "%s", str.get());
+-}
+-#endif
+-
+-/* virtual */ int32_t
+-CharsetRule::GetType() const
+-{
+-  return Rule::CHARSET_RULE;
+-}
+-
+-/* virtual */ already_AddRefed<Rule>
+-CharsetRule::Clone() const
+-{
+-  nsRefPtr<Rule> clone = new CharsetRule(*this);
+-  return clone.forget();
+-}
+-
+-NS_IMETHODIMP
+-CharsetRule::GetEncoding(nsAString& aEncoding)
+-{
+-  aEncoding = mEncoding;
+-  return NS_OK;
+-}
+-
+-NS_IMETHODIMP
+-CharsetRule::SetEncoding(const nsAString& aEncoding)
+-{
+-  mEncoding = aEncoding;
+-  return NS_OK;
+-}
+-
+-NS_IMETHODIMP
+-CharsetRule::GetType(uint16_t* aType)
+-{
+-  *aType = nsIDOMCSSRule::CHARSET_RULE;
+-  return NS_OK;
+-}
+-
+-NS_IMETHODIMP
+-CharsetRule::GetCssText(nsAString& aCssText)
+-{
+-  aCssText.AssignLiteral("@charset \"");
+-  aCssText.Append(mEncoding);
+-  aCssText.AppendLiteral("\";");
+-  return NS_OK;
+-}
+-
+-NS_IMETHODIMP
+-CharsetRule::SetCssText(const nsAString& aCssText)
+-{
+-  return NS_ERROR_NOT_IMPLEMENTED;
+-}
+-
+-NS_IMETHODIMP
+-CharsetRule::GetParentStyleSheet(nsIDOMCSSStyleSheet** aSheet)
+-{
+-  return Rule::GetParentStyleSheet(aSheet);
+-}
+-
+-NS_IMETHODIMP
+-CharsetRule::GetParentRule(nsIDOMCSSRule** aParentRule)
+-{
+-  return Rule::GetParentRule(aParentRule);
+-}
+-
+-css::Rule*
+-CharsetRule::GetCSSRule()
+-{
+-  return Rule::GetCSSRule();
+-}
+-
+-/* virtual */ size_t
+-CharsetRule::SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const
+-{
+-  return aMallocSizeOf(this);
+-
+-  // Measurement of the following members may be added later if DMD finds it is
+-  // worthwhile:
+-  // - mEncoding
+-}
+-
+-// -------------------------------------------
+ // ImportRule
+ //
+ 
+diff --git a/layout/style/nsCSSRules.h b/layout/style/nsCSSRules.h
+index 0750e50..1d8883b 100644
+--- a/layout/style/nsCSSRules.h
++++ b/layout/style/nsCSSRules.h
+@@ -28,7 +28,6 @@
+ #include "nsAutoPtr.h"
+ #include "nsCSSProperty.h"
+ #include "nsCSSValue.h"
+-#include "nsIDOMCSSCharsetRule.h"
+ #include "nsTArray.h"
+ #include "nsDOMCSSDeclaration.h"
+ #include "Declaration.h"
+@@ -356,50 +355,6 @@ protected:
+   nsTArray<gfxFontFeatureValueSet::FeatureValues> mFeatureValues;
+ };
+ 
+-namespace mozilla {
+-namespace css {
+-
+-class CharsetRule final : public Rule,
+-                              public nsIDOMCSSCharsetRule
+-{
+-public:
+-  CharsetRule(const nsAString& aEncoding,
+-              uint32_t aLineNumber, uint32_t aColumnNumber);
+-private:
+-  // For |Clone|
+-  CharsetRule(const CharsetRule& aCopy);
+-  ~CharsetRule() {}
+-
+-public:
+-  NS_DECL_ISUPPORTS
+-
+-  DECL_STYLE_RULE_INHERIT
+-
+-  // nsIStyleRule methods
+-#ifdef DEBUG
+-  virtual void List(FILE* out = stdout, int32_t aIndent = 0) const override;
+-#endif
+-
+-  // Rule methods
+-  virtual int32_t GetType() const override;
+-  virtual already_AddRefed<Rule> Clone() const override;
+-
+-  // nsIDOMCSSRule interface
+-  NS_DECL_NSIDOMCSSRULE
+-
+-  // nsIDOMCSSCharsetRule methods
+-  NS_IMETHOD GetEncoding(nsAString& aEncoding) override;
+-  NS_IMETHOD SetEncoding(const nsAString& aEncoding) override;
+-
+-  virtual size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const override;
+-
+-private:
+-  nsString  mEncoding;
+-};
+-
+-} // namespace css
+-} // namespace mozilla
+-
+ class nsCSSKeyframeRule;
+ 
+ class nsCSSKeyframeStyleDeclaration final : public nsDOMCSSDeclaration
+-- 
+1.7.12.4 (Apple Git-37)
+

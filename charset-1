@@ -1,0 +1,27 @@
+From 37f7c51cae2390663cbab0107dbf58a883da73c0 Mon Sep 17 00:00:00 2001
+From: Kevin Wern <kevin.m.wern@gmail.com>
+Date: Tue, 21 Apr 2015 01:26:11 -0700
+Subject: [PATCH] Bug 1148694 patch 1 - Stop creating a CharsetRule object when parsing @charset rules. r=dbaron
+
+---
+ layout/style/nsCSSParser.cpp | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+index 841a4f8..b13b68b 100644
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -3023,9 +3023,7 @@ CSSParserImpl::ParseCharsetRule(RuleAppendFunc aAppendFunc,
+     return false;
+   }
+ 
+-  nsRefPtr<css::CharsetRule> rule = new css::CharsetRule(charset,
+-                                                         linenum, colnum);
+-  (*aAppendFunc)(rule, aData);
++  // It's intentional that we don't create a rule object for @charset rules.
+ 
+   return true;
+ }
+-- 
+1.7.12.4 (Apple Git-37)
+

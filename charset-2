@@ -1,18 +1,7 @@
-From b8929cdb2ec231062b65551ecc6bc2c0db854bce Mon Sep 17 00:00:00 2001
-From: Kevin Wern <kevin.m.wern@gmail.com>
-Date: Tue, 21 Apr 2015 00:08:36 -0700
-Subject: [PATCH] Bug 1148694 patch 2 - Remove interface and implementation of
- CSSCharsetRule. r=dbaron
+# User Kevin Wern <kevin.m.wern@gmail.com>
+# Date Tue, 21 Apr 2015 00:08:36 -0700
 
----
- dom/base/nsDOMClassInfo.cpp                 |   7 --
- dom/base/nsDOMClassInfoClasses.h            |   1 -
- dom/interfaces/css/moz.build                |   1 -
- dom/interfaces/css/nsIDOMCSSCharsetRule.idl |  13 ---
- layout/style/nsCSSRules.cpp                 | 125 ----------------------------
- layout/style/nsCSSRules.h                   |  45 ----------
- 6 files changed, 192 deletions(-)
- delete mode 100644 dom/interfaces/css/nsIDOMCSSCharsetRule.idl
+Bug 1148694 patch 2 - Remove interface and implementation of CSSCharsetRule. r=dbaron
 
 diff --git a/dom/base/nsDOMClassInfo.cpp b/dom/base/nsDOMClassInfo.cpp
 index e1c2cfc..f114e0b 100644
@@ -288,6 +277,3 @@ index 0750e50..1d8883b 100644
  class nsCSSKeyframeRule;
  
  class nsCSSKeyframeStyleDeclaration final : public nsDOMCSSDeclaration
--- 
-1.7.12.4 (Apple Git-37)
-

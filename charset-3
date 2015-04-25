@@ -1,14 +1,7 @@
-From 2848c1782e9e4e46a184b2b085c12c14b9b93536 Mon Sep 17 00:00:00 2001
-From: Kevin Wern <kevin.m.wern@gmail.com>
-Date: Mon, 20 Apr 2015 23:38:13 -0700
-Subject: [PATCH] Bug 1148694 patch 3 - remove tests affected by removal of
- CSSCharsetRule. r=dbaron
+# User Kevin Wern <kevin.m.wern@gmail.com>
+# Date Mon, 20 Apr 2015 23:38:13 -0700
 
----
- dom/tests/mochitest/general/test_interfaces.html |  2 --
- layout/style/test/test_css_eof_handling.html     | 10 ----------
- layout/style/test/test_rule_insertion.html       |  5 -----
- 3 files changed, 17 deletions(-)
+Bug 1148694 patch 3 - remove tests affected by removal of CSSCharsetRule. r=dbaron
 
 diff --git a/dom/tests/mochitest/general/test_interfaces.html b/dom/tests/mochitest/general/test_interfaces.html
 index 3a8f5df..dc30427 100644
@@ -60,6 +53,3 @@ index c4aefd9..a55ec08 100644
    ["@import url(nothing.css);",
     function(aApplied, aParent, aException) {
       // just test whether it threw
--- 
-1.7.12.4 (Apple Git-37)
-

@@ -1,0 +1,815 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Test for bug 1158560.  try: -b o -p win32 -u reftest-no-accel -t none
+
+diff --git a/layout/base/nsDisplayList.cpp b/layout/base/nsDisplayList.cpp
+--- a/layout/base/nsDisplayList.cpp
++++ b/layout/base/nsDisplayList.cpp
+@@ -4802,24 +4802,64 @@ nsDisplayTransform::GetResultingTransfor
+                                  aAppUnitsPerPixel,
+                                  aBoundsOverride);
+ 
+   return GetResultingTransformMatrixInternal(props, aOrigin, aAppUnitsPerPixel,
+                                              aBoundsOverride, aOutAncestor,
+                                              aOffsetByOrigin);
+ }
+ 
++static int gIndent = 0;
++
++static void PrintIndent()
++{
++  for (int i = 0; i < gIndent; ++i) {
++    printf("  ");
++  }
++}
++
+ gfx3DMatrix
+ nsDisplayTransform::GetResultingTransformMatrixInternal(const FrameTransformProperties& aProperties,
+                                                         const nsPoint& aOrigin,
+                                                         float aAppUnitsPerPixel,
+                                                         const nsRect* aBoundsOverride,
+                                                         nsIFrame** aOutAncestor,
+                                                         bool aOffsetByOrigin)
+ {
++  PrintIndent();
++  printf("nsDisplayTransform::GetResultingTransformMatrix:\n");
++  PrintIndent();
++  printf("  aProperties.mToTransformOrigin = %.17f,%.17f,%.17f\n",
++         double(aProperties.mToTransformOrigin.x),
++         double(aProperties.mToTransformOrigin.y),
++         double(aProperties.mToTransformOrigin.z));
++  PrintIndent();
++  printf("  aProperties.mToPerspectiveOrigin = %.17f,%.17f,%.17f\n",
++         double(aProperties.mToPerspectiveOrigin.x),
++         double(aProperties.mToPerspectiveOrigin.y),
++         double(aProperties.mToPerspectiveOrigin.z));
++  PrintIndent();
++  printf("  aProperties.mChildPerspective = %.17f\n",
++         double(nsPresContext::AppUnitsToFloatCSSPixels(aProperties.mChildPerspective)));
++  PrintIndent();
++  printf("  aOrigin = %.17f,%.17f\n",
++         double(nsPresContext::AppUnitsToFloatCSSPixels(aOrigin.x)),
++         double(nsPresContext::AppUnitsToFloatCSSPixels(aOrigin.y)));
++  PrintIndent();
++  printf("  aAppUnitsPerPixel = %.17f\n",
++         double(aAppUnitsPerPixel));
++  if (aBoundsOverride) {
++  PrintIndent();
++  printf("  aBoundsOverride = %.17f,%.17f,%.17f,%.17f\n",
++         double(nsPresContext::AppUnitsToFloatCSSPixels(aBoundsOverride->x)),
++         double(nsPresContext::AppUnitsToFloatCSSPixels(aBoundsOverride->y)),
++         double(nsPresContext::AppUnitsToFloatCSSPixels(aBoundsOverride->width)),
++         double(nsPresContext::AppUnitsToFloatCSSPixels(aBoundsOverride->height)));
++  }
++
+   const nsIFrame *frame = aProperties.mFrame;
+ 
+   if (aOutAncestor) {
+     *aOutAncestor = nsLayoutUtils::GetCrossDocParentFrame(frame);
+   }
+ 
+   /* Get the underlying transform matrix.  This requires us to get the
+    * bounds of the frame.
+@@ -4845,88 +4885,169 @@ nsDisplayTransform::GetResultingTransfor
+     // Correct the translation components for zoom:
+     float pixelsPerCSSPx = frame->PresContext()->AppUnitsPerCSSPixel() /
+                              aAppUnitsPerPixel;
+     svgTransform._31 *= pixelsPerCSSPx;
+     svgTransform._32 *= pixelsPerCSSPx;
+     result = gfx3DMatrix::From2D(ThebesMatrix(svgTransform));
+   }
+ 
++    PrintIndent();
++    printf("initial result:\n");
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._11, result._12, result._13, result._14);
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._21, result._22, result._23, result._24);
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._31, result._32, result._33, result._34);
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._41, result._42, result._43, result._44);
++
+   if (hasSVGTransforms && !transformFromSVGParent.IsIdentity()) {
+     // Correct the translation components for zoom:
+     float pixelsPerCSSPx = frame->PresContext()->AppUnitsPerCSSPixel() /
+                              aAppUnitsPerPixel;
+     transformFromSVGParent._31 *= pixelsPerCSSPx;
+     transformFromSVGParent._32 *= pixelsPerCSSPx;
+     result = result * gfx3DMatrix::From2D(ThebesMatrix(transformFromSVGParent));
+   }
+ 
++    PrintIndent();
++    printf("with SVG:\n");
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._11, result._12, result._13, result._14);
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._21, result._22, result._23, result._24);
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._31, result._32, result._33, result._34);
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._41, result._42, result._43, result._44);
++
+   if (aProperties.mChildPerspective > 0.0) {
+     gfx3DMatrix perspective;
+     perspective._34 =
+       -1.0 / NSAppUnitsToFloatPixels(aProperties.mChildPerspective, aAppUnitsPerPixel);
+     /* At the point when perspective is applied, we have been translated to the transform origin.
+      * The translation to the perspective origin is the difference between these values.
+      */
+     perspective.ChangeBasis(aProperties.mToPerspectiveOrigin - aProperties.mToTransformOrigin);
+     result = result * perspective;
+   }
+ 
++    PrintIndent();
++    printf("with perspective:\n");
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._11, result._12, result._13, result._14);
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._21, result._22, result._23, result._24);
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._31, result._32, result._33, result._34);
++    PrintIndent();
++    printf("  [ %.17f %.17f %.17f %.17f ]\n",
++           result._41, result._42, result._43, result._44);
++
+   /* Account for the -moz-transform-origin property by translating the
+    * coordinate space to the new origin.
+    */
+   Point3D newOrigin =
+     Point3D(NSAppUnitsToFloatPixels(aOrigin.x, aAppUnitsPerPixel),
+             NSAppUnitsToFloatPixels(aOrigin.y, aAppUnitsPerPixel),
+             0.0f);
+   Point3D roundedOrigin(hasSVGTransforms ? newOrigin.x : NS_round(newOrigin.x),
+                         hasSVGTransforms ? newOrigin.y : NS_round(newOrigin.y),
+                         0);
+   Point3D offsetBetweenOrigins = roundedOrigin + aProperties.mToTransformOrigin;
+ 
++  PrintIndent();
++  printf("Offset between origins: %.17f,%.17f,%.17f\n",
++         offsetBetweenOrigins.x, offsetBetweenOrigins.y, offsetBetweenOrigins.z);
++
+   if (frame && frame->Preserves3D()) {
+     // Include the transform set on our parent
+     NS_ASSERTION(frame->GetParent() &&
+                  frame->GetParent()->IsTransformed() &&
+                  frame->GetParent()->Preserves3DChildren(),
+                  "Preserve3D mismatch!");
+     FrameTransformProperties props(frame->GetParent(),
+                                    aAppUnitsPerPixel,
+                                    nullptr);
+ 
+     // If this frame isn't transformed (but we exist for backface-visibility),
+     // then we're not a reference frame so no offset to origin will be added. Our
+     // parent transform however *is* the reference frame, so we pass true for
+     // aOffsetByOrigin to convert into the correct coordinate space.
++    ++gIndent;
+     gfx3DMatrix parent =
+       GetResultingTransformMatrixInternal(props,
+                                           aOrigin - frame->GetPosition(),
+                                           aAppUnitsPerPixel, nullptr,
+                                           aOutAncestor, !frame->IsTransformed());
++    --gIndent;
+ 
+     if (aOffsetByOrigin) {
+       result.Translate(-aProperties.mToTransformOrigin);
+       result.TranslatePost(offsetBetweenOrigins);
+     } else {
+       result.ChangeBasis(offsetBetweenOrigins);
+     }
+     result = result * parent;
++    PrintIndent();
++    printf("Preserve-3D case result:\n");
++    PrintIndent();
++    printf("  [ %f %f %f %f ]\n",
++           result._11, result._12, result._13, result._14);
++    PrintIndent();
++    printf("  [ %f %f %f %f ]\n",
++           result._21, result._22, result._23, result._24);
++    PrintIndent();
++    printf("  [ %f %f %f %f ]\n",
++           result._31, result._32, result._33, result._34);
++    PrintIndent();
++    printf("  [ %f %f %f %f ]\n",
++           result._41, result._42, result._43, result._44);
+     return result;
+   }
+ 
++  PrintIndent();
++  printf("aOffsetByOrigin = %d\n", int(aOffsetByOrigin));
+   if (aOffsetByOrigin) {
+     // We can fold the final translation by roundedOrigin into the first matrix
+     // basis change translation. This is more stable against variation due to
+     // insufficient floating point precision than reversing the translation
+     // afterwards.
+     result.Translate(-aProperties.mToTransformOrigin);
+     result.TranslatePost(offsetBetweenOrigins);
+   } else {
+     result.ChangeBasis(offsetBetweenOrigins);
+   }
++    PrintIndent();
++    printf("normal case result:\n");
++    PrintIndent();
++    printf("  [ %f %f %f %f ]\n",
++           result._11, result._12, result._13, result._14);
++    PrintIndent();
++    printf("  [ %f %f %f %f ]\n",
++           result._21, result._22, result._23, result._24);
++    PrintIndent();
++    printf("  [ %f %f %f %f ]\n",
++           result._31, result._32, result._33, result._34);
++    PrintIndent();
++    printf("  [ %f %f %f %f ]\n",
++           result._41, result._42, result._43, result._44);
+   return result;
+ }
+ 
+ bool
+ nsDisplayOpacity::CanUseAsyncAnimations(nsDisplayListBuilder* aBuilder)
+ {
+   if (ActiveLayerTracker::IsStyleAnimated(aBuilder, mFrame, eCSSProperty_opacity)) {
+     return true;
+diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
+--- a/layout/reftests/reftest.list
++++ b/layout/reftests/reftest.list
+@@ -1,390 +1,1 @@
+-# If you mark a test as failing or random, you MUST file a bug report in
+-# bugzilla and note the bug number as a comment on the line with the
+-# failing test.
+-#
+-# Please keep the tests in alphabetical order unless there is a reason
+-# for something to not be in order.
+-
+-# verify the tests work
+-include reftest-sanity/reftest.list
+-
+-# images (if ImageLib is busted, could result in weird failures in other tests)
+-include ../../image/test/reftest/reftest.list
+-
+-# CSSWG tests
+-include w3c-css/submitted/reftest.list
+-include w3c-css/received/reftest.list
+-
+-# relative and absolute positioning
+-include abs-pos/reftest.list
+-include position-relative/reftest.list
+-
+-include async-scrolling/reftest.list
+-
+-# backgrounds/
+-include backgrounds/reftest.list
+-
+-# bidi/
+-include bidi/reftest.list
+-
+-# border-image
+-include border-image/reftest.list
+-
+-# border-radius/
+-include border-radius/reftest.list
+-
+-# -moz-box tests
+-include box/reftest.list
+-
+-# box-ordinal/
+-include box-ordinal/reftest.list
+-
+-# box-properties/
+-include box-properties/reftest.list
+-
+-# box-shadow/
+-include box-shadow/reftest.list
+-
+-# bugs/
+-include bugs/reftest.list
+-
+-# canvas
+-include canvas/reftest.list
+-include ../../dom/canvas/test/reftest/reftest.list
+-
+-# css animations
+-include css-animations/reftest.list
+-
+-# blending/
+-include css-blending/reftest.list
+-
+-# Tests for the css-break spec
+-include css-break/reftest.list
+-
+-# css calc() tests
+-include css-calc/reftest.list
+-
+-# css character encoding tests
+-include css-charset/reftest.list
+-
+-# css default pseudo class tests
+-include css-default/reftest.list
+-
+-# css-display spec tests
+-include css-display/reftest.list
+-
+-# css :disable tests
+-include css-disabled/reftest.list
+-
+-# css :enable tests
+-include css-enabled/reftest.list
+-
+-# css @import tests
+-include css-import/reftest.list
+-
+-# css gradients
+-include css-gradients/reftest.list
+-
+-# css media queries (tests for print mode)
+-include css-mediaqueries/reftest.list
+-
+-# css parsing
+-include css-parsing/reftest.list
+-
+-# css placeholder
+-include css-placeholder/reftest.list
+-
+-# css ruby
+-include css-ruby/reftest.list
+-
+-# css required
+-include css-required/reftest.list
+-
+-# css optional
+-include css-optional/reftest.list
+-
+-# css valid
+-include css-valid/reftest.list
+-
+-# css invalid
+-include css-invalid/reftest.list
+-
+-# css-submit-invalid
+-include css-submit-invalid/reftest.list
+-
+-# css text-overflow
+-include text-overflow/reftest.list
+-
+-# css selectors
+-include css-selectors/reftest.list
+-
+-# css transitions
+-include css-transitions/reftest.list
+-
+-# css :-moz-ui-invalid
+-include css-ui-invalid/reftest.list
+-
+-# css :-moz-ui-valid
+-include css-ui-valid/reftest.list
+-
+-# css values and units
+-include css-valuesandunits/reftest.list
+-
+-# css variables
+-include css-variables/reftest.list
+-
+-# Reftests in css-visited are run using
+-# layout/style/test/test_visited_reftests instead of using the reftest
+-# harness.
+-
+-include cssom/reftest.list
+-
+-# columns/
+-include columns/reftest.list
+-
+-# content/
+-include ../../content/test/reftest/reftest.list
+-
+-# counters/
+-include counters/reftest.list
+-
+-# counter-style/
+-include counter-style/reftest.list
+-
+-# datalist
+-include datalist/reftest.list
+-
+-# dom/
+-include dom/reftest.list
+-
+-# generated-content/
+-include generated-content/reftest.list
+-
+-# first-letter/
+-include first-letter/reftest.list
+-
+-# first-line/
+-include first-line/reftest.list
+-
+-# flexbox (display: flex, display: inline-flex)
+-include flexbox/reftest.list
+-
+-# CSS Grid (display: grid, display: inline-grid)
+-include css-grid/reftest.list
+-
+-# floats/
+-include floats/reftest.list
+-
+-# font-face
+-include font-face/reftest.list
+-
+-# font features (opentype)
+-include font-features/reftest.list
+-
+-# mobile font size inflation
+-skip-if((B2G&&browserIsRemote)||Mulet) include font-inflation/reftest.list # Bug 972697 # Initial mulet triage: parity with B2G/B2G Desktop
+-
+-# CSS Font Loading API
+-include font-loading-api/reftest.list
+-
+-# font matching
+-include font-matching/reftest.list
+-
+-# forms
+-include forms/reftest.list
+-
+-# gfx
+-include ../../gfx/tests/reftest/reftest.list
+-
+-# block-inside-inline splits
+-include ib-split/reftest.list
+-
+-# image/
+-include image/reftest.list
+-
+-# image-element/
+-include image-element/reftest.list
+-
+-# image-rect/
+-include image-rect/reftest.list
+-
+-# image-region/
+-include image-region/reftest.list
+-
+-# indic shaping with harfbuzz
+-include indic-shaping/reftest.list
+-
+-# inline layout
+-include inline/reftest.list
+-
+-# inline borders and padding
+-include inline-borderpadding/reftest.list
+-
+-# layers/
+-include layers/reftest.list
+-
+-# line-breaking/
+-include line-breaking/reftest.list
+-
+-# list-item/
+-include list-item/reftest.list
+-
+-# mathml/
+-include mathml/reftest.list
+-
+-# margin-collapsing
+-include margin-collapsing/reftest.list
+-
+-# marquee/
+-include marquee/reftest.list
+-
+-# native-theme/
+-# skipping for B2G since something around radio-nonnative.html makes the whole suite hang
+-skip-if(B2G||Mulet) include native-theme/reftest.list # Initial mulet triage: parity with B2G/B2G Desktop
+-
+-# netwerk/
+-include ../../netwerk/test/reftest/reftest.list
+-
+-include outline/reftest.list
+-
+-# object/
+-include object/reftest.list
+-
+-# ogg-video/
+-skip-if(!B2G&&browserIsRemote) include ogg-video/reftest.list
+-
+-# webm-video/
+-skip-if(!B2G&&browserIsRemote) include webm-video/reftest.list
+-
+-# parser/
+-include ../../parser/htmlparser/tests/reftest/reftest.list
+-
+-# percent-overflow-sizing/
+-include percent-overflow-sizing/reftest.list
+-
+-# pixel-rounding/
+-include pixel-rounding/reftest.list
+-
+-# plugin/
+-include ../../dom/plugins/test/reftest/reftest.list
+-
+-# position-dynamic-changes/
+-include position-dynamic-changes/reftest.list
+-
+-# printing
+-include printing/reftest.list
+-include pagination/reftest.list
+-
+-# <style scoped>
+-include scoped-style/reftest.list
+-
+-# scrolling
+-include scrolling/reftest.list
+-
+-# selection
+-include selection/reftest.list
+-
+-# sticky positioning
+-include position-sticky/reftest.list
+-
+-# svg/
+-include svg/reftest.list
+-
+-# tab-size/
+-include tab-size/reftest.list
+-
+-# table-anonymous-boxes/
+-include table-anonymous-boxes/reftest.list
+-
+-# table-background/
+-include table-background/reftest.list
+-
+-# table-bordercollapse/
+-include table-bordercollapse/reftest.list
+-
+-# table-dom/
+-include table-dom/reftest.list
+-
+-include table-overflow/reftest.list
+-
+-# table-width/
+-include table-width/reftest.list
+-
+-include ../tables/reftests/reftest.list
+-
+-# text/
+-include text/reftest.list
+-
+-# text-decoration/
+-include text-decoration/reftest.list
+-
+-# text-indent/
+-include text-indent/reftest.list
+-
+-# text-shadow/
+-include text-shadow/reftest.list
+-
+-# text-svgglyphs/
+-include text-svgglyphs/reftest.list
+-
+-# text-transform/
+-include text-transform/reftest.list
+-
+-# theme (osx)
+-include ../../toolkit/themes/osx/reftests/reftest.list
+-
+-include ../../toolkit/content/tests/reftests/reftest.list
+-
+-# -moz-transform/
+-include transform/reftest.list
+-
+-# 3d transforms
+ include transform-3d/reftest.list
+-
+-# unicode/ (verify that we don't do expend effort doing unicode-aware case checks)
+-include unicode/reftest.list
+-
+-include view-source/reftest.list
+-
+-# webcomponents/
+-include webcomponents/reftest.list
+-
+-# widget/
+-include ../../widget/reftests/reftest.list
+-
+-# xml-stylesheet/
+-include ../../content/test/reftest/xml-stylesheet/reftest.list
+-
+-# xul-document-load/
+-include xul-document-load/reftest.list
+-
+-# xul/
+-include xul/reftest.list
+-
+-# xul
+-include ../xul/reftest/reftest.list
+-
+-# xul grid
+-include ../xul/grid/reftests/reftest.list
+-
+-# writing-mode
+-include writing-mode/reftest.list
+-
+-# z-index/
+-include z-index/reftest.list
+-
+-# reftest(s) to verify content bugfixes
+-include ../../dom/html/reftests/reftest.list
+-include ../../dom/imptests/reftest.list
+-
+-# editor/
+-include ../../editor/reftests/reftest.list
+-
+-# box-sizing
+-include box-sizing/reftest.list
+-
+-# invalidation
+-include invalidation/reftest.list
+-
+-# encodings
+-include ../../dom/encoding/test/reftest/reftest.list
+diff --git a/layout/reftests/transform-3d/reftest.list b/layout/reftests/transform-3d/reftest.list
+--- a/layout/reftests/transform-3d/reftest.list
++++ b/layout/reftests/transform-3d/reftest.list
+@@ -1,65 +1,2 @@
+-== scalez-1a.html scalez-1-ref.html
+-== rotatey-1a.html rotatey-1-ref.html
+-== rotatex-1a.html rotatex-1-ref.html
+-# Check that scaleZ(-1) rotateX(180deg) is the same as rotateY(180deg)
+-== scalezrotatex-1.html scalezrotatex-1-ref.html
+-# Check that the perspectve() transform function results in some visual changes
+-!= rotatex-perspective-1a.html rotatex-1-ref.html
+-# Check that -moz-perspective results in visual changes to child transformed elements
+-!= rotatex-perspective-1b.html rotatex-1-ref.html
+-# -moz-perspective should only apply to child elements
+-== rotatex-perspective-1c.html rotatex-1-ref.html
+-== rotatex-perspective-3a.html rotatex-perspective-3-ref.html
+-== scalez-1a.html scalez-1-ref.html
+-fuzzy-if(cocoaWidget,17,3) == preserve3d-1a.html preserve3d-1-ref.html
+-== preserve3d-1b.html about:blank
+-== preserve3d-clipped.html about:blank
+-== preserve3d-2a.html preserve3d-2-ref.html
+-== preserve3d-2b.html preserve3d-2-ref.html
+-== preserve3d-2c.html preserve3d-2-ref.html
+-== preserve3d-2d.html preserve3d-2-ref.html
+-== preserve3d-3a.html preserve3d-3-ref.html
+-skip-if(B2G||Mulet) == preserve3d-4a.html green-rect.html # Initial mulet triage: parity with B2G/B2G Desktop
+-fuzzy-if(Android&&AndroidVersion>=15,4,300) == preserve3d-5a.html preserve3d-5-ref.html
+-== scale3d-z.html scalez-1-ref.html
+-fuzzy-if(winWidget,102,580) fuzzy-if(d2d,143,681) fuzzy-if(OSX>=1008,224,924) == scale3d-all.html scale3d-1-ref.html # subpixel AA
+-fuzzy-if(winWidget,102,580) fuzzy-if(d2d,143,681) fuzzy-if(OSX>=1008,224,924) == scale3d-all-separate.html scale3d-1-ref.html # subpixel AA
+-== scale3d-xz.html scale3d-1-ref.html
+-== translatez-1a.html translatez-1-ref.html
+-!= translatez-1b.html translatez-1-ref.html
+-== translate3d-1a.html translate3d-1-ref.html
+-== matrix3d-1a.html matrix3d-1-ref.html
+-== matrix3d-2a.html matrix3d-2-ref.html
+-== rotate3d-1a.html rotatex-1-ref.html
+-== rotate3d-2a.html rotatey-1-ref.html
+-!= backface-visibility-1a.html about:blank
+-== backface-visibility-1b.html about:blank
+-== backface-visibility-1c.html about:blank
+-fuzzy-if(winWidget&&!layersGPUAccelerated,1,251) == backface-visibility-2.html backface-visibility-2-ref.html
+-== backface-visibility-3.html backface-visibility-3-ref.html
+-!= perspective-origin-1a.html rotatex-perspective-1a.html
+-random-if(Android&&AndroidVersion==17) == perspective-origin-1b.html perspective-origin-1a.html
+-random-if(Android&&!browserIsRemote) == perspective-origin-2a.html perspective-origin-2-ref.html # bug 732568
+-fuzzy-if(winWidget&&!layersGPUAccelerated,1,61) == perspective-origin-3a.html perspective-origin-3-ref.html
+-== perspective-origin-4a.html perspective-origin-4-ref.html
+-!= sorting-1a.html sorting-1-ref.html
+-# Parallel planes, different z depth
+-== sorting-2a.html sorting-2-ref.html
+-# Parallel planes, same z depth (shouldn't be sorted!)
+-== sorting-2b.html sorting-2-ref.html
+-== sorting-3a.html green-rect.html
+-# Different, but equivalent (for the given transform) transform origins
+-== rotatex-transformorigin-1a.html rotatex-transformorigin-1-ref.html
+-fuzzy-if((gtk2Widget&&layersOMTC)||(winWidget&&!layersGPUAccelerated),1,86) == overflow-hidden-1a.html overflow-hidden-1-ref.html
+-== transform-style-flat-1a.html transform-style-flat-1-ref.html
+-pref(layout.css.will-change.enabled,true) == willchange-containing-block.html?willchange willchange-containing-block.html?ref
+-pref(layout.css.will-change.enabled,true) != willchange-containing-block.html?willchange willchange-containing-block.html?noblock
+-fuzzy-if(winWidget&&!layersGPUAccelerated,1,606) == scroll-perspective-1.html scroll-perspective-1-ref.html
+-# Bugs
+-fails-if(!layersGPUAccelerated) == 1035611-1.html 1035611-1-ref.html # Bug 1072898 for !layersGPUAccelerated failures
+-== animate-cube-radians.html animate-cube-radians-ref.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated,16,6) fuzzy-if(Mulet,16,9) == animate-cube-radians-zoom.html animate-cube-radians-zoom-ref.html
+-!= animate-cube-radians-ref.html animate-cube-radians-zoom-ref.html
+-== animate-cube-degrees.html animate-cube-degrees-ref.html
+-== animate-cube-degrees-zoom.html animate-cube-degrees-zoom-ref.html
+-!= animate-cube-degrees-ref.html animate-cube-degrees-zoom-ref.html
++== data:text/html,<body> about:blank
++== animate-cube-radians-zoom.html animate-cube-radians-zoom-ref.html
+diff --git a/layout/style/nsStyleTransformMatrix.cpp b/layout/style/nsStyleTransformMatrix.cpp
+--- a/layout/style/nsStyleTransformMatrix.cpp
++++ b/layout/style/nsStyleTransformMatrix.cpp
+@@ -393,32 +393,44 @@ ProcessSkew(gfx3DMatrix& aMatrix, const 
+ }
+ 
+ /* Function that converts a rotate transform into a matrix. */
+ static void
+ ProcessRotateZ(gfx3DMatrix& aMatrix, const nsCSSValue::Array* aData)
+ {
+   NS_PRECONDITION(aData->Count() == 2, "Invalid array!");
+   double theta = aData->Item(1).GetAngleValueInRadians();
++  nsAutoString str;
++  aData->Item(1).AppendToString(eCSSProperty_transform, str,
++                                nsCSSValue::eAuthorSpecified);
++  printf("                      rotate Z %s -> %.17f\n", NS_ConvertUTF16toUTF8(str).get(), theta * 180.0 / M_PI);
+   aMatrix.RotateZ(theta);
+ }
+ 
+ static void
+ ProcessRotateX(gfx3DMatrix& aMatrix, const nsCSSValue::Array* aData)
+ {
+   NS_PRECONDITION(aData->Count() == 2, "Invalid array!");
+   double theta = aData->Item(1).GetAngleValueInRadians();
++  nsAutoString str;
++  aData->Item(1).AppendToString(eCSSProperty_transform, str,
++                                nsCSSValue::eAuthorSpecified);
++  printf("                      rotate X %s -> %.17f\n", NS_ConvertUTF16toUTF8(str).get(), theta * 180.0 / M_PI);
+   aMatrix.RotateX(theta);
+ }
+ 
+ static void
+ ProcessRotateY(gfx3DMatrix& aMatrix, const nsCSSValue::Array* aData)
+ {
+   NS_PRECONDITION(aData->Count() == 2, "Invalid array!");
+   double theta = aData->Item(1).GetAngleValueInRadians();
++  nsAutoString str;
++  aData->Item(1).AppendToString(eCSSProperty_transform, str,
++                                nsCSSValue::eAuthorSpecified);
++  printf("                      rotate Y %s -> %.17f\n", NS_ConvertUTF16toUTF8(str).get(), theta * 180.0 / M_PI);
+   aMatrix.RotateY(theta);
+ }
+ 
+ static void
+ ProcessRotate3D(gfx3DMatrix& aMatrix, const nsCSSValue::Array* aData)
+ {
+   NS_PRECONDITION(aData->Count() == 5, "Invalid array!");
+ 
+@@ -615,18 +627,37 @@ ReadTransforms(const nsCSSValueList* aLi
+       continue;
+     }
+     NS_ASSERTION(currElem.GetArrayValue()->Count() >= 1,
+                  "Incoming function is too short!");
+ 
+     /* Read in a single transform matrix. */
+     MatrixForTransformFunction(result, currElem.GetArrayValue(), aContext,
+                                aPresContext, aCanStoreInRuleTree, aBounds);
++    printf("      ReadTransforms read function:\n");
++    printf("        [ %.17f %.17f %.17f %.17f ]\n",
++           result._11, result._12, result._13, result._14);
++    printf("        [ %.17f %.17f %.17f %.17f ]\n",
++           result._21, result._22, result._23, result._24);
++    printf("        [ %.17f %.17f %.17f %.17f ]\n",
++           result._31, result._32, result._33, result._34);
++    printf("        [ %.17f %.17f %.17f %.17f ]\n",
++           result._41, result._42, result._43, result._44);
++
+   }
+ 
+   float scale = float(nsPresContext::AppUnitsPerCSSPixel()) / aAppUnitsPerMatrixUnit;
+   result.Scale(1/scale, 1/scale, 1/scale);
+   result.ScalePost(scale, scale, scale);
++    printf("      ReadTransforms scaled:\n");
++    printf("        [ %.17f %.17f %.17f %.17f ]\n",
++           result._11, result._12, result._13, result._14);
++    printf("        [ %.17f %.17f %.17f %.17f ]\n",
++           result._21, result._22, result._23, result._24);
++    printf("        [ %.17f %.17f %.17f %.17f ]\n",
++           result._31, result._32, result._33, result._34);
++    printf("        [ %.17f %.17f %.17f %.17f ]\n",
++           result._41, result._42, result._43, result._44);
+   
+   return result;
+ }
+ 
+ } // namespace nsStyleTransformMatrix
+diff --git a/layout/tools/reftest/reftest-content.js b/layout/tools/reftest/reftest-content.js
+--- a/layout/tools/reftest/reftest-content.js
++++ b/layout/tools/reftest/reftest-content.js
+@@ -143,17 +143,17 @@ function StartTestURI(type, uri, timeout
+ function setupZoom(contentRootElement) {
+     if (!contentRootElement || !contentRootElement.hasAttribute('reftest-zoom'))
+         return;
+     markupDocumentViewer().fullZoom =
+         contentRootElement.getAttribute('reftest-zoom');
+ }
+ 
+ function resetZoom() {
+-    markupDocumentViewer().fullZoom = 1.0;
++    markupDocumentViewer().fullZoom = 1.5;
+ }
+ 
+ function doPrintMode(contentRootElement) {
+ #if REFTEST_B2G
+     // nsIPrintSettings not available in B2G
+     return false;
+ #else
+     // use getAttribute because className works differently in HTML and SVG

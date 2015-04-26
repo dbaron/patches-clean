@@ -634,6 +634,66 @@ diff --git a/layout/reftests/reftest.list b/layout/reftests/reftest.list
 -
 -# encodings
 -include ../../dom/encoding/test/reftest/reftest.list
+diff --git a/layout/reftests/transform-3d/animate-cube-radians-zoom-ref.html b/layout/reftests/transform-3d/animate-cube-radians-zoom-ref.html
+--- a/layout/reftests/transform-3d/animate-cube-radians-zoom-ref.html
++++ b/layout/reftests/transform-3d/animate-cube-radians-zoom-ref.html
+@@ -22,26 +22,10 @@ div {
+   margin: auto;
+   transform-origin: 50% 50% 100px;
+   background: #006;
+   /* approximately rotateY(-120deg) rotateX(60deg); */
+   transform: rotateY(-2.0944rad) rotateX(1.0472rad);
+   transform-style: preserve-3d;
+ }
+ 
+-div::before, div::after {
+-  position: absolute;
+-  top: 0; left: 0;
+-  content: "";
+-}
+-
+-div::before {
+-  background: #00f;
+-  transform: translate3D(100px, 0, 100px) rotateY(90deg);
+-}
+-
+-div::after {
+-  background: #00c;
+-  transform: translate3D(0, -100px, 100px) rotateX(90deg);
+-}
+-
+ </style>
+ <div></div>
+diff --git a/layout/reftests/transform-3d/animate-cube-radians-zoom.html b/layout/reftests/transform-3d/animate-cube-radians-zoom.html
+--- a/layout/reftests/transform-3d/animate-cube-radians-zoom.html
++++ b/layout/reftests/transform-3d/animate-cube-radians-zoom.html
+@@ -28,26 +28,10 @@ div {
+   top: 0; right: 0; bottom: 0; left: 0;
+   margin: auto;
+   transform-origin: 50% 50% 100px;
+   background: #006;
+   transform-style: preserve-3d;
+   animation: 10s HoldTransform infinite;
+ }
+ 
+-div::before, div::after {
+-  position: absolute;
+-  top: 0; left: 0;
+-  content: "";
+-}
+-
+-div::before {
+-  background: #00f;
+-  transform: translate3D(100px, 0, 100px) rotateY(90deg);
+-}
+-
+-div::after {
+-  background: #00c;
+-  transform: translate3D(0, -100px, 100px) rotateX(90deg);
+-}
+-
+ </style>
+ <div></div>
 diff --git a/layout/reftests/transform-3d/reftest.list b/layout/reftests/transform-3d/reftest.list
 --- a/layout/reftests/transform-3d/reftest.list
 +++ b/layout/reftests/transform-3d/reftest.list

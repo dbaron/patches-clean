@@ -1,0 +1,29 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Bug 276079 followup - Make check-for-references.sh accept single-quoted attribute values.
+
+This allows it to not give errors on the tests previously added in this
+bug (in 1e68627db428).
+
+diff --git a/layout/reftests/w3c-css/submitted/check-for-references.sh b/layout/reftests/w3c-css/submitted/check-for-references.sh
+--- a/layout/reftests/w3c-css/submitted/check-for-references.sh
++++ b/layout/reftests/w3c-css/submitted/check-for-references.sh
+@@ -10,17 +10,17 @@ do
+         then
+             REFTYPE="match"
+         elif [ "$TYPE" == "!=" ]
+         then
+             REFTYPE="mismatch"
+         else
+             echo "Unexpected type $TYPE for $DIRNAME/$TEST"
+         fi
+-        if grep "rel=\"$REFTYPE\"" "$DIRNAME/$TEST" | head -1 | grep -q "href=\"$REF\""
++        if grep "rel=\(\"$REFTYPE\"\|'$REFTYPE'\)" "$DIRNAME/$TEST" | head -1 | grep -q "href=\(\"$REF\"\|'$REF'\)"
+         then
+             #echo "Good link for $DIRNAME/$TEST"
+             echo -n
+         else
+             echo "Missing link for $DIRNAME/$TEST"
+             #echo "<link rel=\"$REFTYPE\" href=\"$REF\">" >> "$DIRNAME/$TEST"
+         fi
+     done

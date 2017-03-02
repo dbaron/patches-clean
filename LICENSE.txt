@@ -1,0 +1,3 @@
+This repository consists of patch files that apply against
+https://hg.mozilla.org/mozilla-central/ ; all of the changes are
+licensed under the license of the file that they are patching.

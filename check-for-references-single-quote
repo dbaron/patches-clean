@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Bug 276079 followup - Make check-for-references.sh accept single-quoted attribute values.
+Bug 276079 followup - Make check-for-references.sh accept single-quoted attribute values.  No review.
 
 This allows it to not give errors on the tests previously added in this
 bug (in 1e68627db428).

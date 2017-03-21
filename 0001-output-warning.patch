@@ -55,7 +55,7 @@ diff --git a/dom/html/HTMLContentElement.cpp b/dom/html/HTMLContentElement.cpp
 diff --git a/layout/style/StyleRule.cpp b/layout/style/StyleRule.cpp
 --- a/layout/style/StyleRule.cpp
 +++ b/layout/style/StyleRule.cpp
-@@ -1385,28 +1385,28 @@ StyleRule::SetSelectorText(const nsAStri
+@@ -1385,18 +1385,18 @@ StyleRule::SetSelectorText(const nsAStri
    nsCSSParser css(loader, sheet);
  
    // StyleRule lives inside of the Inner, it is unsafe to call WillDirty 

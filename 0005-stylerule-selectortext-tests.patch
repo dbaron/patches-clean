@@ -1,0 +1,217 @@
+# HG changeset patch
+# User Kerem KAT <keremkat@gmail.com>
+# Date 1488994739 -10800
+#      Wed Mar 08 20:38:59 2017 +0300
+# Node ID c86def88deec351322dc049ce2349571a801eb1b
+# Parent  e149e4a275453b97b8daec3b9bc8566a95659ab7
+Bug 37468 - Added web-platform tests for CSSStyleRule.selectorText property.
+
+diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta/MANIFEST.json
+--- a/testing/web-platform/meta/MANIFEST.json
++++ b/testing/web-platform/meta/MANIFEST.json
+@@ -83416,16 +83416,22 @@
+     ]
+    ],
+    "cssom/CSSRuleList.html": [
+     [
+      "/cssom/CSSRuleList.html",
+      {}
+     ]
+    ],
++   "cssom/CSSStyleRule-set-selectorText.html": [
++    [
++     "/cssom/CSSStyleRule-set-selectorText.html",
++     {}
++    ]
++   ],
+    "cssom/CSSStyleRule.html": [
+     [
+      "/cssom/CSSStyleRule.html",
+      {}
+     ]
+    ],
+    "cssom/CSSStyleSheet.html": [
+     [
+@@ -159647,16 +159653,20 @@
+   "cssom/CSSNamespaceRule.html": [
+    "701b19bdfa480a5e0997492094657e32ae11ea48",
+    "testharness"
+   ],
+   "cssom/CSSRuleList.html": [
+    "8d8b435c2398c7a9de5fd57584240e24b45b80bc",
+    "testharness"
+   ],
++  "cssom/CSSStyleRule-set-selectorText.html": [
++   "9ff28f9c7fe1a1af57902d4435fee87bd340235f",
++   "testharness"
++  ],
+   "cssom/CSSStyleRule.html": [
+    "f5767d7b9e7e32ad3b74b316e02f16ec625fa7e5",
+    "testharness"
+   ],
+   "cssom/CSSStyleSheet.html": [
+    "f0d47464da9d30e70733f09af78f3e9f982c4406",
+    "testharness"
+   ],
+diff --git a/testing/web-platform/tests/cssom/CSS-setSelectorText.html b/testing/web-platform/tests/cssom/CSS-setSelectorText.html
+new file mode 100644
+--- /dev/null
++++ b/testing/web-platform/tests/cssom/CSS-setSelectorText.html
+@@ -0,0 +1,157 @@
++<!doctype html>
++<meta charset=utf-8>
++<title></title>
++<script src=/resources/testharness.js></script>
++<script src=/resources/testharnessreport.js></script>
++<style type="text/css" id="styleElement">
++  .style0 { background-color: rgb(0, 0, 255) !important; }
++  .style1 { background-color: rgb(255, 0, 0); }
++</style>
++
++<span>
++<p></p>
++<div id="container" class="style1" lang="zh-CN" language segment="42 43">
++</div>
++</span>
++
++<script>
++  var styleSheet = document.getElementById("styleElement").sheet;
++  var rule = styleSheet.cssRules[0];
++
++  var divContainer = document.getElementById("container");
++
++  const originalStyleSelector = ".style0";
++
++var assertColors = function(selectorMatches){
++  assert_equals(getComputedStyle(divContainer).getPropertyValue('background-color'), selectorMatches ? "rgb(0, 0, 255)" : "rgb(255, 0, 0)")
++};
++
++test(function(){
++  assert_equals(typeof rule.selectorText, "string");
++  assert_equals(rule.selectorText, originalStyleSelector);
++}, "CSSStyleRule: Can read selectorText value.");
++
++[ // Invalid selector values.
++  "",
++  " ",
++  "!!",  
++  "123",
++  "-",
++  "$",
++  ":",
++  "::",
++  ":::",
++  ":selection",
++  "::selection",
++  "::gibberish",
++  ":gibberish",
++  ".",
++  "#",
++  "[]",
++  "[",
++  "()",
++  "(",
++  "{}",
++  "{",
++].forEach(function(selector) {
++  test(function() {
++    assert_equals(rule.selectorText, originalStyleSelector);
++
++    rule.selectorText = selector;
++
++    assert_equals(rule.selectorText, originalStyleSelector);
++  }, "CSSStyleRule: Invalid CSS selector: " + selector);
++});
++
++
++[ // Valid selector values.
++  {selector: "#container", isMatch: true},
++  {selector: "#container  ", isMatch: true, normalizedSelector: "#container"},
++  {selector: "  #container ", isMatch: true, normalizedSelector: "#container"},
++  {selector: ".style1", isMatch: true},
++  {selector: "div.style1", isMatch: true},
++  {selector: "div:not(#non-existing-id)", isMatch: true},
++  {selector: "div", isMatch: true},
++  {selector: "*", isMatch: true},
++
++  {selector: "#no-match", isMatch: false},
++  {selector: "ÇĞıİ", isMatch: false},
++  {selector: "🤓", isMatch: false},
++
++  {selector: "[language]", isMatch: true},
++  {selector: "[language-no]", isMatch: false},
++  {selector: "[lang=\"zh-CN\"]", isMatch: true},
++  {selector: "[lang=\"ab-CD\"]", isMatch: false},
++  {selector: "[segment~=\"43\"]", isMatch: true},
++  {selector: "[segment~=\"42\"]", isMatch: true},
++  {selector: "[lang|=\"zh\"]", isMatch: true},
++  {selector: "[lang|=\"zh-CN\"]", isMatch: true},
++  {selector: "[lang|=\"ab\"]", isMatch: false},
++  {selector: "[lang|=\"z\"]", isMatch: false},
++  {selector: "[lang^=\"z\"]", isMatch: true},
++  {selector: "[lang^=\"ab\"]", isMatch: false},
++  {selector: "[segment$=\"43\"]", isMatch: true},
++  {selector: "[segment$=\"3\"]", isMatch: true},
++  {selector: "[segment$=\"42\"]", isMatch: false},
++  {selector: "[lang*=\"-\"]", isMatch: true},
++  {selector: "[lang*=\"h-\"]", isMatch: true},
++  {selector: "[lang*=\"ab\"]", isMatch: false},
++
++  {selector: "*|div", isMatch: true, normalizedSelector: "div"},
++  {selector: "|div", isMatch: false},
++  {selector: "*|a", isMatch: false, normalizedSelector: "a"},
++  {selector: "*|*", isMatch: true, normalizedSelector: "*"},
++  {selector: "[*|lang]", isMatch: true, normalizedSelector: "[*|lang]"},
++  {selector: "[|lang]", isMatch: true, normalizedSelector: "[lang]"},
++
++  {selector: ":active", isMatch: false},
++  {selector: ":not(:active)", isMatch: true},
++  {selector: "*:not(:active)", isMatch: true, normalizedSelector: ":not(:active)"},
++  {selector: "div:not(:active)", isMatch: true},
++  {selector: "div:active", isMatch: false},
++
++  {selector: "span div", isMatch: true},
++  {selector: "span  div  ", isMatch: true, normalizedSelector: "span div"},
++  {selector: "span > div", isMatch: true},
++  {selector: "div div", isMatch: false},
++  {selector: "div > div", isMatch: false},
++  {selector: "p + div", isMatch: true},
++  {selector: "span + div", isMatch: false},
++  {selector: "p ~ div", isMatch: true},
++  {selector: "span ~ div", isMatch: false},
++  
++  {selector: ":lang(zh-CN)", isMatch: true},
++  {selector: ":lang(zh)", isMatch: true},
++  {selector: ":lang(tr-AZ)", isMatch: false},
++
++  {selector: "::after", isMatch: false, normalizedSelector: "*::after"},
++  {selector: ":after", isMatch: false, normalizedSelector: "*::after"},
++  {selector: "::before", isMatch: false, normalizedSelector: "*::before"},
++  {selector: ":before", isMatch: false, normalizedSelector: "*::before"},
++  {selector: "::first-letter", isMatch: false, normalizedSelector: "*::first-letter"},
++  {selector: ":first-letter", isMatch: false, normalizedSelector: "*::first-letter"},
++  {selector: "::first-line", isMatch: false, normalizedSelector: "*::first-line"},
++  {selector: ":first-line", isMatch: false, normalizedSelector: "*::first-line"},
++
++  {selector: "div:focus:not([lang=\"zh-CN\"])", isMatch: false},
++  {selector: "div[lang=\"zh-CN\"]:not(:focus)", isMatch: true},
++].forEach(function(testCase){
++ test(function() {
++    // Check if starting with the default value.
++    assert_equals(rule.selectorText, originalStyleSelector);
++
++    this.add_cleanup(function() {  rule.selectorText = originalStyleSelector; });
++
++    assertColors(false);
++
++    rule.selectorText = testCase.selector;
++
++    var expectedSelector = testCase.normalizedSelector ? testCase.normalizedSelector : testCase.selector;
++
++    assert_equals(rule.selectorText, expectedSelector);
++
++    assertColors(testCase.isMatch);
++  }, "CSSStyleRule: selectorText value: |" + testCase.selector + "| isMatch: " + testCase.isMatch);
++});
++
++</script>

@@ -1,0 +1,186 @@
+# HG changeset patch
+# User Kerem KAT <keremkat@gmail.com>
+# Date 1489520656 -10800
+#      Tue Mar 14 22:44:16 2017 +0300
+# Node ID e88f94216b94b1e81faa8115ef10bd8df06b7ff1
+# Parent  c86def88deec351322dc049ce2349571a801eb1b
+Output setSelectorText errors to console.
+
+diff --git a/dom/base/nsINode.cpp b/dom/base/nsINode.cpp
+--- a/dom/base/nsINode.cpp
++++ b/dom/base/nsINode.cpp
+@@ -2673,17 +2673,18 @@ nsINode::ParseSelectorList(const nsAStri
+     return selectorList;
+   }
+ 
+   nsCSSParser parser(doc->CSSLoader());
+ 
+   aRv = parser.ParseSelectorString(aSelectorString,
+                                    doc->GetDocumentURI(),
+                                    0, // XXXbz get the line number!
+-                                   &selectorList);
++                                   &selectorList,
++                                   false);
+   if (aRv.Failed()) {
+     // We hit this for syntax errors, which are quite common, so don't
+     // use NS_ENSURE_SUCCESS.  (For example, jQuery has an extended set
+     // of selectors, but it sees if we can parse them first.)
+     MOZ_ASSERT(aRv.ErrorCodeIs(NS_ERROR_DOM_SYNTAX_ERR),
+                "Unexpected error, so cached version won't return it");
+ 
+     // Change the error message to match above.
+diff --git a/dom/html/HTMLContentElement.cpp b/dom/html/HTMLContentElement.cpp
+--- a/dom/html/HTMLContentElement.cpp
++++ b/dom/html/HTMLContentElement.cpp
+@@ -226,17 +226,18 @@ HTMLContentElement::SetAttr(int32_t aNam
+ 
+     mValidSelector = true;
+     mSelectorList = nullptr;
+ 
+     nsresult rv = parser.ParseSelectorString(aValue,
+                                              doc->GetDocumentURI(),
+                                              // Bug 11240
+                                              0, // XXX get the line number!
+-                                             getter_Transfers(mSelectorList));
++                                             getter_Transfers(mSelectorList),
++                                             false);
+ 
+     // We don't want to return an exception if parsing failed because
+     // the spec does not define it as an exception case.
+     if (NS_SUCCEEDED(rv)) {
+       // Ensure that all the selectors are valid
+       nsCSSSelectorList* selectors = mSelectorList;
+       while (selectors) {
+         if (!IsValidContentSelectors(selectors->mSelectors)) {
+diff --git a/layout/style/StyleRule.cpp b/layout/style/StyleRule.cpp
+--- a/layout/style/StyleRule.cpp
++++ b/layout/style/StyleRule.cpp
+@@ -1385,28 +1385,28 @@ StyleRule::SetSelectorText(const nsAStri
+   nsCSSParser css(loader, sheet);
+ 
+   // StyleRule lives inside of the Inner, it is unsafe to call WillDirty 
+   // if sheet does not already have a unique Inner.
+   sheet->AssertHasUniqueInner();
+   sheet->WillDirty();
+   
+   nsCSSSelectorList *selectorList = nullptr;
+   
+-  nsresult result = css.ParseSelectorString(aSelectorText, sheet->GetSheetURI(), 0, &selectorList);
++  nsresult result = css.ParseSelectorString(aSelectorText, sheet->GetSheetURI(), 0, &selectorList, true);
+   if (NS_FAILED(result)) {
+     // Ignore parsing errors and continue to use the previous value.
+     return NS_OK;
+   }
+ 
+   // Replace selector.
+   delete mSelector;
+   mSelector = selectorList;
+diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
+--- a/layout/style/nsCSSParser.cpp
++++ b/layout/style/nsCSSParser.cpp
+@@ -234,17 +234,18 @@ public:
+                          nsIURI* aURL, // for error reporting
+                          uint32_t aLineNumber, // for error reporting
+                          nsCSSValue& aValue,
+                          bool aSuppressErrors /* false */);
+ 
+   nsresult ParseSelectorString(const nsSubstring& aSelectorString,
+                                nsIURI* aURL, // for error reporting
+                                uint32_t aLineNumber, // for error reporting
+-                               nsCSSSelectorList **aSelectorList);
++                               nsCSSSelectorList **aSelectorList,
++                               bool aDoOutputError);
+ 
+   already_AddRefed<nsCSSKeyframeRule>
+   ParseKeyframeRule(const nsSubstring& aBuffer,
+                     nsIURI*            aURL,
+                     uint32_t           aLineNumber);
+ 
+   bool ParseKeyframeSelectorString(const nsSubstring& aSelectorString,
+                                    nsIURI* aURL, // for error reporting
+@@ -2288,33 +2289,35 @@ CSSParserImpl::ParseFontFamilyListString
+   ReleaseScanner();
+   return familyParsed;
+ }
+ 
+ nsresult
+ CSSParserImpl::ParseSelectorString(const nsSubstring& aSelectorString,
+                                    nsIURI* aURI, // for error reporting
+                                    uint32_t aLineNumber, // for error reporting
+-                                   nsCSSSelectorList **aSelectorList)
++                                   nsCSSSelectorList **aSelectorList,
++                                   bool aDoOutputError)
+ {
+   nsCSSScanner scanner(aSelectorString, aLineNumber);
+   css::ErrorReporter reporter(scanner, mSheet, mChildLoader, aURI);
+   InitScanner(scanner, reporter, aURI, aURI, nullptr);
+ 
+   bool success = ParseSelectorList(*aSelectorList, char16_t(0));
+ 
+-  // We deliberately do not call OUTPUT_ERROR here, because all our
++  // Except for StyleRule::setSelectorText method, which sets aDoOutputError,
++  // we deliberately do not call OUTPUT_ERROR here, because all our
+   // callers map a failure return to a JS exception, and if that JS
+   // exception is caught, people don't want to see parser diagnostics;
+   // see e.g. http://bugs.jquery.com/ticket/7535
+   // It would be nice to be able to save the parser diagnostics into
+   // the exception, so that if it _isn't_ caught we can report them
+   // along with the usual uncaught-exception message, but we don't
+   // have any way to do that at present; see bug 631621.
+-  CLEAR_ERROR();
++  aDoOutputError ? OUTPUT_ERROR() : CLEAR_ERROR();
+   ReleaseScanner();
+ 
+   if (success) {
+     NS_ASSERTION(*aSelectorList, "Should have list!");
+     return NS_OK;
+   }
+ 
+   NS_ASSERTION(!*aSelectorList, "Shouldn't have list!");
+@@ -18070,20 +18073,21 @@ nsCSSParser::ParseMarginString(const nsS
+   return static_cast<CSSParserImpl*>(mImpl)->
+     ParseMarginString(aBuffer, aURI, aLineNumber, aValue, aSuppressErrors);
+ }
+ 
+ nsresult
+ nsCSSParser::ParseSelectorString(const nsSubstring&  aSelectorString,
+                                  nsIURI*             aURI,
+                                  uint32_t            aLineNumber,
+-                                 nsCSSSelectorList** aSelectorList)
++                                 nsCSSSelectorList** aSelectorList,
++                                 bool aDoOutputError)
+ {
+   return static_cast<CSSParserImpl*>(mImpl)->
+-    ParseSelectorString(aSelectorString, aURI, aLineNumber, aSelectorList);
++    ParseSelectorString(aSelectorString, aURI, aLineNumber, aSelectorList, aDoOutputError);
+ }
+ 
+ already_AddRefed<nsCSSKeyframeRule>
+ nsCSSParser::ParseKeyframeRule(const nsSubstring& aBuffer,
+                                nsIURI*            aURI,
+                                uint32_t           aLineNumber)
+ {
+   return static_cast<CSSParserImpl*>(mImpl)->
+diff --git a/layout/style/nsCSSParser.h b/layout/style/nsCSSParser.h
+--- a/layout/style/nsCSSParser.h
++++ b/layout/style/nsCSSParser.h
+@@ -214,17 +214,18 @@ public:
+ 
+   /**
+    * Parse aBuffer into a selector list.  On success, caller must
+    * delete *aSelectorList when done with it.
+    */
+   nsresult ParseSelectorString(const nsSubstring&  aSelectorString,
+                                nsIURI*             aURL,
+                                uint32_t            aLineNumber,
+-                               nsCSSSelectorList** aSelectorList);
++                               nsCSSSelectorList** aSelectorList,
++                               bool aDoOutputError);
+ 
+   /*
+    * Parse a keyframe rule (which goes inside an @keyframes rule).
+    * Return it if the parse was successful.
+    */
+   already_AddRefed<nsCSSKeyframeRule>
+   ParseKeyframeRule(const nsSubstring& aBuffer,
+                     nsIURI*            aURL,

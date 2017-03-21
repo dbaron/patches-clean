@@ -1,3 +1,6 @@
+0005-stylerule-selectortext-setter.patch
+0005-stylerule-selectortext-tests.patch
+0001-output-warning.patch
 disable-try-platforms
 bug1158560-test
 b2g-investigate-mochitest

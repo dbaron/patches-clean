@@ -9,7 +9,7 @@ Bug 37468 - Add web-platform tests for StyleRule selectorText property setter.
 diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta/MANIFEST.json
 --- a/testing/web-platform/meta/MANIFEST.json
 +++ b/testing/web-platform/meta/MANIFEST.json
-@@ -337848,16 +337848,22 @@
+@@ -337842,16 +337842,22 @@
      ]
     ],
     "cssom/CSSRuleList.html": [
@@ -32,7 +32,7 @@ diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta
     ],
     "cssom/CSSStyleSheet.html": [
      [
-@@ -578967,16 +578973,20 @@
+@@ -578963,16 +578969,20 @@
    "cssom/CSSNamespaceRule.html": [
     "701b19bdfa480a5e0997492094657e32ae11ea48",
     "testharness"

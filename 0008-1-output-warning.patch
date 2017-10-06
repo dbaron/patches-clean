@@ -3,18 +3,18 @@
 # Date 1504449317 -10800
 #      Sun Sep 03 17:35:17 2017 +0300
 # Node ID ffff5adaa4ddf09b69e612f9375026aee0bfd63a
-# Parent  ab2d700fda2b4934d24227216972dce9fac19b74
+# Parent  2d7b8b5dd174bd9db5894c6cb770e05f83e95ee3
 Bug 37468 - Add parameter to nsCSSParser::ParseSelectorString to control whether to output console error message.
 
 diff --git a/dom/base/nsINode.cpp b/dom/base/nsINode.cpp
 --- a/dom/base/nsINode.cpp
 +++ b/dom/base/nsINode.cpp
-@@ -2693,17 +2693,18 @@ nsINode::ParseSelectorList(const nsAStri
-     return selectorList;
+@@ -2742,17 +2742,18 @@ nsINode::ParseSelectorList(const nsAStri
    }
  
    nsCSSParser parser(doc->CSSLoader());
  
+   nsCSSSelectorList* selectorList = nullptr;
    aRv = parser.ParseSelectorString(aSelectorString,
                                     doc->GetDocumentURI(),
                                     0, // XXXbz get the line number!
@@ -32,7 +32,7 @@ diff --git a/dom/base/nsINode.cpp b/dom/base/nsINode.cpp
 diff --git a/dom/html/HTMLContentElement.cpp b/dom/html/HTMLContentElement.cpp
 --- a/dom/html/HTMLContentElement.cpp
 +++ b/dom/html/HTMLContentElement.cpp
-@@ -225,17 +225,18 @@ HTMLContentElement::AfterSetAttr(int32_t
+@@ -222,17 +222,18 @@ HTMLContentElement::AfterSetAttr(int32_t
        mSelectorList = nullptr;
  
        nsAutoString valueStr;
@@ -75,7 +75,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  
    bool ParseKeyframeSelectorString(const nsAString& aSelectorString,
                                     nsIURI* aURL, // for error reporting
-@@ -2171,33 +2172,35 @@ CSSParserImpl::ParseFontFamilyListString
+@@ -2174,33 +2175,35 @@ CSSParserImpl::ParseFontFamilyListString
    ReleaseScanner();
    return familyParsed;
  }
@@ -114,7 +114,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    }
  
    NS_ASSERTION(!*aSelectorList, "Shouldn't have list!");
-@@ -18064,20 +18067,21 @@ nsCSSParser::ParseMarginString(const nsA
+@@ -18052,20 +18055,21 @@ nsCSSParser::ParseMarginString(const nsA
    return static_cast<CSSParserImpl*>(mImpl)->
      ParseMarginString(aBuffer, aURI, aLineNumber, aValue, aSuppressErrors);
  }

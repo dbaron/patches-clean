@@ -1,6 +1,7 @@
-0005-stylerule-selectortext-setter.patch
-0005-stylerule-selectortext-tests.patch
-0001-output-warning.patch
+0008-1-output-warning.patch
+0008-2-StyleRule-SetSelectorText.patch
+0008-3-wpt-manifest-update.patch
+0008-5-StyleRule-SetSelectorText-tests-with-pref.patch
 disable-try-platforms
 bug1158560-test
 b2g-investigate-mochitest

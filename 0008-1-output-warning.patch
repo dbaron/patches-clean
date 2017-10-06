@@ -1,15 +1,15 @@
 # HG changeset patch
-# User Kerem KAT <keremkat@gmail.com>
-# Date 1489520656 -10800
-#      Tue Mar 14 22:44:16 2017 +0300
-# Node ID e88f94216b94b1e81faa8115ef10bd8df06b7ff1
-# Parent  c86def88deec351322dc049ce2349571a801eb1b
-Output setSelectorText errors to console.
+# User Kerem Kat <keremkat@gmail.com>
+# Date 1504449317 -10800
+#      Sun Sep 03 17:35:17 2017 +0300
+# Node ID ffff5adaa4ddf09b69e612f9375026aee0bfd63a
+# Parent  ab2d700fda2b4934d24227216972dce9fac19b74
+Bug 37468 - Add parameter to nsCSSParser::ParseSelectorString to control whether to output console error message.
 
 diff --git a/dom/base/nsINode.cpp b/dom/base/nsINode.cpp
 --- a/dom/base/nsINode.cpp
 +++ b/dom/base/nsINode.cpp
-@@ -2673,17 +2673,18 @@ nsINode::ParseSelectorList(const nsAStri
+@@ -2693,17 +2693,18 @@ nsINode::ParseSelectorList(const nsAStri
      return selectorList;
    }
  
@@ -32,59 +32,36 @@ diff --git a/dom/base/nsINode.cpp b/dom/base/nsINode.cpp
 diff --git a/dom/html/HTMLContentElement.cpp b/dom/html/HTMLContentElement.cpp
 --- a/dom/html/HTMLContentElement.cpp
 +++ b/dom/html/HTMLContentElement.cpp
-@@ -226,17 +226,18 @@ HTMLContentElement::SetAttr(int32_t aNam
+@@ -225,17 +225,18 @@ HTMLContentElement::AfterSetAttr(int32_t
+       mSelectorList = nullptr;
  
-     mValidSelector = true;
-     mSelectorList = nullptr;
+       nsAutoString valueStr;
+       aValue->ToString(valueStr);
+       nsresult rv = parser.ParseSelectorString(valueStr,
+                                                doc->GetDocumentURI(),
+                                                // Bug 11240
+                                                0, // XXX get the line number!
+-                                               getter_Transfers(mSelectorList));
++                                               getter_Transfers(mSelectorList),
++                                               false);
  
-     nsresult rv = parser.ParseSelectorString(aValue,
-                                              doc->GetDocumentURI(),
-                                              // Bug 11240
-                                              0, // XXX get the line number!
--                                             getter_Transfers(mSelectorList));
-+                                             getter_Transfers(mSelectorList),
-+                                             false);
- 
-     // We don't want to return an exception if parsing failed because
-     // the spec does not define it as an exception case.
-     if (NS_SUCCEEDED(rv)) {
-       // Ensure that all the selectors are valid
-       nsCSSSelectorList* selectors = mSelectorList;
-       while (selectors) {
-         if (!IsValidContentSelectors(selectors->mSelectors)) {
-diff --git a/layout/style/StyleRule.cpp b/layout/style/StyleRule.cpp
---- a/layout/style/StyleRule.cpp
-+++ b/layout/style/StyleRule.cpp
-@@ -1385,18 +1385,18 @@ StyleRule::SetSelectorText(const nsAStri
-   nsCSSParser css(loader, sheet);
- 
-   // StyleRule lives inside of the Inner, it is unsafe to call WillDirty 
-   // if sheet does not already have a unique Inner.
-   sheet->AssertHasUniqueInner();
-   sheet->WillDirty();
-   
-   nsCSSSelectorList *selectorList = nullptr;
-   
--  nsresult result = css.ParseSelectorString(aSelectorText, sheet->GetSheetURI(), 0, &selectorList);
-+  nsresult result = css.ParseSelectorString(aSelectorText, sheet->GetSheetURI(), 0, &selectorList, true);
-   if (NS_FAILED(result)) {
-     // Ignore parsing errors and continue to use the previous value.
-     return NS_OK;
-   }
- 
-   // Replace selector.
-   delete mSelector;
-   mSelector = selectorList;
+       // We don't want to return an exception if parsing failed because
+       // the spec does not define it as an exception case.
+       if (NS_SUCCEEDED(rv)) {
+         // Ensure that all the selectors are valid
+         nsCSSSelectorList* selectors = mSelectorList;
+         while (selectors) {
+           if (!IsValidContentSelectors(selectors->mSelectors)) {
 diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
 --- a/layout/style/nsCSSParser.cpp
 +++ b/layout/style/nsCSSParser.cpp
-@@ -234,17 +234,18 @@ public:
+@@ -231,17 +231,18 @@ public:
                           nsIURI* aURL, // for error reporting
                           uint32_t aLineNumber, // for error reporting
                           nsCSSValue& aValue,
                           bool aSuppressErrors /* false */);
  
-   nsresult ParseSelectorString(const nsSubstring& aSelectorString,
+   nsresult ParseSelectorString(const nsAString& aSelectorString,
                                 nsIURI* aURL, // for error reporting
                                 uint32_t aLineNumber, // for error reporting
 -                               nsCSSSelectorList **aSelectorList);
@@ -92,19 +69,19 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
 +                               bool aDoOutputError);
  
    already_AddRefed<nsCSSKeyframeRule>
-   ParseKeyframeRule(const nsSubstring& aBuffer,
+   ParseKeyframeRule(const nsAString& aBuffer,
                      nsIURI*            aURL,
                      uint32_t           aLineNumber);
  
-   bool ParseKeyframeSelectorString(const nsSubstring& aSelectorString,
+   bool ParseKeyframeSelectorString(const nsAString& aSelectorString,
                                     nsIURI* aURL, // for error reporting
-@@ -2288,33 +2289,35 @@ CSSParserImpl::ParseFontFamilyListString
+@@ -2171,33 +2172,35 @@ CSSParserImpl::ParseFontFamilyListString
    ReleaseScanner();
    return familyParsed;
  }
  
  nsresult
- CSSParserImpl::ParseSelectorString(const nsSubstring& aSelectorString,
+ CSSParserImpl::ParseSelectorString(const nsAString& aSelectorString,
                                     nsIURI* aURI, // for error reporting
                                     uint32_t aLineNumber, // for error reporting
 -                                   nsCSSSelectorList **aSelectorList)
@@ -137,13 +114,13 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
    }
  
    NS_ASSERTION(!*aSelectorList, "Shouldn't have list!");
-@@ -18070,20 +18073,21 @@ nsCSSParser::ParseMarginString(const nsS
+@@ -18064,20 +18067,21 @@ nsCSSParser::ParseMarginString(const nsA
    return static_cast<CSSParserImpl*>(mImpl)->
      ParseMarginString(aBuffer, aURI, aLineNumber, aValue, aSuppressErrors);
  }
  
  nsresult
- nsCSSParser::ParseSelectorString(const nsSubstring&  aSelectorString,
+ nsCSSParser::ParseSelectorString(const nsAString&  aSelectorString,
                                   nsIURI*             aURI,
                                   uint32_t            aLineNumber,
 -                                 nsCSSSelectorList** aSelectorList)
@@ -156,7 +133,7 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
  }
  
  already_AddRefed<nsCSSKeyframeRule>
- nsCSSParser::ParseKeyframeRule(const nsSubstring& aBuffer,
+ nsCSSParser::ParseKeyframeRule(const nsAString& aBuffer,
                                 nsIURI*            aURI,
                                 uint32_t           aLineNumber)
  {
@@ -164,13 +141,13 @@ diff --git a/layout/style/nsCSSParser.cpp b/layout/style/nsCSSParser.cpp
 diff --git a/layout/style/nsCSSParser.h b/layout/style/nsCSSParser.h
 --- a/layout/style/nsCSSParser.h
 +++ b/layout/style/nsCSSParser.h
-@@ -214,17 +214,18 @@ public:
+@@ -219,17 +219,18 @@ public:
  
    /**
     * Parse aBuffer into a selector list.  On success, caller must
     * delete *aSelectorList when done with it.
     */
-   nsresult ParseSelectorString(const nsSubstring&  aSelectorString,
+   nsresult ParseSelectorString(const nsAString&  aSelectorString,
                                 nsIURI*             aURL,
                                 uint32_t            aLineNumber,
 -                               nsCSSSelectorList** aSelectorList);
@@ -182,5 +159,5 @@ diff --git a/layout/style/nsCSSParser.h b/layout/style/nsCSSParser.h
     * Return it if the parse was successful.
     */
    already_AddRefed<nsCSSKeyframeRule>
-   ParseKeyframeRule(const nsSubstring& aBuffer,
+   ParseKeyframeRule(const nsAString& aBuffer,
                      nsIURI*            aURL,

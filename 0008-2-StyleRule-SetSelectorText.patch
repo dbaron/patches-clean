@@ -1,0 +1,112 @@
+# HG changeset patch
+# User Kerem Kat <keremkat@gmail.com>
+# Date 1506611444 -10800
+#      Thu Sep 28 18:10:44 2017 +0300
+# Node ID 6c70c53f742589f5d2ba60a6efe67799994fb8f1
+# Parent  316860ff8fab408611449152ee7b01c947ca0504
+Bug 37468 - Implement StyleRule::SetSelectorText method for setting CSS rule selectorText from JS.
+
+diff --git a/layout/style/StyleRule.cpp b/layout/style/StyleRule.cpp
+--- a/layout/style/StyleRule.cpp
++++ b/layout/style/StyleRule.cpp
+@@ -1386,19 +1386,55 @@ StyleRule::GetSelectorText(nsAString& aS
+   else
+     aSelectorText.Truncate();
+   return NS_OK;
+ }
+ 
+ NS_IMETHODIMP
+ StyleRule::SetSelectorText(const nsAString& aSelectorText)
+ {
+-  // XXX TBI - get a parser and re-parse the selectors,
+-  // XXX then need to re-compute the cascade
+-  // XXX and dirty sheet
++  CSSStyleSheet* sheet = GetStyleSheet();
++
++  nsIDocument* doc = GetDocument();
++  RefPtr<css::Loader> loader;
++
++  if (doc) {
++    loader = doc->CSSLoader();
++  }
++
++  // NOTE:  Passing a null loader means that the parser is always in
++  // standards mode and never in quirks mode.
++  nsCSSParser css(loader, sheet);
++
++  // StyleRule lives inside of the Inner, it is unsafe to call WillDirty
++  // if sheet does not already have a unique Inner.
++  sheet->AssertHasUniqueInner();
++  sheet->WillDirty();
++
++  nsCSSSelectorList* selectorList = nullptr;
++
++  nsresult result = css.ParseSelectorString(
++    aSelectorText, sheet->GetSheetURI(), 0, &selectorList, true);
++  if (NS_FAILED(result)) {
++    // Ignore parsing errors and continue to use the previous value.
++    return NS_OK;
++  }
++
++  // Replace selector.
++  delete mSelector;
++  mSelector = selectorList;
++
++  sheet->DidDirty();
++
++  if (doc) {
++    mozAutoDocUpdate updateBatch(doc, UPDATE_STYLE, true);
++
++    doc->StyleRuleChanged(sheet, this);
++  }
++
+   return NS_OK;
+ }
+ 
+ /* virtual */ size_t
+ StyleRule::SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const
+ {
+   size_t n = aMallocSizeOf(this);
+   n += mSelector ? mSelector->SizeOfIncludingThis(aMallocSizeOf) : 0;
+diff --git a/layout/style/StyleSheet.h b/layout/style/StyleSheet.h
+--- a/layout/style/StyleSheet.h
++++ b/layout/style/StyleSheet.h
+@@ -8,16 +8,17 @@
+ #define mozilla_StyleSheet_h
+ 
+ #include "mozilla/css/SheetParsingMode.h"
+ #include "mozilla/dom/CSSStyleSheetBinding.h"
+ #include "mozilla/net/ReferrerPolicy.h"
+ #include "mozilla/StyleBackendType.h"
+ #include "mozilla/CORSMode.h"
+ #include "mozilla/ServoUtils.h"
++#include "mozilla/StyleSheetInfo.h"
+ 
+ #include "nsICSSLoaderObserver.h"
+ #include "nsIDOMCSSStyleSheet.h"
+ #include "nsWrapperCache.h"
+ 
+ class nsIDocument;
+ class nsINode;
+ class nsIPrincipal;
+@@ -254,16 +255,20 @@ public:
+                       uint32_t* aReturn) final;
+   NS_IMETHOD DeleteRule(uint32_t aIndex) final;
+ 
+   // Changes to sheets should be inside of a WillDirty-DidDirty pair.
+   // However, the calls do not need to be matched; it's ok to call
+   // WillDirty and then make no change and skip the DidDirty call.
+   void WillDirty();
+   virtual void DidDirty() {}
++  inline void AssertHasUniqueInner() const
++  {
++    MOZ_ASSERT(mInner->mSheets.Length() == 1, "expected unique inner");
++  }
+ 
+   void AddStyleSet(const StyleSetHandle& aStyleSet);
+   void DropStyleSet(const StyleSetHandle& aStyleSet);
+ 
+   nsresult DeleteRuleFromGroup(css::GroupRule* aGroup, uint32_t aIndex);
+   nsresult InsertRuleIntoGroup(const nsAString& aRule,
+                                css::GroupRule* aGroup, uint32_t aIndex);
+ 

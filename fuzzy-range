@@ -15,20 +15,36 @@ fi
 find . -regex '.*\(ref\|crash\)test.*\.list' | while read FILENAME
 do
     echo "Processing ${FILENAME}."
-    # The following has four substitutions.
-    # The first one replaces the *first* argument to fuzzy() when it
-    #   doesn't have a - in it, by replacing it with an explicit 0-N
-    #   range.
-    # The second one does the same for the *second* argument to fuzzy().
-    # The third does the same for the *second* argument to fuzzy-if().
-    # The fourth does the same for the *third* argument to fuzzy-if().
-    sed -i -e 's/\(fuzzy(\)\([^ ,()-]*\)\(,[^ ,()]*)\)/\10-\2\3/g;s/\(fuzzy([^ ,()]*,\)\([^ ,()-]*\)\()\)/\10-\2\3/g;s/\(fuzzy-if([^ ,()]*,\)\([^ ,()-]*\)\(,[^ ,()]*)\)/\10-\2\3/g;s/\(fuzzy-if([^ ,()]*,[^ ,()]*,\)\([^ ,()-]*\)\()\)/\10-\2\3/g' "${FILENAME}"
+    # The following has four substitutions:
+    # * The first one replaces the *first* argument to fuzzy() when it doesn't
+    #   have a - in it, by replacing it with an explicit 0-N range.
+    # * The second one does the same for the *second* argument to fuzzy().
+    # * The third does the same for the *second* argument to fuzzy-if().
+    # * The fourth does the same for the *third* argument to fuzzy-if().
+    #
+    # Note that this is using perl rather than sed because perl doesn't
+    # support non-greedy matching, which is needed for the first argument to
+    # fuzzy-if.
+    perl -pi -e 's/(fuzzy\()([^ ,()-]*)(,[^ ,()]*\))/${1}0-${2}${3}/g;s/(fuzzy\([^ ,()]*,)([^ ,()-]*)(\))/${1}0-${2}${3}/g;s/(fuzzy-if\([^ ]*?,)([^ ,()-]*)(,[^ ,()]*\))/${1}0-${2}${3}/g;s/(fuzzy-if\([^ ]*?,[^ ,()]*,)([^ ,()-]*)(\))/${1}0-${2}${3}/g' "${FILENAME}"
 done
 
 diff --git a/dom/canvas/test/reftest/filters/reftest.list b/dom/canvas/test/reftest/filters/reftest.list
 --- a/dom/canvas/test/reftest/filters/reftest.list
 +++ b/dom/canvas/test/reftest/filters/reftest.list
-@@ -13,18 +13,18 @@ fuzzy-if(/^Windows\x20NT\x2010\.0/.test(
+@@ -1,30 +1,30 @@
+ default-preferences pref(canvas.filters.enabled,true)
+ 
+ == default-color.html ref.html
+ == drop-shadow.html ref.html
+ == drop-shadow-transformed.html ref.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||azureSkia,1,1500) == global-alpha.html global-alpha-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||azureSkia,0-1,0-1500) == global-alpha.html global-alpha-ref.html
+ == global-composite-operation.html global-composite-operation-ref.html
+ == liveness.html ref.html
+ == multiple-drop-shadows.html shadow-ref.html
+ == shadow.html shadow-ref.html
+ == subregion-fill-paint.html subregion-ref.html
+ == subregion-stroke-paint.html subregion-ref.html
  == svg-bbox.html svg-bbox-ref.html
  == svg-inline.html ref.html
  == svg-liveness.html ref.html
@@ -196,7 +212,7 @@ diff --git a/dom/canvas/test/reftest/reftest.list b/dom/canvas/test/reftest/reft
  == capturestream.html wrapper.html?green.png
  
 -fuzzy-if(azureSkia,16,2) fuzzy-if(Android,3,40) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,1) == 1177726-text-stroke-bounds.html 1177726-text-stroke-bounds-ref.html
-+fuzzy-if(azureSkia,0-16,0-2) fuzzy-if(Android,0-3,0-40) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,1) == 1177726-text-stroke-bounds.html 1177726-text-stroke-bounds-ref.html
++fuzzy-if(azureSkia,0-16,0-2) fuzzy-if(Android,0-3,0-40) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-1) == 1177726-text-stroke-bounds.html 1177726-text-stroke-bounds-ref.html
  
  # Canvas Filter Reftests
  include filters/reftest.list
@@ -396,8 +412,9 @@ diff --git a/dom/vr/test/reftest/reftest.list b/dom/vr/test/reftest/reftest.list
  skip-if((!winWidget&&release_or_beta)||Android||gtkWidget||!layersGPUAccelerated||/^Windows\x20NT\x206\.1/.test(http.oscpu)) == draw_rect.html wrapper.html?draw_rect.png
  # On MacOSX platform, getting different color interpolation result.
 -# For lower resolution Mac hardware, we need to adjust it to fuzzy-if(cocoaWidget,1,1200).
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||cocoaWidget,1,600) skip-if((!winWidget&&release_or_beta)||Android||gtkWidget||!layersGPUAccelerated||/^Windows\x20NT\x206\.1/.test(http.oscpu)) == change_size.html wrapper.html?change_size.png
 +# For lower resolution Mac hardware, we need to adjust it to fuzzy-if(cocoaWidget,0-1,0-1200).
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||cocoaWidget,1,600) skip-if((!winWidget&&release_or_beta)||Android||gtkWidget||!layersGPUAccelerated||/^Windows\x20NT\x206\.1/.test(http.oscpu)) == change_size.html wrapper.html?change_size.png
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||cocoaWidget,0-1,0-600) skip-if((!winWidget&&release_or_beta)||Android||gtkWidget||!layersGPUAccelerated||/^Windows\x20NT\x206\.1/.test(http.oscpu)) == change_size.html wrapper.html?change_size.png
 diff --git a/editor/reftests/reftest.list b/editor/reftests/reftest.list
 --- a/editor/reftests/reftest.list
 +++ b/editor/reftests/reftest.list
@@ -951,7 +968,7 @@ diff --git a/image/test/reftest/downscaling/reftest.list b/image/test/reftest/do
 -fuzzy(51,90) fuzzy-if(skiaContent,142,77) fuzzy-if(webrender,62-62,98-98) == downscale-svg-1f.html downscale-svg-1-ref.html?24
 +fuzzy-if(skiaContent,0-14,0-416) fuzzy-if(webrender,14-14,397-473) == downscale-svg-1a.html downscale-svg-1-ref.html?80
 +fuzzy(0-80,0-468) fuzzy-if(webrender,65-65,579-580) == downscale-svg-1b.html downscale-svg-1-ref.html?72
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,62) fuzzy-if(skiaContent,0-8,0-292) fuzzy-if(webrender,14-14,316-316) == downscale-svg-1c.html downscale-svg-1-ref.html?64
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-62) fuzzy-if(skiaContent,0-8,0-292) fuzzy-if(webrender,14-14,316-316) == downscale-svg-1c.html downscale-svg-1-ref.html?64
 +fuzzy(0-17,0-208) fuzzy-if(webrender,83-84,274-325) == downscale-svg-1d.html downscale-svg-1-ref.html?53
 +fuzzy(0-80,0-216) fuzzy-if(skiaContent,0-110,0-181) fuzzy-if(webrender,84-84,216-216) == downscale-svg-1e.html downscale-svg-1-ref.html?40
 +fuzzy(0-51,0-90) fuzzy-if(skiaContent,0-142,0-77) fuzzy-if(webrender,62-62,98-98) == downscale-svg-1f.html downscale-svg-1-ref.html?24
@@ -1304,6 +1321,19 @@ diff --git a/image/test/reftest/pngsuite-background/reftest.list b/image/test/re
 diff --git a/layout/reftests/abs-pos/reftest.list b/layout/reftests/abs-pos/reftest.list
 --- a/layout/reftests/abs-pos/reftest.list
 +++ b/layout/reftests/abs-pos/reftest.list
+@@ -1,11 +1,11 @@
+ == font-size-wrap.html font-size-wrap-ref.html
+ == abs-pos-auto-margin-1.html abs-pos-auto-margin-1-ref.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,73,1) == auto-offset-inline-block-1.html auto-offset-inline-block-1-ref.html # bug 696670
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-73,0-1) == auto-offset-inline-block-1.html auto-offset-inline-block-1-ref.html # bug 696670
+ == fieldset-1.html fieldset-1-ref.html
+ == table-1.html table-1-ref.html
+ == table-2.html table-2-ref.html
+ == table-3.html table-3-ref.html
+ == table-caption-1.html table-internal-1-ref.html
+ == table-caption-2.html table-internal-2-ref.html
+ == table-caption-3.html table-internal-3-ref.html
+ == table-caption-4.html table-internal-8-ref.html
 @@ -44,19 +44,19 @@ fuzzy-if(/^Windows\x20NT\x206\.1/.test(h
  == table-footer-group-3.html table-internal-3-ref.html
  == table-footer-group-4.html table-internal-4-ref.html
@@ -1357,7 +1387,8 @@ diff --git a/layout/reftests/async-scrolling/reftest.list b/layout/reftests/asyn
  skip-if(!asyncPan) == nested-2.html nested-2-ref.html
  skip-if(!asyncPan) == position-fixed-1.html position-fixed-1-ref.html
  skip-if(!asyncPan) == position-fixed-2.html position-fixed-2-ref.html
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,3120) skip-if(!asyncPan) == position-fixed-body.html position-fixed-body-ref.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,3120) skip-if(!asyncPan) == position-fixed-body.html position-fixed-body-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-3120) skip-if(!asyncPan) == position-fixed-body.html position-fixed-body-ref.html
  skip-if(!asyncPan) == position-fixed-cover-1.html position-fixed-cover-1-ref.html
  skip-if(!asyncPan) == position-fixed-cover-2.html position-fixed-cover-2-ref.html
  skip-if(!asyncPan) == position-fixed-cover-3.html position-fixed-cover-3-ref.html
@@ -1366,7 +1397,7 @@ diff --git a/layout/reftests/async-scrolling/reftest.list b/layout/reftests/asyn
  skip-if(!asyncPan) == split-layers-1.html split-layers-1-ref.html
  skip-if(!asyncPan) == split-layers-multi-scrolling-1.html split-layers-multi-scrolling-1-ref.html
 -fuzzy-if(skiaContent,2,240000) fuzzy-if(browserIsRemote&&!skiaContent&&(cocoaWidget||winWidget),1,240000) skip-if(!asyncPan) == split-opacity-layers-1.html split-opacity-layers-1-ref.html
-+fuzzy-if(skiaContent,0-2,0-240000) fuzzy-if(browserIsRemote&&!skiaContent&&(cocoaWidget||winWidget),1,240000) skip-if(!asyncPan) == split-opacity-layers-1.html split-opacity-layers-1-ref.html
++fuzzy-if(skiaContent,0-2,0-240000) fuzzy-if(browserIsRemote&&!skiaContent&&(cocoaWidget||winWidget),0-1,0-240000) skip-if(!asyncPan) == split-opacity-layers-1.html split-opacity-layers-1-ref.html
  skip-if(!asyncPan) == sticky-pos-scrollable-1.html sticky-pos-scrollable-1-ref.html
  skip-if(!asyncPan) == sticky-pos-scrollable-2.html sticky-pos-scrollable-2-ref.html
  skip-if(!asyncPan) == sticky-pos-scrollable-3.html sticky-pos-scrollable-3-ref.html
@@ -1592,9 +1623,23 @@ diff --git a/layout/reftests/bidi/dirAuto/reftest.list b/layout/reftests/bidi/di
  == dynamicDirAuto-setRTL-RTL6.html dynamicDirAuto-refRTL-RTL.html
  == dynamicDirAuto-setRTL-RTL7.html dynamicDirAuto-refRTL-RTL.html
  == dynamicDirAuto-setRTL-RTL8.html dynamicDirAuto-refRTL-RTL.html
-@@ -100,17 +100,17 @@ fuzzy-if(/^Windows\x20NT\x206\.1/.test(h
- fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,30,1) == dynamicDirAuto-ChangeText-RTL5.html dynamicDirAuto-refRTL-RTL.html
- fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,30,1) == dynamicDirAuto-ChangeText-RTL6.html dynamicDirAuto-refRTL-RTL.html
+@@ -90,27 +90,27 @@ fuzzy-if(Android,4,2) == dynamicDirAuto-
+ == dynamicDirAuto-ChangeText-LTR5.html dynamicDirAuto-refLTR-LTR.html
+ == dynamicDirAuto-ChangeText-LTR6.html dynamicDirAuto-refLTR-LTR.html
+ == dynamicDirAuto-ChangeText-LTR7.html dynamicDirAuto-refLTR-LTR.html
+ == dynamicDirAuto-ChangeText-LTR8.html dynamicDirAuto-refLTR-LTR.html
+ == dynamicDirAuto-ChangeText-LTR9.html dynamicDirAuto-refLTR-LTR.html
+ == dynamicDirAuto-ChangeText-LTR10.html dynamicDirAuto-refLTR-LTR.html
+ == dynamicDirAuto-ChangeText-RTL1.html dynamicDirAuto-refRTL-RTL.html
+ == dynamicDirAuto-ChangeText-RTL2.html dynamicDirAuto-refRTL-RTL.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,30,1) == dynamicDirAuto-ChangeText-RTL3.html dynamicDirAuto-refRTL-RTL.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,30,1) == dynamicDirAuto-ChangeText-RTL4.html dynamicDirAuto-refRTL-RTL.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,30,1) == dynamicDirAuto-ChangeText-RTL5.html dynamicDirAuto-refRTL-RTL.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,30,1) == dynamicDirAuto-ChangeText-RTL6.html dynamicDirAuto-refRTL-RTL.html
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-30,0-1) == dynamicDirAuto-ChangeText-RTL3.html dynamicDirAuto-refRTL-RTL.html
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-30,0-1) == dynamicDirAuto-ChangeText-RTL4.html dynamicDirAuto-refRTL-RTL.html
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-30,0-1) == dynamicDirAuto-ChangeText-RTL5.html dynamicDirAuto-refRTL-RTL.html
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-30,0-1) == dynamicDirAuto-ChangeText-RTL6.html dynamicDirAuto-refRTL-RTL.html
  == dynamicDirAuto-ChangeText-RTL7.html dynamicDirAuto-refRTL-RTL.html
  == dynamicDirAuto-ChangeText-RTL8.html dynamicDirAuto-refRTL-RTL.html
  == dynamicDirAuto-ChangeText-RTL9.html dynamicDirAuto-refRTL-RTL.html
@@ -1676,7 +1721,7 @@ diff --git a/layout/reftests/bidi/reftest.list b/layout/reftests/bidi/reftest.li
  == mirroring-03.html mirroring-03-ref.html
  == mixedChartype-00.html mixedChartype-00-ref.html
  == mixedChartype-00-j.html mixedChartype-00-ref.html
-@@ -33,17 +33,17 @@ random-if(cocoaWidget) == mirroring-02.h
+@@ -33,30 +33,30 @@ random-if(cocoaWidget) == mirroring-02.h
  == mixedChartype-02.html mixedChartype-02-ref.html
  == mixedChartype-02-j.html mixedChartype-02-ref.html
  == mixedChartype-03.html mixedChartype-03-ref.html
@@ -1686,7 +1731,7 @@ diff --git a/layout/reftests/bidi/reftest.list b/layout/reftests/bidi/reftest.li
  == unicode-bidi-isolate-basic.html unicode-bidi-isolate-basic-ref.html
  == unicode-bidi-isolate-aharon.html unicode-bidi-isolate-aharon-ref.html
 -fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,73,1) fuzzy-if(skiaContent,104,32) == unicode-bidi-plaintext.html unicode-bidi-plaintext-ref.html
-+fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,73,1) fuzzy-if(skiaContent,0-104,0-32) == unicode-bidi-plaintext.html unicode-bidi-plaintext-ref.html
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-73,0-1) fuzzy-if(skiaContent,0-104,0-32) == unicode-bidi-plaintext.html unicode-bidi-plaintext-ref.html
  == unicode-bidi-plaintext-textarea-1.html unicode-bidi-plaintext-textarea-ref.html
  == unicode-bidi-plaintext-textarea-2.html unicode-bidi-plaintext-textarea-ref.html
  == unicode-bidi-plaintext-textarea-3.html unicode-bidi-plaintext-textarea-ref.html
@@ -1695,6 +1740,21 @@ diff --git a/layout/reftests/bidi/reftest.list b/layout/reftests/bidi/reftest.li
  == with-first-letter-1b.html with-first-letter-1-ref.html
  random-if(cocoaWidget) == with-first-letter-2a.html with-first-letter-2-ref.html # bug 734313
  random-if(cocoaWidget) == with-first-letter-2b.html with-first-letter-2-ref.html # bug 734313
+ == 83958-1a.html 83958-1-ref.html
+ == 83958-1b.html 83958-1-ref.html
+ == 83958-1c.html 83958-1-ref.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,111,7) == 83958-2a.html 83958-2-ref.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,111,7) == 83958-2b.html 83958-2-ref.html
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-111,0-7) == 83958-2a.html 83958-2-ref.html
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-111,0-7) == 83958-2b.html 83958-2-ref.html
+ == 115921-1.html 115921-1-ref.html
+ == 115921-2.html 115921-2-ref.html
+ == 151407-1.html 151407-1-ref.html
+ == 151407-1a.html 151407-1-ref.html
+ == 151407-2-ltr.html 151407-2-ltr-ref.html
+ == 151407-2-rtl.html 151407-2-rtl-ref.html
+ == 151407-2-auto.html 151407-2-auto-ref.html
+ == 151407-2-empty.html 151407-2-empty-ref.html
 @@ -70,60 +70,60 @@ random-if(/^Windows\x20NT\x206\.1/.test(
  random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == 229367-3.html 229367-3-ref.html # Bug 1392106
  == 258928-1.html 258928-1-ref.html
@@ -1749,7 +1809,8 @@ diff --git a/layout/reftests/bidi/reftest.list b/layout/reftests/bidi/reftest.li
 -random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) fuzzy-if(Android,24,1) == 613149-2b.html 613149-2-ref.html # Bug 1392106
 +random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) fuzzy-if(Android,0-24,0-1) == 613149-2b.html 613149-2-ref.html # Bug 1392106
  == 613157-1.html 613157-1-ref.html
- fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,255,6) == 613157-2.html 613157-2-ref.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,255,6) == 613157-2.html 613157-2-ref.html
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-255,0-6) == 613157-2.html 613157-2-ref.html
  random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == 662288-1.html 662288-1-ref.html # Bug 1392106
  == 670226-1.html 670226-1-ref.html
  == 676245-1.html 676245-1-ref.html
@@ -1992,7 +2053,7 @@ diff --git a/layout/reftests/border-radius/reftest.list b/layout/reftests/border
  != clipping-2.html about:blank # background color clipped to inner/outer border, can't get
  # great tests for this due to antialiasing problems described in bug 466572
 -fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,1) fuzzy-if(skiaContent,17,62) fuzzy-if(webrender,30-30,70-70) == clipping-3.html clipping-3-ref.xhtml # edge of border-radius clips an underlying object's background
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,1) fuzzy-if(skiaContent,0-17,0-62) fuzzy-if(webrender,30-30,70-70) == clipping-3.html clipping-3-ref.xhtml # edge of border-radius clips an underlying object's background
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-1) fuzzy-if(skiaContent,0-17,0-62) fuzzy-if(webrender,30-30,70-70) == clipping-3.html clipping-3-ref.xhtml # edge of border-radius clips an underlying object's background
  
  # Tests for clipping the contents of replaced elements and overflow!=visible
  != clipping-4-ref.html clipping-4-notref.html
@@ -2000,22 +2061,24 @@ diff --git a/layout/reftests/border-radius/reftest.list b/layout/reftests/border
 -fuzzy-if(Android,5,54) fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,10) fuzzy-if(skiaContent,1,172) == clipping-4-image.html clipping-4-ref.html
 -fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,10) fuzzy-if(skiaContent,1,77) == clipping-4-overflow-hidden.html clipping-4-ref.html
 +fuzzy-if(true,0-1,0-20) fuzzy-if(d2d,0-72,0-196) fuzzy-if(cocoaWidget,0-1,0-180) fuzzy-if(Android,0-140,0-237) == clipping-4-canvas.html clipping-4-ref.html # bug 732535
-+fuzzy-if(Android,0-5,0-54) fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,10) fuzzy-if(skiaContent,0-1,0-172) == clipping-4-image.html clipping-4-ref.html
-+fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,10) fuzzy-if(skiaContent,0-1,0-77) == clipping-4-overflow-hidden.html clipping-4-ref.html
++fuzzy-if(Android,0-5,0-54) fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-10) fuzzy-if(skiaContent,0-1,0-172) == clipping-4-image.html clipping-4-ref.html
++fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-10) fuzzy-if(skiaContent,0-1,0-77) == clipping-4-overflow-hidden.html clipping-4-ref.html
  == clipping-5-canvas.html clipping-5-refc.html
- fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) == clipping-5-image.html clipping-5-refi.html
+-fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) == clipping-5-image.html clipping-5-refi.html
 -fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) fuzzy-if(skiaContent,1,77) == clipping-5-overflow-hidden.html clipping-5-ref.html
 -fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) fuzzy-if(Android,5,21) fuzzy-if(skiaContent,1,97) == clipping-5-refi.html clipping-5-ref.html
 -fuzzy-if(true,1,7) fuzzy-if(d2d,55,95) fuzzy-if(cocoaWidget,1,99) fuzzy-if(Android,99,115) fuzzy-if(skiaContent,1,77) == clipping-5-refc.html clipping-5-ref.html # bug 732535
 -fuzzy-if(Android,8,469) fuzzy-if(skiaContent,21,76) fuzzy-if(winWidget,144,335) fuzzy-if(webrender&&cocoaWidget,98-98,279-279) random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == clipping-6.html clipping-6-ref.html # PaintedLayer and MaskLayer with transforms that aren't identical, bug 1392106
 -fuzzy-if(true,2,29) fuzzy-if(d2d,46,71) fuzzy-if(Android,255,586) fuzzy-if(skiaContent,28,97) == clipping-7.html clipping-7-ref.html # ColorLayer and MaskLayer with transforms that aren't identical. Reference image rendered without using layers (which causes fuzzy failures).
-+fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) fuzzy-if(skiaContent,0-1,0-77) == clipping-5-overflow-hidden.html clipping-5-ref.html
-+fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) fuzzy-if(Android,0-5,0-21) fuzzy-if(skiaContent,0-1,0-97) == clipping-5-refi.html clipping-5-ref.html
+-fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) == clipping-and-zindex-1.html clipping-and-zindex-1-ref.html
+-fuzzy-if(cocoaWidget,1,4) fuzzy-if(d2d,59,342) fuzzy-if(d3d11&&advancedLayers&&!d2d,30,3) == intersecting-clipping-1-canvas.html intersecting-clipping-1-refc.html
++fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-5) == clipping-5-image.html clipping-5-refi.html
++fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-5) fuzzy-if(skiaContent,0-1,0-77) == clipping-5-overflow-hidden.html clipping-5-ref.html
++fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-5) fuzzy-if(Android,0-5,0-21) fuzzy-if(skiaContent,0-1,0-97) == clipping-5-refi.html clipping-5-ref.html
 +fuzzy-if(true,0-1,0-7) fuzzy-if(d2d,0-55,0-95) fuzzy-if(cocoaWidget,0-1,0-99) fuzzy-if(Android,0-99,0-115) fuzzy-if(skiaContent,0-1,0-77) == clipping-5-refc.html clipping-5-ref.html # bug 732535
 +fuzzy-if(Android,0-8,0-469) fuzzy-if(skiaContent,0-21,0-76) fuzzy-if(winWidget,0-144,0-335) fuzzy-if(webrender&&cocoaWidget,98-98,279-279) random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == clipping-6.html clipping-6-ref.html # PaintedLayer and MaskLayer with transforms that aren't identical, bug 1392106
 +fuzzy-if(true,0-2,0-29) fuzzy-if(d2d,0-46,0-71) fuzzy-if(Android,0-255,0-586) fuzzy-if(skiaContent,0-28,0-97) == clipping-7.html clipping-7-ref.html # ColorLayer and MaskLayer with transforms that aren't identical. Reference image rendered without using layers (which causes fuzzy failures).
- fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) == clipping-and-zindex-1.html clipping-and-zindex-1-ref.html
--fuzzy-if(cocoaWidget,1,4) fuzzy-if(d2d,59,342) fuzzy-if(d3d11&&advancedLayers&&!d2d,30,3) == intersecting-clipping-1-canvas.html intersecting-clipping-1-refc.html
++fuzzy-if(/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-5) == clipping-and-zindex-1.html clipping-and-zindex-1-ref.html
 +fuzzy-if(cocoaWidget,0-1,0-4) fuzzy-if(d2d,0-59,0-342) fuzzy-if(d3d11&&advancedLayers&&!d2d,0-30,0-3) == intersecting-clipping-1-canvas.html intersecting-clipping-1-refc.html
  == intersecting-clipping-1-image.html intersecting-clipping-1-refi.html
  == intersecting-clipping-1-overflow-hidden.html intersecting-clipping-1-ref.html
@@ -2038,7 +2101,7 @@ diff --git a/layout/reftests/border-radius/reftest.list b/layout/reftests/border
  
  # test that border-radius is reduced for scrollbars
 -fails-if(Android) fuzzy-if(asyncPan&&!layersGPUAccelerated,12,12) fuzzy-if(browserIsRemote&&layersGPUAccelerated&&/^Windows\x20NT\x206\.1/.test(http.oscpu),12,12) fuzzy-if(skiaContent&&!Android,1,50) fuzzy-if(gtkWidget&&layersGPUAccelerated,12,12) == scrollbar-clamping-1.html scrollbar-clamping-1-ref.html
-+fails-if(Android) fuzzy-if(asyncPan&&!layersGPUAccelerated,0-12,0-12) fuzzy-if(browserIsRemote&&layersGPUAccelerated&&/^Windows\x20NT\x206\.1/.test(http.oscpu),12,12) fuzzy-if(skiaContent&&!Android,0-1,0-50) fuzzy-if(gtkWidget&&layersGPUAccelerated,0-12,0-12) == scrollbar-clamping-1.html scrollbar-clamping-1-ref.html
++fails-if(Android) fuzzy-if(asyncPan&&!layersGPUAccelerated,0-12,0-12) fuzzy-if(browserIsRemote&&layersGPUAccelerated&&/^Windows\x20NT\x206\.1/.test(http.oscpu),0-12,0-12) fuzzy-if(skiaContent&&!Android,0-1,0-50) fuzzy-if(gtkWidget&&layersGPUAccelerated,0-12,0-12) == scrollbar-clamping-1.html scrollbar-clamping-1-ref.html
  fails-if(Android) == scrollbar-clamping-2.html scrollbar-clamping-2-ref.html
  
  # Test for bad corner joins.
@@ -2048,7 +2111,7 @@ diff --git a/layout/reftests/border-radius/reftest.list b/layout/reftests/border
 +fuzzy(0-255,0-20) random-if(winWidget) fuzzy-if(skiaContent,0-255,0-610) == corner-joins-2.xhtml corner-joins-2-ref.xhtml
  
 -fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),1,20) fuzzy-if(d2d,98,157) fuzzy-if(Android,166,400) fuzzy-if(skiaContent,59,146) == scroll-1.html scroll-1-ref.html # see bug 732535 #Bug 959166
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),1,20) fuzzy-if(d2d,0-98,0-157) fuzzy-if(Android,0-166,0-400) fuzzy-if(skiaContent,0-59,0-146) == scroll-1.html scroll-1-ref.html # see bug 732535 #Bug 959166
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-20) fuzzy-if(d2d,0-98,0-157) fuzzy-if(Android,0-166,0-400) fuzzy-if(skiaContent,0-59,0-146) == scroll-1.html scroll-1-ref.html # see bug 732535 #Bug 959166
  
  == transforms-1.html transforms-1-ref.html
  
@@ -2088,7 +2151,7 @@ diff --git a/layout/reftests/box-shadow/reftest.list b/layout/reftests/box-shado
 -random-if(d2d) fuzzy-if(skiaContent,1,22) == boxshadow-twocorners.html boxshadow-twocorners-ref.html
 -random-if(d2d) fuzzy-if(skiaContent,1,36) == boxshadow-threecorners.html boxshadow-threecorners-ref.html
 -fuzzy(2,440) fails-if(webrender) == boxshadow-skiprect.html boxshadow-skiprect-ref.html
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),98,152) fuzzy-if(skiaContent,0-13,0-28) fuzzy-if(webrender,19-19,50-50) == boxshadow-inner-basic.html boxshadow-inner-basic-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-98,0-152) fuzzy-if(skiaContent,0-13,0-28) fuzzy-if(webrender,19-19,50-50) == boxshadow-inner-basic.html boxshadow-inner-basic-ref.svg
 +fuzzy-if(skiaContent,0-1,0-17) random-if(layersGPUAccelerated) == boxshadow-mixed.html boxshadow-mixed-ref.html
 +fuzzy-if(skiaContent,0-1,0-17) == boxshadow-mixed-2.html boxshadow-mixed-2-ref.html
 +random-if(d2d) fuzzy-if(skiaContent,0-1,0-212) fuzzy-if(webrender,0-127,0-3528) == boxshadow-rounded-spread.html boxshadow-rounded-spread-ref.html
@@ -3223,12 +3286,13 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 +skip-if(!haveTestPlugin) fails-if(Android) fuzzy-if(winWidget&&!layersGPUAccelerated,0-102,0-535) fuzzy-if(skiaContent&&!Android,0-102,0-11000) random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) HTTP == 632423-1.html 632423-1-ref.html # Bug 1392106
  skip-if(Android) random-if(winWidget||OSX==1010) == 632781-verybig.html 632781-ref.html
  == 632781-normalsize.html 632781-ref.html
- fuzzy-if(d2d&&/^Windows\x20NT\x206\.2/.test(http.oscpu),1,559) fuzzy-if(!isDebugBuild&&gtkWidget&&/^Linux\x20i686/.test(http.oscpu),102,140) == 633344-1.html 633344-1-ref.html # bug 1103623, Linux32 from GCC update
+-fuzzy-if(d2d&&/^Windows\x20NT\x206\.2/.test(http.oscpu),1,559) fuzzy-if(!isDebugBuild&&gtkWidget&&/^Linux\x20i686/.test(http.oscpu),102,140) == 633344-1.html 633344-1-ref.html # bug 1103623, Linux32 from GCC update
 -fuzzy-if(skiaContent,1,500) == 634232-1.html 634232-1-ref.html
 -fuzzy-if(skiaContent,3,120000) == 635302-1.html 635302-1-ref.html
 -fuzzy(1,68) fuzzy-if(gtkWidget,1,70) fails-if(Android) fuzzy-if(skiaContent&&!Android,2,300) == 635373-1.html 635373-1-ref.html
 -random-if(d2d) fails-if(Android) fuzzy-if(winWidget&&!d2d,20,118) fuzzy-if(skiaContent&&!Android,2,550) == 635373-2.html 635373-2-ref.html
 -random-if(d2d) fails-if(Android) fuzzy-if(winWidget&&!d2d,20,116) fuzzy-if(skiaContent&&!Android,2,650) == 635373-3.html 635373-3-ref.html
++fuzzy-if(d2d&&/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-559) fuzzy-if(!isDebugBuild&&gtkWidget&&/^Linux\x20i686/.test(http.oscpu),0-102,0-140) == 633344-1.html 633344-1-ref.html # bug 1103623, Linux32 from GCC update
 +fuzzy-if(skiaContent,0-1,0-500) == 634232-1.html 634232-1-ref.html
 +fuzzy-if(skiaContent,0-3,0-120000) == 635302-1.html 635302-1-ref.html
 +fuzzy(0-1,0-68) fuzzy-if(gtkWidget,0-1,0-70) fails-if(Android) fuzzy-if(skiaContent&&!Android,0-2,0-300) == 635373-1.html 635373-1-ref.html
@@ -3479,7 +3543,7 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
  == 1103258-1.html 1103258-1-ref.html # assertion crash test with layers culling test
  == 1105137-1.html 1105137-1-ref.html
 -fuzzy-if(d2d,36,304) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)&&d2d,139,701) == 1116480-1-fakeitalic-overflow.html 1116480-1-fakeitalic-overflow-ref.html
-+fuzzy-if(d2d,0-36,0-304) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)&&d2d,139,701) == 1116480-1-fakeitalic-overflow.html 1116480-1-fakeitalic-overflow-ref.html
++fuzzy-if(d2d,0-36,0-304) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)&&d2d,0-139,0-701) == 1116480-1-fakeitalic-overflow.html 1116480-1-fakeitalic-overflow-ref.html
  == 1111753-1.html about:blank
  == 1114526-1.html 1114526-1-ref.html
 -fuzzy-if(skiaContent,1,800000) == 1119117-1a.html 1119117-1-ref.html
@@ -3570,9 +3634,9 @@ diff --git a/layout/reftests/bugs/reftest.list b/layout/reftests/bugs/reftest.li
 -fuzzy(2,40000) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),13,40000) fails-if(webrender) == 1316719-1a.html 1316719-1-ref.html
 -fuzzy(13,40000) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),13,40000) fails-if(webrender) == 1316719-1b.html 1316719-1-ref.html
 -fuzzy(13,40000) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),13,40000) == 1316719-1c.html 1316719-1-ref.html
-+fuzzy(0-2,0-40000) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),13,40000) fails-if(webrender) == 1316719-1a.html 1316719-1-ref.html
-+fuzzy(0-13,0-40000) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),13,40000) fails-if(webrender) == 1316719-1b.html 1316719-1-ref.html
-+fuzzy(0-13,0-40000) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),13,40000) == 1316719-1c.html 1316719-1-ref.html
++fuzzy(0-2,0-40000) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-13,0-40000) fails-if(webrender) == 1316719-1a.html 1316719-1-ref.html
++fuzzy(0-13,0-40000) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-13,0-40000) fails-if(webrender) == 1316719-1b.html 1316719-1-ref.html
++fuzzy(0-13,0-40000) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-13,0-40000) == 1316719-1c.html 1316719-1-ref.html
  skip-if(Android) != 1318769-1.html 1318769-1-ref.html
  == 1322512-1.html 1322512-1-ref.html
  skip-if(isDebugBuild&&winWidget) == 1330051.svg 1330051-ref.svg
@@ -3632,7 +3696,21 @@ diff --git a/layout/reftests/canvas/reftest.list b/layout/reftests/canvas/reftes
  
  asserts-if(cocoaWidget,0-2) == size-change-1.html size-change-1-ref.html
  
-@@ -34,17 +34,17 @@ fuzzy-if(/^Windows\x20NT\x2010\.0/.test(
+@@ -22,29 +22,29 @@ random-if(cocoaWidget) == subpixel-1.htm
+ == text-rtl-end.html text-rtl-left.html
+ != text-rtl-left.html text-rtl-right.html
+ 
+ == text-ltr-left.html text-rtl-left.html
+ 
+ == text-ltr-alignment-test.html text-ltr-alignment-ref.html
+ == text-rtl-alignment-test.html text-rtl-alignment-ref.html
+ 
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,256) == text-horzline-with-bottom.html text-horzline.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,256) fails-if(azureSkia&&OSX) == text-horzline-with-top.html text-horzline.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-256) == text-horzline-with-bottom.html text-horzline.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-256) fails-if(azureSkia&&OSX) == text-horzline-with-top.html text-horzline.html
+ 
+ != text-big-stroke.html text-blank.html
  != text-big-stroke.html text-big-fill.html
  
  == text-context-state-test.html text-context-state-ref.html
@@ -3651,7 +3729,22 @@ diff --git a/layout/reftests/canvas/reftest.list b/layout/reftests/canvas/reftes
  != text-font-lang.html text-font-lang-notref.html
  
  == text-measure.html text-measure-ref.html
-@@ -79,35 +79,35 @@ fuzzy-if(/^Windows\x20NT\x2010\.0/.test(
+@@ -65,49 +65,49 @@ random != text-emoji.html text-emoji-not
+ == linear-gradient-1b.html linear-gradient-1-ref.html
+ 
+ == zero-dimensions.html zero-dimensions-ref.html
+ 
+ != evenodd-fill-1.html nonzero-fill-1.html
+ == evenodd-fill-1.html evenodd-fill-ref.html
+ 
+ == dash-sanity.html data:text/html,<body>Pass
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||azureSkia||skiaContent,9,470) random-if(Android) fails-if(webrender) == dash-1.html dash-1-ref.svg  # Bug 668412 (really is android-specific, not IPC-specific)
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||azureSkia||skiaContent,0-9,0-470) random-if(Android) fails-if(webrender) == dash-1.html dash-1-ref.svg  # Bug 668412 (really is android-specific, not IPC-specific)
+ 
+ == ctm-sanity.html data:text/html,<body>Pass
+ == ctm-singular-sanity.html data:text/html,<body>Pass
+ == ctm-1.html ctm-1-ref.html
+ 
  == 672646-alpha-radial-gradient.html 672646-alpha-radial-gradient-ref.html
  skip-if(verify&&/^Windows\x20NT\x2010\.0/.test(http.oscpu)) == 674003-alpha-radial-gradient-superlum.html 674003-alpha-radial-gradient-superlum-ref.html
  
@@ -3668,7 +3761,7 @@ diff --git a/layout/reftests/canvas/reftest.list b/layout/reftests/canvas/reftes
  
  # You get a little bit of rounding fuzz on OSX from transforming the paths between user space and device space
 -fuzzy-if(d2d,12,21) fuzzy-if(skiaContent,16,84) fuzzy-if(d2d&&/^Windows\x20NT\x2010\.0/.test(http.oscpu),2,153) == 784573-1.html 784573-1-ref.html
-+fuzzy-if(d2d,0-12,0-21) fuzzy-if(skiaContent,0-16,0-84) fuzzy-if(d2d&&/^Windows\x20NT\x2010\.0/.test(http.oscpu),2,153) == 784573-1.html 784573-1-ref.html
++fuzzy-if(d2d,0-12,0-21) fuzzy-if(skiaContent,0-16,0-84) fuzzy-if(d2d&&/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-2,0-153) == 784573-1.html 784573-1-ref.html
  
  == 802658-1.html 802658-1-ref.html
  == 1074733-1.html 1074733-1-ref.html
@@ -3746,7 +3839,7 @@ diff --git a/layout/reftests/css-blending/reftest.list b/layout/reftests/css-ble
  pref(layout.css.mix-blend-mode.enabled,true) fuzzy-if(webrender&&winWidget,27-27,2-2) == blend-difference-stacking.html blend-difference-stacking-ref.html
  
 -fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,10000) fuzzy-if(skiaContent,1,30000) pref(layout.css.background-blend-mode.enabled,true) == background-blending-alpha.html background-blending-alpha-ref.html
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,10000) fuzzy-if(skiaContent,0-1,0-30000) pref(layout.css.background-blend-mode.enabled,true) == background-blending-alpha.html background-blending-alpha-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-10000) fuzzy-if(skiaContent,0-1,0-30000) pref(layout.css.background-blend-mode.enabled,true) == background-blending-alpha.html background-blending-alpha-ref.html
  pref(layout.css.background-blend-mode.enabled,true) fuzzy-if(webrender,1-1,1411-7888) == background-blending-gradient-color.html background-blending-gradient-color-ref.html
 -fuzzy-if(azureSkiaGL,3,7597) fuzzy-if(cocoaWidget,3,7597) fuzzy-if(d2d,1,3800) fuzzy-if(d3d11,1,4200) fuzzy-if(skiaContent,2,9450) fuzzy-if(webrender,1-1,3938-23663) pref(layout.css.background-blend-mode.enabled,true) == background-blending-gradient-gradient.html background-blending-gradient-gradient-ref.html
 -fuzzy-if(azureSkiaGL,2,7174) fuzzy-if(webrender,1-1,1312-7887) pref(layout.css.background-blend-mode.enabled,true) == background-blending-gradient-image.html background-blending-gradient-color-ref.html
@@ -3770,9 +3863,10 @@ diff --git a/layout/reftests/css-blending/reftest.list b/layout/reftests/css-ble
 +fuzzy-if(azureSkia||gtkWidget,0-2,0-9600) fuzzy-if(d2d,0-1,0-8000) pref(layout.css.background-blend-mode.enabled,true) == background-blending-color.html background-blending-color-ref.svg
  pref(layout.css.background-blend-mode.enabled,true) == background-blending-darken.html background-blending-darken-ref.svg
  pref(layout.css.background-blend-mode.enabled,true) == background-blending-difference.html background-blending-difference-ref.svg
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,1,1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-exclusion.html background-blending-exclusion-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,1,1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-exclusion.html background-blending-exclusion-ref.svg
 -fuzzy-if(cocoaWidget||d2d,1,1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-hard-light.html background-blending-hard-light-ref.svg
 -fuzzy-if(d2d,1,9600) fuzzy-if(azureSkia||gtkWidget,1,11200) fuzzy-if(webrender,1-1,9600-11200) pref(layout.css.background-blend-mode.enabled,true) == background-blending-hue.html background-blending-hue-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,0-1,0-1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-exclusion.html background-blending-exclusion-ref.svg
 +fuzzy-if(cocoaWidget||d2d,0-1,0-1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-hard-light.html background-blending-hard-light-ref.svg
 +fuzzy-if(d2d,0-1,0-9600) fuzzy-if(azureSkia||gtkWidget,0-1,0-11200) fuzzy-if(webrender,1-1,9600-11200) pref(layout.css.background-blend-mode.enabled,true) == background-blending-hue.html background-blending-hue-ref.svg
  pref(layout.css.background-blend-mode.enabled,true) == background-blending-lighten.html background-blending-lighten-ref.svg
@@ -3780,10 +3874,11 @@ diff --git a/layout/reftests/css-blending/reftest.list b/layout/reftests/css-ble
 +fuzzy-if(d2d,0-1,0-8000) fuzzy-if(azureSkia||gtkWidget,0-2,0-9600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-luminosity.html background-blending-luminosity-ref.svg
  pref(layout.css.background-blend-mode.enabled,true) == background-blending-multiply.html background-blending-multiply-ref.svg
  pref(layout.css.background-blend-mode.enabled,true) == background-blending-normal.html background-blending-normal-ref.svg
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||azureSkia||gtkWidget,1,1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-overlay.html background-blending-overlay-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||azureSkia||gtkWidget,1,1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-overlay.html background-blending-overlay-ref.svg
 -fuzzy-if(d2d,1,3200) fuzzy-if(azureSkia||gtkWidget,2,12800) pref(layout.css.background-blend-mode.enabled,true) == background-blending-saturation.html background-blending-saturation-ref.svg
 -fuzzy-if(d2d||azureSkia||gtkWidget,1,1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-screen.html background-blending-screen-ref.svg
 -fuzzy-if(d2d||azureSkia||gtkWidget,10,4800) pref(layout.css.background-blend-mode.enabled,true) == background-blending-soft-light.html background-blending-soft-light-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||azureSkia||gtkWidget,0-1,0-1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-overlay.html background-blending-overlay-ref.svg
 +fuzzy-if(d2d,0-1,0-3200) fuzzy-if(azureSkia||gtkWidget,0-2,0-12800) pref(layout.css.background-blend-mode.enabled,true) == background-blending-saturation.html background-blending-saturation-ref.svg
 +fuzzy-if(d2d||azureSkia||gtkWidget,0-1,0-1600) pref(layout.css.background-blend-mode.enabled,true) == background-blending-screen.html background-blending-screen-ref.svg
 +fuzzy-if(d2d||azureSkia||gtkWidget,0-10,0-4800) pref(layout.css.background-blend-mode.enabled,true) == background-blending-soft-light.html background-blending-soft-light-ref.svg
@@ -3827,7 +3922,7 @@ diff --git a/layout/reftests/css-blending/reftest.list b/layout/reftests/css-ble
  
  pref(layout.css.background-blend-mode.enabled,true) == background-blend-mode-body-image.html background-blend-mode-body-image-ref.html
 -fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,16408) fuzzy-if(Android,4,768) fuzzy-if(gtkWidget,1,132) fuzzy-if(skiaContent,1,800) fuzzy-if(d2d,1,33208) pref(layout.css.background-blend-mode.enabled,true) == background-blend-mode-body-transparent-image.html background-blend-mode-body-transparent-image-ref.html
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,16408) fuzzy-if(Android,0-4,0-768) fuzzy-if(gtkWidget,0-1,0-132) fuzzy-if(skiaContent,0-1,0-800) fuzzy-if(d2d,0-1,0-33208) pref(layout.css.background-blend-mode.enabled,true) == background-blend-mode-body-transparent-image.html background-blend-mode-body-transparent-image-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-16408) fuzzy-if(Android,0-4,0-768) fuzzy-if(gtkWidget,0-1,0-132) fuzzy-if(skiaContent,0-1,0-800) fuzzy-if(d2d,0-1,0-33208) pref(layout.css.background-blend-mode.enabled,true) == background-blend-mode-body-transparent-image.html background-blend-mode-body-transparent-image-ref.html
  
  pref(layout.css.background-blend-mode.enabled,true) == background-blending-moz-element.html background-blending-moz-element-ref.html
  
@@ -4166,9 +4261,9 @@ diff --git a/layout/reftests/css-gradients/reftest.list b/layout/reftests/css-gr
 +fuzzy(0-3,0-7860) fuzzy-if(cocoaWidget,0-5,0-89041) fuzzy-if(azureSkiaGL,0-4,0-90000) == radial-2d.html radial-2-ref.html
 +fuzzy-if(cocoaWidget,0-1,0-28) fuzzy-if(winWidget,0-1,0-18) fuzzy-if(skiaContent,0-1,0-50) == radial-position-1b.html radial-position-1-ref.html
 +fuzzy-if(cocoaWidget,0-4,0-22317) fuzzy-if(Android,0-8,0-771) == radial-shape-closest-corner-1a.html radial-shape-closest-corner-1-ref.html
-+fuzzy(0-1,0-238) fuzzy-if(cocoaWidget,0-4,0-22608) fuzzy-if((/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\./.test(http.oscpu))&&d2d,1,336) fuzzy-if(Android,0-8,0-787) fuzzy-if(skiaContent,0-2,0-300) == radial-shape-closest-corner-1b.html radial-shape-closest-corner-1-ref.html
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) fuzzy-if(Android,0-17,0-3880) == radial-shape-closest-side-1a.html radial-shape-closest-side-1-ref.html
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),1,5) fuzzy-if(Android,0-17,0-3880) == radial-shape-closest-side-1b.html radial-shape-closest-side-1-ref.html
++fuzzy(0-1,0-238) fuzzy-if(cocoaWidget,0-4,0-22608) fuzzy-if((/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\./.test(http.oscpu))&&d2d,0-1,0-336) fuzzy-if(Android,0-8,0-787) fuzzy-if(skiaContent,0-2,0-300) == radial-shape-closest-corner-1b.html radial-shape-closest-corner-1-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-5) fuzzy-if(Android,0-17,0-3880) == radial-shape-closest-side-1a.html radial-shape-closest-side-1-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-5) fuzzy-if(Android,0-17,0-3880) == radial-shape-closest-side-1b.html radial-shape-closest-side-1-ref.html
 +fuzzy-if(Android,0-8,0-771) == radial-shape-farthest-corner-1a.html radial-shape-farthest-corner-1-ref.html
 +fails-if(gtkWidget&&/x86_64-/.test(xulRuntime.XPCOMABI)) fuzzy(0-1,0-1622) fuzzy-if(cocoaWidget,0-2,0-41281) fuzzy-if(Android,0-8,0-1091) fuzzy-if(skiaContent,0-2,0-500) == radial-shape-farthest-corner-1b.html radial-shape-farthest-corner-1-ref.html
 +fuzzy-if(Android,0-17,0-13320) == radial-shape-farthest-side-1a.html radial-shape-farthest-side-1-ref.html
@@ -4479,7 +4574,7 @@ diff --git a/layout/reftests/css-placeholder/reftest.list b/layout/reftests/css-
 diff --git a/layout/reftests/css-ruby/reftest.list b/layout/reftests/css-ruby/reftest.list
 --- a/layout/reftests/css-ruby/reftest.list
 +++ b/layout/reftests/css-ruby/reftest.list
-@@ -19,17 +19,17 @@
+@@ -19,44 +19,44 @@
  test-pref(dom.meta-viewport.enabled,true) test-pref(font.size.inflation.emPerLine,15) test-pref(font.size.inflation.forceEnabled,true) test-pref(font.size.inflation.lineThreshold,0) == inflated-ruby-1.html inflated-ruby-1-ref.html
  == intra-level-whitespace-1.html intra-level-whitespace-1-ref.html
  == intra-level-whitespace-2.html intra-level-whitespace-2-ref.html
@@ -4493,12 +4588,18 @@ diff --git a/layout/reftests/css-ruby/reftest.list b/layout/reftests/css-ruby/re
  == line-breaking-1.html line-breaking-1-ref.html
  == line-breaking-2.html line-breaking-2-ref.html
  == line-breaking-3.html line-breaking-3-ref.html
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),3,2) == line-break-suppression-1.html line-break-suppression-1-ref.html
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),3,2) == line-break-suppression-2.html line-break-suppression-2-ref.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),3,2) == line-break-suppression-1.html line-break-suppression-1-ref.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),3,2) == line-break-suppression-2.html line-break-suppression-2-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-3,0-2) == line-break-suppression-1.html line-break-suppression-1-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-3,0-2) == line-break-suppression-2.html line-break-suppression-2-ref.html
  == line-break-suppression-3.html line-break-suppression-3-ref.html
  == line-break-suppression-4.html line-break-suppression-4-ref.html
  == line-break-suppression-5.html line-break-suppression-5-ref.html
-@@ -41,17 +41,17 @@ test-pref(font.minimum-size.ja,16) == mi
+ == line-height-1.html line-height-1-ref.html
+ == line-height-2.html line-height-2-ref.html
+ == line-height-3.html line-height-3-ref.html
+ == line-height-4.html line-height-4-ref.html
+ test-pref(font.minimum-size.ja,16) == min-font-size-1.html min-font-size-1-ref.html
  load nested-ruby-1.html
  == no-transform.html no-transform-ref.html
  == relative-positioning-1.html relative-positioning-1-ref.html
@@ -4516,13 +4617,19 @@ diff --git a/layout/reftests/css-ruby/reftest.list b/layout/reftests/css-ruby/re
  == ruby-position-vertical-lr.html ruby-position-vertical-lr-ref.html
  == ruby-position-vertical-rl.html ruby-position-vertical-rl-ref.html
  != ruby-reflow-1-opaqueruby.html ruby-reflow-1-noruby.html
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),13,1) == ruby-reflow-1-transparentruby.html ruby-reflow-1-noruby.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),13,1) == ruby-reflow-1-transparentruby.html ruby-reflow-1-noruby.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-13,0-1) == ruby-reflow-1-transparentruby.html ruby-reflow-1-noruby.html
+ == ruby-span-1.html ruby-span-1-ref.html
+ == ruby-whitespace-1.html ruby-whitespace-1-ref.html
+ == ruby-whitespace-2.html ruby-whitespace-2-ref.html
+ == bug1181890.html bug1181890-ref.html
+ != bug1181890.html bug1181890-notref.html
 diff --git a/layout/reftests/css-shapes/reftest.list b/layout/reftests/css-shapes/reftest.list
 --- a/layout/reftests/css-shapes/reftest.list
 +++ b/layout/reftests/css-shapes/reftest.list
 @@ -1,33 +1,33 @@
 -fuzzy-if(skiaContent,1,161) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),16,161) pref(layout.css.shape-outside.enabled,true) == dynamic-shape-outside-1.html dynamic-shape-outside-1-ref.html
-+fuzzy-if(skiaContent,0-1,0-161) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),16,161) pref(layout.css.shape-outside.enabled,true) == dynamic-shape-outside-1.html dynamic-shape-outside-1-ref.html
++fuzzy-if(skiaContent,0-1,0-161) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-16,0-161) pref(layout.css.shape-outside.enabled,true) == dynamic-shape-outside-1.html dynamic-shape-outside-1-ref.html
  
  == shape-outside-empty-circle-1.html shape-outside-empty-point-ref.html
  == shape-outside-empty-circle-2.html shape-outside-empty-circle-ref.html
@@ -5095,7 +5202,7 @@ diff --git a/layout/reftests/flexbox/reftest.list b/layout/reftests/flexbox/reft
  # Tests for flexbox in an iframe that gets resized.
 -fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,16) fuzzy-if(skiaContent,1,5) == flexbox-resizeviewport-1.xhtml flexbox-resizeviewport-1-ref.xhtml
 -fuzzy-if(skiaContent,1,5) == flexbox-resizeviewport-2.xhtml flexbox-resizeviewport-2-ref.xhtml
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,16) fuzzy-if(skiaContent,0-1,0-5) == flexbox-resizeviewport-1.xhtml flexbox-resizeviewport-1-ref.xhtml
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-16) fuzzy-if(skiaContent,0-1,0-5) == flexbox-resizeviewport-1.xhtml flexbox-resizeviewport-1-ref.xhtml
 +fuzzy-if(skiaContent,0-1,0-5) == flexbox-resizeviewport-2.xhtml flexbox-resizeviewport-2-ref.xhtml
  
  # Tests for flexbox styling on things that don't support it
@@ -5741,14 +5848,17 @@ diff --git a/layout/reftests/generated-content/reftest.list b/layout/reftests/ge
 diff --git a/layout/reftests/image-element/reftest.list b/layout/reftests/image-element/reftest.list
 --- a/layout/reftests/image-element/reftest.list
 +++ b/layout/reftests/image-element/reftest.list
-@@ -10,40 +10,40 @@ fails-if(azureSkia) fails-if(cocoaWidget
+@@ -8,42 +8,42 @@ random == bug-364968.html bug-364968-ref
+ fails-if(azureSkia) fails-if(cocoaWidget) == canvas-outside-document-invalidate-02.html about:blank # See bug 666800
+ #fails with Skia due to Skia bug http://code.google.com/p/skia/issues/detail?id=568
  fuzzy-if(webrender&&!gtkWidget,117-129,54-54) == element-paint-simple.html element-paint-simple-ref.html
  == element-paint-repeated.html element-paint-repeated-ref.html
  == element-paint-recursion.html element-paint-recursion-ref.html
  == element-paint-continuation.html element-paint-continuation-ref.html
  == element-paint-transform-01.html element-paint-transform-01-ref.html
  random-if(d2d) == element-paint-transform-02.html element-paint-transform-02-ref.html # bug 587133
- fuzzy-if(d2d&&/^Windows\x20NT\x206\.1/.test(http.oscpu),16,90) == element-paint-background-size-01.html element-paint-background-size-01-ref.html
+-fuzzy-if(d2d&&/^Windows\x20NT\x206\.1/.test(http.oscpu),16,90) == element-paint-background-size-01.html element-paint-background-size-01-ref.html
++fuzzy-if(d2d&&/^Windows\x20NT\x206\.1/.test(http.oscpu),0-16,0-90) == element-paint-background-size-01.html element-paint-background-size-01-ref.html
  == element-paint-background-size-02.html element-paint-background-size-02-ref.html
 -fuzzy-if(skiaContent,255,4) == element-paint-transform-repeated.html element-paint-transform-repeated-ref.html
 -fuzzy-if(d2d,255,24) == element-paint-transform-03.html element-paint-transform-03-ref.html
@@ -6542,7 +6652,7 @@ diff --git a/layout/reftests/reftest-sanity/reftest.list b/layout/reftests/refte
 diff --git a/layout/reftests/scrolling/reftest.list b/layout/reftests/scrolling/reftest.list
 --- a/layout/reftests/scrolling/reftest.list
 +++ b/layout/reftests/scrolling/reftest.list
-@@ -1,15 +1,15 @@
+@@ -1,46 +1,46 @@
  HTTP == deferred-anchor.xhtml#d deferred-anchor-ref.xhtml#d
 -fuzzy-if(xulRuntime.widgetToolkit=="gtk3",1,23) == deferred-anchor2.xhtml deferred-anchor-ref.xhtml#d # bug 1182632
 +fuzzy-if(xulRuntime.widgetToolkit=="gtk3",0-1,0-23) == deferred-anchor2.xhtml deferred-anchor-ref.xhtml#d # bug 1182632
@@ -6554,14 +6664,16 @@ diff --git a/layout/reftests/scrolling/reftest.list b/layout/reftests/scrolling/
 -random-if(gtkWidget) fuzzy-if(Android,3,60) HTTP == fixed-text-1.html fixed-text-1.html?ref
 +random-if(gtkWidget) fuzzy-if(Android,0-3,0-60) HTTP == fixed-text-1.html fixed-text-1.html?ref
  HTTP == fixed-text-2.html fixed-text-2.html?ref
- random-if(Android) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,12) == iframe-border-radius.html iframe-border-radius-ref.html # bug 760269
+-random-if(Android) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,12) == iframe-border-radius.html iframe-border-radius-ref.html # bug 760269
++random-if(Android) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-12) == iframe-border-radius.html iframe-border-radius-ref.html # bug 760269
  random-if(Android) HTTP == image-1.html image-1.html?ref
  random-if(Android) HTTP == opacity-mixed-scrolling-1.html opacity-mixed-scrolling-1.html?ref # bug 760269
  random-if(cocoaWidget) HTTP == opacity-mixed-scrolling-2.html opacity-mixed-scrolling-2.html?ref # see bug 625357
  pref(layout.css.scroll-behavior.enabled,true) pref(layout.css.scroll-behavior.property-enabled,true) == scroll-behavior-1.html scroll-behavior-1.html?ref
  pref(layout.css.scroll-behavior.enabled,true) pref(layout.css.scroll-behavior.property-enabled,true) == scroll-behavior-2.html scroll-behavior-2.html?ref
  pref(layout.css.scroll-behavior.enabled,true) pref(layout.css.scroll-behavior.property-enabled,true) == scroll-behavior-3.html scroll-behavior-3.html?ref
-@@ -18,29 +18,29 @@ pref(layout.css.scroll-behavior.enabled,
+ pref(layout.css.scroll-behavior.enabled,true) pref(layout.css.scroll-behavior.property-enabled,true) == scroll-behavior-4.html scroll-behavior-4.html?ref
+ pref(layout.css.scroll-behavior.enabled,true) pref(layout.css.scroll-behavior.property-enabled,true) == scroll-behavior-5.html scroll-behavior-5.html?ref
  pref(layout.css.scroll-behavior.enabled,true) pref(layout.css.scroll-behavior.property-enabled,true) == scroll-behavior-6.html scroll-behavior-6.html?ref
  pref(layout.css.scroll-behavior.enabled,true) pref(layout.css.scroll-behavior.property-enabled,true) == scroll-behavior-7.html scroll-behavior-7.html?ref
  pref(layout.css.scroll-behavior.enabled,true) pref(layout.css.scroll-behavior.property-enabled,true) == scroll-behavior-8.html scroll-behavior-8.html?ref
@@ -6703,7 +6815,7 @@ diff --git a/layout/reftests/svg/as-image/reftest.list b/layout/reftests/svg/as-
 +fuzzy-if(winWidget&&!d2d,0-1,0-10000) fuzzy-if(azureSkia,0-1,0-10000) fuzzy-if(Android,0-1,0-10000) == canvas-drawImage-alpha-1.html canvas-drawImage-alpha-1-ref.html
  #Same as scale-2a but with globalAlpha:
 -fuzzy(1,2) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,7018) fuzzy-if(azureSkia,1,40000) fuzzy-if(webrender&&winWidget,1-1,39743-39743) == canvas-drawImage-alpha-2.html canvas-drawImage-alpha-2-ref.html
-+fuzzy(0-1,0-2) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,7018) fuzzy-if(azureSkia,0-1,0-40000) fuzzy-if(webrender&&winWidget,1-1,39743-39743) == canvas-drawImage-alpha-2.html canvas-drawImage-alpha-2-ref.html
++fuzzy(0-1,0-2) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-7018) fuzzy-if(azureSkia,0-1,0-40000) fuzzy-if(webrender&&winWidget,1-1,39743-39743) == canvas-drawImage-alpha-2.html canvas-drawImage-alpha-2-ref.html
  
  == canvas-drawImage-slice-1a.html lime100x100-ref.html
  == canvas-drawImage-slice-1b.html lime100x100-ref.html
@@ -6794,7 +6906,7 @@ diff --git a/layout/reftests/svg/as-image/reftest.list b/layout/reftests/svg/as-
  # doesn't load (or execute scripts) in SVG-as-an-image.
  # The "!=" lines are to test that the SVG content, when viewed directly (not as
  # an image), does actually render its external content (making it look
-@@ -151,18 +151,18 @@ fuzzy-if(webrender,255-255,12-12) == img
+@@ -151,38 +151,38 @@ fuzzy-if(webrender,255-255,12-12) == img
  == img-novb-widthAndHeight-meet-1-px.html  img-novb-widthAndHeight-all-1-ref.html
  == img-novb-widthAndHeight-slice-1-em.html img-novb-widthAndHeight-all-1-ref.html
  == img-novb-widthAndHeight-slice-1-px.html img-novb-widthAndHeight-all-1-ref.html
@@ -6815,6 +6927,30 @@ diff --git a/layout/reftests/svg/as-image/reftest.list b/layout/reftests/svg/as-
  == img-fragment-2a.html  img-fragment-2-ref.html
  == img-fragment-2b.html  img-fragment-2-ref.html
  == img-fragment-2c.html  img-fragment-2-ref.html
+ 
+ == list-simple-1.html list-simple-1-ref.html
+ 
+ == svg-image-simple-1.svg lime100x100.svg
+ == svg-image-simple-2.svg lime100x100.svg
+ == svg-image-simple-3.svg lime100x100.svg
+ 
+ # tests for <svg> files that include themselves as an <image>
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,1) == svg-image-recursive-1a.svg  svg-image-recursive-1-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,1) == svg-image-recursive-1b.svg  svg-image-recursive-1-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,1) == svg-image-recursive-2a.svg  svg-image-recursive-2-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,1) == svg-image-recursive-2b.html svg-image-recursive-2-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-1) == svg-image-recursive-1a.svg  svg-image-recursive-1-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-1) == svg-image-recursive-1b.svg  svg-image-recursive-1-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-1) == svg-image-recursive-2a.svg  svg-image-recursive-2-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-1) == svg-image-recursive-2b.html svg-image-recursive-2-ref.svg
+ 
+ # tests for external resources vs. data URIs in SVG as an image
+ == svg-image-datauri-1.html            lime100x100.svg
+ HTTP == svg-image-datauri-1.html       lime100x100.svg
+ == svg-image-external-1.html           blue100x100.svg
+ HTTP == svg-image-external-1.html      blue100x100.svg
+ == svg-stylesheet-datauri-1.html       lime100x100.svg
+ HTTP == svg-stylesheet-datauri-1.html  lime100x100.svg
 @@ -191,17 +191,17 @@ HTTP == svg-stylesheet-external-1.html b
  
  # tests for SVG <image> that should have a synthetic viewBox
@@ -6862,7 +6998,7 @@ diff --git a/layout/reftests/svg/filters/css-filter-chains/reftest.list b/layout
  
  # Some platforms render this complex filter chain a little differently, and that's ok.
 -fuzzy(5,13638) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)&&layersGPUAccelerated,35,13638) fuzzy-if(webrender,5-6,18006-18071) == long-chain.html long-chain-ref.html # Win10: Bug 1258241
-+fuzzy(0-5,0-13638) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)&&layersGPUAccelerated,35,13638) fuzzy-if(webrender,5-6,18006-18071) == long-chain.html long-chain-ref.html # Win10: Bug 1258241
++fuzzy(0-5,0-13638) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)&&layersGPUAccelerated,0-35,0-13638) fuzzy-if(webrender,5-6,18006-18071) == long-chain.html long-chain-ref.html # Win10: Bug 1258241
  == moz-element.html moz-element-ref.html
  fuzzy-if(webrender,15-15,7958-8262) == same-filter.html same-filter-ref.html
 diff --git a/layout/reftests/svg/filters/css-filters/reftest.list b/layout/reftests/svg/filters/css-filters/reftest.list
@@ -6898,8 +7034,9 @@ diff --git a/layout/reftests/svg/filters/css-filters/reftest.list b/layout/refte
  == hue-rotate-turn.html hue-rotate-turn-ref.html
  == hue-rotate-zero.html hue-rotate-zero-ref.html
 -fuzzy-if(webrender,1,10000) fuzzy-if(d2d,1,10000) == invert.html invert-ref.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||webrender,1,10000) == invert-half.html invert-half-ref.html
 +fuzzy-if(webrender,0-1,0-10000) fuzzy-if(d2d,0-1,0-10000) == invert.html invert-ref.html
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||webrender,1,10000) == invert-half.html invert-half-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||webrender,0-1,0-10000) == invert-half.html invert-half-ref.html
  == invert-one.html invert-one-ref.html
  == invert-over-one.html invert-over-one-ref.html
 -fuzzy-if(webrender,1,10000) fuzzy-if(d2d,1,10000) == invert-percent.html invert-percent-ref.html
@@ -7003,7 +7140,7 @@ diff --git a/layout/reftests/svg/filters/reftest.list b/layout/reftests/svg/filt
  fails == filter-marked-line-01.svg pass.svg # bug 477704
  == filter-kernelUnitLength-01.svg filter-kernelUnitLength-01-ref.svg
  == filter-marked-line-02.svg pass.svg
-@@ -91,22 +91,22 @@ fails == filter-marked-line-01.svg pass.
+@@ -91,46 +91,46 @@ fails == filter-marked-line-01.svg pass.
  == filter-region-01b.html pass.svg
  == filter-transform-01.svg pass.svg
  
@@ -7024,13 +7161,14 @@ diff --git a/layout/reftests/svg/filters/reftest.list b/layout/reftests/svg/filt
 +fuzzy(0-2,0-500) == feDisplacementMap-colour-01.svg feDisplacementMap-colour-01-ref.svg
  == feDisplacementMap-scale-01.svg pass.svg
  
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),2,25) == feDropShadow-01.svg feDropShadow-01-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),2,25) == feDropShadow-01.svg feDropShadow-01-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-2,0-25) == feDropShadow-01.svg feDropShadow-01-ref.svg
  
  == feFlood-color-01.svg pass.svg
  
  == feGaussianBlur-alpha-01.svg feGaussianBlur-alpha-01-ref.svg
  
-@@ -114,23 +114,23 @@ fuzzy-if(/^Windows\x20NT\x2010\.0/.test(
+ == feMorphology-radius-negative-01.svg pass.svg
  == feMorphology-radius-negative-02.svg pass.svg
  == feMorphology-radius-zero-01.svg pass.svg
  == feMorphology-radius-zero-02.svg pass.svg
@@ -7057,6 +7195,22 @@ diff --git a/layout/reftests/svg/filters/reftest.list b/layout/reftests/svg/filt
  == outside-sourcegraphic-1.svg outside-sourcegraphic-ref.svg
  == outside-sourcegraphic-2.svg outside-sourcegraphic-ref.svg
  == outside-sourcegraphic-3.svg outside-sourcegraphic-ref.svg
+diff --git a/layout/reftests/svg/filters/svg-filter-chains/reftest.list b/layout/reftests/svg/filters/svg-filter-chains/reftest.list
+--- a/layout/reftests/svg/filters/svg-filter-chains/reftest.list
++++ b/layout/reftests/svg/filters/svg-filter-chains/reftest.list
+@@ -8,11 +8,11 @@ default-preferences pref(layout.css.filt
+ == clip-output.svg clip-output-ref.svg
+ == default-subregion.svg default-subregion-ref.svg
+ == different-FillPaint-filter-regions.svg different-FillPaint-filter-regions-ref.svg
+ == different-StrokePaint-filter-regions.svg different-StrokePaint-filter-regions-ref.svg
+ == dont-clip-previous-primitives.svg dont-clip-previous-primitives-ref.svg
+ == intersecting-filter-regions.svg intersecting-filter-regions-ref.svg
+ == long-chain.svg simple-chain-ref.svg
+ == multiple-primitives-per-filter.svg simple-chain-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),1,173) == second-filter-uses-SourceAlpha.svg second-filter-uses-SourceAlpha-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-1,0-173) == second-filter-uses-SourceAlpha.svg second-filter-uses-SourceAlpha-ref.svg
+ == second-filter-uses-SourceGraphic.svg simple-chain-ref.svg
+ == simple-chain.svg simple-chain-ref.svg
 diff --git a/layout/reftests/svg/image/reftest.list b/layout/reftests/svg/image/reftest.list
 --- a/layout/reftests/svg/image/reftest.list
 +++ b/layout/reftests/svg/image/reftest.list
@@ -7139,7 +7293,7 @@ diff --git a/layout/reftests/svg/reftest.list b/layout/reftests/svg/reftest.list
  == clipPath-and-mask-on-outflowElement-01a.html clipPath-on-outflowElement-01-ref.html
  == clipPath-and-mask-on-outflowElement-01b.html clipPath-on-outflowElement-01-ref.html
 -fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.[12]/.test(http.oscpu),1,34) fuzzy-if(OSX,1,6) fuzzy-if(skiaContent,1,630) == clipPath-and-shape-rendering-01.svg clipPath-and-shape-rendering-01-ref.svg # bug 614840
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.[12]/.test(http.oscpu),1,34) fuzzy-if(OSX,0-1,0-6) fuzzy-if(skiaContent,0-1,0-630) == clipPath-and-shape-rendering-01.svg clipPath-and-shape-rendering-01-ref.svg # bug 614840
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.[12]/.test(http.oscpu),0-1,0-34) fuzzy-if(OSX,0-1,0-6) fuzzy-if(skiaContent,0-1,0-630) == clipPath-and-shape-rendering-01.svg clipPath-and-shape-rendering-01-ref.svg # bug 614840
  == clipPath-and-transform-01.svg pass.svg
  == clipPath-basic-01.svg pass.svg
  == clipPath-basic-02.svg pass.svg
@@ -7248,7 +7402,7 @@ diff --git a/layout/reftests/svg/reftest.list b/layout/reftests/svg/reftest.list
  random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == dynamic-text-attr-01.svg dynamic-text-attr-01-ref.svg # bug 1392106
  random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == dynamic-textPath-01.svg dynamic-textPath-01-ref.svg # bug 1392106
  random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == dynamic-textPath-02.svg dynamic-textPath-02-ref.svg # bug 1392106
-@@ -185,35 +185,35 @@ random == dynamic-use-nested-01b.svg dyn
+@@ -185,223 +185,223 @@ random == dynamic-use-nested-01b.svg dyn
  == dynamic-viewBox-change-02.svg pass.svg
  == dynamic-viewBox-change-03.svg pass.svg
  
@@ -7281,13 +7435,15 @@ diff --git a/layout/reftests/svg/reftest.list b/layout/reftests/svg/reftest.list
 +fuzzy-if(skiaContent,0-1,0-500) == filter-scaled-02.html filter-scaled-02-ref.html
  == filter-translated-01.svg filter-translated-01-ref.svg
  == filter-use-element-01.svg pass.svg
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,1,800000) == filters-and-group-opacity-01.svg filters-and-group-opacity-01-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,1,800000) == filters-and-group-opacity-01.svg filters-and-group-opacity-01-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,0-1,0-800000) == filters-and-group-opacity-01.svg filters-and-group-opacity-01-ref.svg
  
  == foreignObject-01.svg pass.svg
  == foreignObject-02.svg foreignObject-02-ref.svg
  == foreignObject-ancestor-style-change-01.svg foreignObject-ancestor-style-change-01-ref.svg
  == foreignObject-change-transform-01.svg pass.svg
-@@ -222,186 +222,186 @@ fuzzy-if(webrender,160-255,229-1552) == 
+ == foreignObject-display-01.svg pass.svg
+ fuzzy-if(webrender,160-255,229-1552) == foreignObject-form-theme.svg foreignObject-form-theme-ref.html # Bug 1439980
  == foreignObject-img.html foreignObject-img-ref.html
  == foreignObject-img-form-theme.html foreignObject-img-form-theme-ref.html
  == foreignObject-move-repaint-01.svg pass.svg
@@ -7334,7 +7490,8 @@ diff --git a/layout/reftests/svg/reftest.list b/layout/reftests/svg/reftest.list
  == linked-filter-01.svg pass.svg
  == linked-pattern-01.svg pass.svg
  
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,1,800000) == markers-and-group-opacity-01.svg markers-and-group-opacity-01-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,1,800000) == markers-and-group-opacity-01.svg markers-and-group-opacity-01-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,0-1,0-800000) == markers-and-group-opacity-01.svg markers-and-group-opacity-01-ref.svg
  == marker-attribute-01.svg pass.svg
  == marker-dynamic-opacity.html marker-dynamic-opacity-ref.html
  == marker-effects-01.svg marker-effects-01-ref.svg
@@ -7390,7 +7547,7 @@ diff --git a/layout/reftests/svg/reftest.list b/layout/reftests/svg/reftest.list
  
 -fuzzy-if(d2d&&/^Windows\x20NT\x20(6\.1|10\.0)/.test(http.oscpu),63,168) fuzzy-if(cocoaWidget,1,122) fuzzy-if(skiaContent,2,1000) == non-scaling-stroke-01.svg non-scaling-stroke-01-ref.svg # bug 1074161 for Win7 and OSX 10.8
 -fuzzy-if(gtkWidget,1,99) fuzzy-if(!contentSameGfxBackendAsCanvas,9,99) fuzzy-if(Android,9,586) == non-scaling-stroke-02.svg non-scaling-stroke-02-ref.svg
-+fuzzy-if(d2d&&/^Windows\x20NT\x20(6\.1|10\.0)/.test(http.oscpu),63,168) fuzzy-if(cocoaWidget,0-1,0-122) fuzzy-if(skiaContent,0-2,0-1000) == non-scaling-stroke-01.svg non-scaling-stroke-01-ref.svg # bug 1074161 for Win7 and OSX 10.8
++fuzzy-if(d2d&&/^Windows\x20NT\x20(6\.1|10\.0)/.test(http.oscpu),0-63,0-168) fuzzy-if(cocoaWidget,0-1,0-122) fuzzy-if(skiaContent,0-2,0-1000) == non-scaling-stroke-01.svg non-scaling-stroke-01-ref.svg # bug 1074161 for Win7 and OSX 10.8
 +fuzzy-if(gtkWidget,0-1,0-99) fuzzy-if(!contentSameGfxBackendAsCanvas,0-9,0-99) fuzzy-if(Android,0-9,0-586) == non-scaling-stroke-02.svg non-scaling-stroke-02-ref.svg
  == non-scaling-stroke-03.svg non-scaling-stroke-03-ref.svg
  
@@ -7410,7 +7567,8 @@ diff --git a/layout/reftests/svg/reftest.list b/layout/reftests/svg/reftest.list
 -skip-if(d2d) fuzzy-if(cocoaWidget,1,99974) fuzzy-if(skiaContent,1,200000) == opacity-and-gradient-02.svg opacity-and-gradient-02-ref.svg
 +skip-if(d2d) fuzzy-if(cocoaWidget,0-1,0-99974) fuzzy-if(skiaContent,0-1,0-200000) == opacity-and-gradient-02.svg opacity-and-gradient-02-ref.svg
  == opacity-and-pattern-01.svg pass.svg
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,1,10000) == opacity-and-transform-01.svg opacity-and-transform-01-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,1,10000) == opacity-and-transform-01.svg opacity-and-transform-01-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||skiaContent,0-1,0-10000) == opacity-and-transform-01.svg opacity-and-transform-01-ref.svg
  
 -fuzzy-if(Android,8,200) == outer-svg-border-and-padding-01.svg outer-svg-border-and-padding-01-ref.svg
 +fuzzy-if(Android,0-8,0-200) == outer-svg-border-and-padding-01.svg outer-svg-border-and-padding-01-ref.svg
@@ -7429,7 +7587,8 @@ diff --git a/layout/reftests/svg/reftest.list b/layout/reftests/svg/reftest.list
  == paint-on-maskLayer-1a.html paint-on-maskLayer-1-ref.html
  == paint-on-maskLayer-1b.html paint-on-maskLayer-1-ref.html
  == paint-on-maskLayer-1c.html paint-on-maskLayer-1-ref.html
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),15,5) == paint-order-01.svg paint-order-01-ref.svg
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),15,5) == paint-order-01.svg paint-order-01-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-15,0-5) == paint-order-01.svg paint-order-01-ref.svg
  == paint-order-02.svg paint-order-02-ref.svg
  == paint-order-03.svg paint-order-03-ref.svg
  
@@ -7775,10 +7934,14 @@ diff --git a/layout/reftests/svg/smil/container/reftest.list b/layout/reftests/s
 diff --git a/layout/reftests/svg/smil/motion/reftest.list b/layout/reftests/svg/smil/motion/reftest.list
 --- a/layout/reftests/svg/smil/motion/reftest.list
 +++ b/layout/reftests/svg/smil/motion/reftest.list
-@@ -4,18 +4,18 @@
+@@ -1,21 +1,21 @@
+ # Tests related to SVG Animation (using SMIL), focusing on the animateMotion
+ # element.
+ 
  == animateMotion-by-1.svg      lime.svg
  == animateMotion-by-2.svg      lime.svg
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),1,800) == animateMotion-flattening-1.svg lime.svg # bug 951541
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),1,800) == animateMotion-flattening-1.svg lime.svg # bug 951541
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.2/.test(http.oscpu),0-1,0-800) == animateMotion-flattening-1.svg lime.svg # bug 951541
  == animateMotion-from-to-1.svg lime.svg
  == animateMotion-indefinite-to-1.svg lime.svg
  == animateMotion-indefinite-to-2.svg lime.svg
@@ -8079,6 +8242,25 @@ diff --git a/layout/reftests/svg/svg-integration/clip-path/reftest.list b/layout
  fuzzy-if(webrender,64-64,714-714) == clip-path-circle-005.html clip-path-circle-002-ref.html
  fuzzy-if(webrender,64-64,714-714) == clip-path-circle-006.html clip-path-circle-001-ref.html
  fuzzy-if(webrender,64-64,714-714) == clip-path-circle-007.html clip-path-circle-002-ref.html
+@@ -27,17 +27,17 @@ fuzzy-if(webrender,64-64,714-714) == cli
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-009.html clip-path-circle-003-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-010.html clip-path-circle-004-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-011.html clip-path-circle-005-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-012.html clip-path-circle-006-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-013.html clip-path-circle-002-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-014.html clip-path-circle-007-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-015.html clip-path-circle-008-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-016.html clip-path-circle-009-ref.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),16,9) fuzzy-if(webrender,64-64,714-714) == clip-path-circle-017.html clip-path-circle-007-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-16,0-9) fuzzy-if(webrender,64-64,714-714) == clip-path-circle-017.html clip-path-circle-007-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-018.html clip-path-circle-010-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-019.html clip-path-circle-002-ref.html
+ fuzzy-if(webrender,64-64,714-714) == clip-path-circle-020.html clip-path-circle-002-ref.html
+ == clip-path-circle-021.html clip-path-circle-021-ref.html
+ 
+ fuzzy-if(webrender,64-64,1106-1106) == clip-path-ellipse-001.html clip-path-ellipse-001-ref.html
+ fuzzy-if(webrender,64-64,1106-1106) == clip-path-ellipse-002.html clip-path-ellipse-001-ref.html
+ fuzzy-if(webrender,64-64,1106-1106) == clip-path-ellipse-003.html clip-path-ellipse-001-ref.html
 @@ -46,16 +46,16 @@ fuzzy-if(webrender,64-64,1106-1106) == c
  fuzzy-if(webrender,64-64,1106-1106) == clip-path-ellipse-006.html clip-path-ellipse-001-ref.html
  fuzzy-if(webrender,64-64,1106-1106) == clip-path-ellipse-007.html clip-path-ellipse-001-ref.html
@@ -8261,7 +8443,7 @@ diff --git a/layout/reftests/svg/text/reftest.list b/layout/reftests/svg/text/re
 -fuzzy-if(skiaContent,1,200) == textLength-2.svg textLength-2-ref.svg
 -fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.[12]/.test(http.oscpu),4,17) fuzzy-if(skiaContent,4,100) == textLength-3.svg textLength-3-ref.svg
 +fuzzy-if(skiaContent,0-1,0-200) == textLength-2.svg textLength-2-ref.svg
-+fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.[12]/.test(http.oscpu),4,17) fuzzy-if(skiaContent,0-4,0-100) == textLength-3.svg textLength-3-ref.svg
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu)||/^Windows\x20NT\x206\.[12]/.test(http.oscpu),0-4,0-17) fuzzy-if(skiaContent,0-4,0-100) == textLength-3.svg textLength-3-ref.svg
  == textLength-4.svg textLength-4-ref.svg
  == textLength-5.svg textLength-5-ref.svg
  == textLength-6.svg textLength-6-ref.svg
@@ -8612,8 +8794,8 @@ diff --git a/layout/reftests/text-svgglyphs/reftest.list b/layout/reftests/text-
 -pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(cocoaWidget,1,7028) fuzzy-if(gtkWidget&&/^Linux\x20x86_64/.test(http.oscpu),1,23) fuzzy-if(skiaContent,1,250) == svg-glyph-objectgradient-zoom.svg svg-glyph-objectgradient-zoom-ref.svg
 -pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(gtkWidget,1,1438) fuzzy-if(winWidget,1,1954) fuzzy-if(Android,8,3795) fuzzy-if(skiaContent,14,13000) == svg-glyph-objectpattern.svg svg-glyph-objectpattern-ref.svg
 +pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(skiaContent,0-2,0-200) == svg-glyph-objectstroke-solid.svg svg-glyph-objectstroke-solid-ref.svg
-+pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy(0-1,0-7) fuzzy-if(gtkWidget&&/^Linux\x20x86_64/.test(http.oscpu),1,79) fuzzy-if(skiaContent,0-1,0-300) == svg-glyph-objectgradient.svg svg-glyph-objectgradient-ref.svg # see bug 871961#c5
-+pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(cocoaWidget,0-1,0-7028) fuzzy-if(gtkWidget&&/^Linux\x20x86_64/.test(http.oscpu),1,23) fuzzy-if(skiaContent,0-1,0-250) == svg-glyph-objectgradient-zoom.svg svg-glyph-objectgradient-zoom-ref.svg
++pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy(0-1,0-7) fuzzy-if(gtkWidget&&/^Linux\x20x86_64/.test(http.oscpu),0-1,0-79) fuzzy-if(skiaContent,0-1,0-300) == svg-glyph-objectgradient.svg svg-glyph-objectgradient-ref.svg # see bug 871961#c5
++pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(cocoaWidget,0-1,0-7028) fuzzy-if(gtkWidget&&/^Linux\x20x86_64/.test(http.oscpu),0-1,0-23) fuzzy-if(skiaContent,0-1,0-250) == svg-glyph-objectgradient-zoom.svg svg-glyph-objectgradient-zoom-ref.svg
 +pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(gtkWidget,0-1,0-1438) fuzzy-if(winWidget,0-1,0-1954) fuzzy-if(Android,0-8,0-3795) fuzzy-if(skiaContent,0-14,0-13000) == svg-glyph-objectpattern.svg svg-glyph-objectpattern-ref.svg
  pref(gfx.font_rendering.opentype_svg.enabled,true)    == clip.html clip-ref.html
 -pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy(1,13) fuzzy-if(gtkWidget&&/^Linux\x20x86_64/.test(http.oscpu),1,62) fuzzy-if(skiaContent,1,350) == svg-glyph-objectopacity.svg svg-glyph-objectopacity-ref.svg # see bug 871961#c5
@@ -8622,7 +8804,7 @@ diff --git a/layout/reftests/text-svgglyphs/reftest.list b/layout/reftests/text-
 -pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(skiaContent,2,200) == svg-glyph-cachedopacity.svg svg-glyph-cachedopacity-ref.svg
 -pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(cocoaWidget,255,100) == svg-glyph-objectvalue.svg svg-glyph-objectvalue-ref.svg
 -pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(skiaContent,15,152) == svg-glyph-mask.svg svg-glyph-mask-ref.svg
-+pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy(0-1,0-13) fuzzy-if(gtkWidget&&/^Linux\x20x86_64/.test(http.oscpu),1,62) fuzzy-if(skiaContent,0-1,0-350) == svg-glyph-objectopacity.svg svg-glyph-objectopacity-ref.svg # see bug 871961#c5
++pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy(0-1,0-13) fuzzy-if(gtkWidget&&/^Linux\x20x86_64/.test(http.oscpu),0-1,0-62) fuzzy-if(skiaContent,0-1,0-350) == svg-glyph-objectopacity.svg svg-glyph-objectopacity-ref.svg # see bug 871961#c5
 +pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(gtkWidget,0-1,0-2268) fuzzy-if(winWidget,0-1,0-3074) fuzzy-if(Android,0-5,0-4715) fuzzy-if(skiaContent,0-8,0-13000) == svg-glyph-objectopacity2.svg svg-glyph-objectopacity2-ref.svg
 +pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(skiaContent,0-2,0-200) == svg-glyph-paintnone.svg svg-glyph-paintnone-ref.svg
 +pref(gfx.font_rendering.opentype_svg.enabled,true)    fuzzy-if(skiaContent,0-2,0-200) == svg-glyph-cachedopacity.svg svg-glyph-cachedopacity-ref.svg
@@ -8845,7 +9027,8 @@ diff --git a/layout/reftests/transform-3d/reftest.list b/layout/reftests/transfo
  == sorting-3a.html green-rect.html
  # Different, but equivalent (for the given transform) transform origins
  fuzzy-if(webrender,0-1,0-4) == rotatex-transformorigin-1a.html rotatex-transformorigin-1-ref.html
- fuzzy-if((gtkWidget&&layersOMTC)||(winWidget&&!layersGPUAccelerated),1,86) == overflow-hidden-1a.html overflow-hidden-1-ref.html
+-fuzzy-if((gtkWidget&&layersOMTC)||(winWidget&&!layersGPUAccelerated),1,86) == overflow-hidden-1a.html overflow-hidden-1-ref.html
++fuzzy-if((gtkWidget&&layersOMTC)||(winWidget&&!layersGPUAccelerated),0-1,0-86) == overflow-hidden-1a.html overflow-hidden-1-ref.html
  fails-if(webrender) == transform-style-flat-1a.html transform-style-flat-1-ref.html
  == willchange-containing-block.html?willchange willchange-containing-block.html?ref
  != willchange-containing-block.html?willchange willchange-containing-block.html?noblock
@@ -8857,7 +9040,7 @@ diff --git a/layout/reftests/transform-3d/reftest.list b/layout/reftests/transfo
 -fuzzy(3,99) == animate-cube-radians.html animate-cube-radians-ref.html # subpixel AA
 -fuzzy(3,99) fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated,16,6) == animate-cube-radians-zoom.html animate-cube-radians-zoom-ref.html
 +fuzzy(0-3,0-99) == animate-cube-radians.html animate-cube-radians-ref.html # subpixel AA
-+fuzzy(0-3,0-99) fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated,16,6) == animate-cube-radians-zoom.html animate-cube-radians-zoom-ref.html
++fuzzy(0-3,0-99) fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated,0-16,0-6) == animate-cube-radians-zoom.html animate-cube-radians-zoom-ref.html
  != animate-cube-radians-ref.html animate-cube-radians-zoom-ref.html
 -fuzzy(3,99) == animate-cube-degrees.html animate-cube-degrees-ref.html # subpixel AA
 +fuzzy(0-3,0-99) == animate-cube-degrees.html animate-cube-degrees-ref.html # subpixel AA
@@ -8866,7 +9049,7 @@ diff --git a/layout/reftests/transform-3d/reftest.list b/layout/reftests/transfo
 -fuzzy-if(gtkWidget,128,100) fuzzy-if(Android||OSX==1010||(gtkWidget&&layersGPUAccelerated),143,100) fuzzy-if(winWidget||OSX<1010,141,100) == preserves3d-nested.html preserves3d-nested-ref.html
 -fuzzy-if(cocoaWidget,128,9) random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == animate-preserve3d-parent.html animate-preserve3d-ref.html # intermittently fuzzy on Mac
 -fuzzy-if(cocoaWidget,128,9) random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == animate-preserve3d-child.html animate-preserve3d-ref.html # intermittently fuzzy on Mac, bug 1461311 for Android
-+fuzzy-if(gtkWidget,0-128,0-100) fuzzy-if(Android||OSX==1010||(gtkWidget&&layersGPUAccelerated),143,100) fuzzy-if(winWidget||OSX<1010,0-141,0-100) == preserves3d-nested.html preserves3d-nested-ref.html
++fuzzy-if(gtkWidget,0-128,0-100) fuzzy-if(Android||OSX==1010||(gtkWidget&&layersGPUAccelerated),0-143,0-100) fuzzy-if(winWidget||OSX<1010,0-141,0-100) == preserves3d-nested.html preserves3d-nested-ref.html
 +fuzzy-if(cocoaWidget,0-128,0-9) random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == animate-preserve3d-parent.html animate-preserve3d-ref.html # intermittently fuzzy on Mac
 +fuzzy-if(cocoaWidget,0-128,0-9) random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == animate-preserve3d-child.html animate-preserve3d-ref.html # intermittently fuzzy on Mac, bug 1461311 for Android
  == animate-backface-hidden.html about:blank
@@ -10950,16 +11133,38 @@ diff --git a/layout/reftests/w3c-css/submitted/selectors4/reftest.list b/layout/
 diff --git a/layout/reftests/w3c-css/submitted/shapes1/reftest.list b/layout/reftests/w3c-css/submitted/shapes1/reftest.list
 --- a/layout/reftests/w3c-css/submitted/shapes1/reftest.list
 +++ b/layout/reftests/w3c-css/submitted/shapes1/reftest.list
-@@ -52,17 +52,17 @@ fuzzy-if(/^Windows\x20NT\x2010\.0/.test(
+@@ -33,36 +33,36 @@ fails == shape-outside-border-box-border
+ == shape-outside-border-box-border-radius-012.html shape-outside-border-box-border-radius-012-ref.html
+ == shape-outside-padding-box-border-radius-001.html shape-outside-padding-box-border-radius-001-ref.html
+ == shape-outside-padding-box-border-radius-002.html shape-outside-padding-box-border-radius-002-ref.html
+ == shape-outside-content-box-border-radius-001.html shape-outside-content-box-border-radius-001-ref.html
+ == shape-outside-content-box-border-radius-002.html shape-outside-content-box-border-radius-002-ref.html
+ 
+ # Basic shape: circle()
+ == shape-outside-circle-032.html shape-outside-circle-032-ref.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),7,6) == shape-outside-circle-033.html shape-outside-circle-033-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-7,0-6) == shape-outside-circle-033.html shape-outside-circle-033-ref.html
+ == shape-outside-circle-034.html shape-outside-circle-034-ref.html
+ == shape-outside-circle-035.html shape-outside-circle-035-ref.html
+ == shape-outside-circle-036.html shape-outside-circle-036-ref.html
+ == shape-outside-circle-037.html shape-outside-circle-036-ref.html
+ == shape-outside-circle-038.html shape-outside-circle-036-ref.html
+ == shape-outside-circle-041.html shape-outside-circle-041-ref.html
+ == shape-outside-circle-042.html shape-outside-circle-042-ref.html
+ == shape-outside-circle-043.html shape-outside-circle-042-ref.html
+ == shape-outside-circle-044.html shape-outside-circle-042-ref.html
+ == shape-outside-circle-047.html shape-outside-circle-047-ref.html
  == shape-outside-circle-048.html shape-outside-circle-048-ref.html
  == shape-outside-circle-049.html shape-outside-circle-049-ref.html
  == shape-outside-circle-050.html shape-outside-circle-050-ref.html
  == shape-outside-circle-051.html shape-outside-circle-051-ref.html
  == shape-outside-circle-052.html shape-outside-circle-052-ref.html
  == shape-outside-circle-053.html shape-outside-circle-053-ref.html
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),16,4) == shape-outside-circle-054.html shape-outside-circle-054-ref.html
- fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),16,4) == shape-outside-circle-055.html shape-outside-circle-055-ref.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),16,4) == shape-outside-circle-054.html shape-outside-circle-054-ref.html
+-fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),16,4) == shape-outside-circle-055.html shape-outside-circle-055-ref.html
 -fuzzy(108,81) == shape-outside-circle-056.html shape-outside-circle-056-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-16,0-4) == shape-outside-circle-054.html shape-outside-circle-054-ref.html
++fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-16,0-4) == shape-outside-circle-055.html shape-outside-circle-055-ref.html
 +fuzzy(0-108,0-81) == shape-outside-circle-056.html shape-outside-circle-056-ref.html
  
  # Basic shape: ellipse()
@@ -11166,7 +11371,7 @@ diff --git a/layout/reftests/w3c-css/submitted/text-decor-3/reftest.list b/layou
  == text-emphasis-line-height-004d.html text-emphasis-line-height-004-ref.html
  # END tests from support/generate-text-emphasis-line-height-tests.py
 -fuzzy-if(gtkWidget,3,4) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),43,1) == text-emphasis-line-height-001z.html text-emphasis-line-height-001-ref.html
-+fuzzy-if(gtkWidget,0-3,0-4) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),43,1) == text-emphasis-line-height-001z.html text-emphasis-line-height-001-ref.html
++fuzzy-if(gtkWidget,0-3,0-4) fuzzy-if(/^Windows\x20NT\x2010\.0/.test(http.oscpu),0-43,0-1) == text-emphasis-line-height-001z.html text-emphasis-line-height-001-ref.html
  
  # text-shadow 'currentcolor' test cases
  == text-shadow-currentcolor.html text-shadow-currentcolor-ref.html
@@ -11636,9 +11841,10 @@ diff --git a/parser/htmlparser/tests/reftest/reftest.list b/parser/htmlparser/te
  == bug592656-1.html bug592656-1-ref.html
 -fuzzy-if(skiaContent,1,5) == bug599320-1.html bug599320-1-ref.html
 -fuzzy-if(skiaContent,2,5) == bug608373-1.html bug608373-1-ref.html
+-fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,73,1) == view-source:bug482921-1.html bug482921-1-ref.html
 +fuzzy-if(skiaContent,0-1,0-5) == bug599320-1.html bug599320-1-ref.html
 +fuzzy-if(skiaContent,0-2,0-5) == bug608373-1.html bug608373-1-ref.html
- fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,73,1) == view-source:bug482921-1.html bug482921-1-ref.html
++fuzzy-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)&&!layersGPUAccelerated&&!azureSkia,0-73,0-1) == view-source:bug482921-1.html bug482921-1-ref.html
  == view-source:bug482921-2.xhtml bug482921-2-ref.html
 -fuzzy-if(skiaContent,2,5) random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == bug659763-1.html bug659763-1-ref.html # Bug 1392106
 -fuzzy-if(skiaContent,1,5) random-if(/^Windows\x20NT\x206\.1/.test(http.oscpu)) == bug659763-2.html bug659763-2-ref.html # Bug 1392106

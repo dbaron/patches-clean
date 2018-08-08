@@ -28,6 +28,8 @@ do
     perl -pi -e 's/(fuzzy\()([^ ,()-]*)(,[^ ,()]*\))/${1}0-${2}${3}/g;s/(fuzzy\([^ ,()]*,)([^ ,()-]*)(\))/${1}0-${2}${3}/g;s/(fuzzy-if\([^ ]*?,)([^ ,()-]*)(,[^ ,()]*\))/${1}0-${2}${3}/g;s/(fuzzy-if\([^ ]*?,[^ ,()]*,)([^ ,()-]*)(\))/${1}0-${2}${3}/g' "${FILENAME}"
 done
 
+Differential Revision: https://phabricator.services.mozilla.com/D2974
+
 diff --git a/dom/canvas/test/reftest/filters/reftest.list b/dom/canvas/test/reftest/filters/reftest.list
 --- a/dom/canvas/test/reftest/filters/reftest.list
 +++ b/dom/canvas/test/reftest/filters/reftest.list

@@ -4,16 +4,16 @@ Bug 1369941: Replace single integers N in fuzzy() and fuzzy-if() with 0-N ranges
 
 This patch was written entirely by the following script:
 
-#!/bin/bash
+  #!/bin/bash
 
-if [ ! -d "./.hg" ]
-then
+  if [ ! -d "./.hg" ]
+  then
     echo "Not in a source tree." 1>&2
     exit 1
-fi
+  fi
 
-find . -regex '.*\(ref\|crash\)test.*\.list' | while read FILENAME
-do
+  find . -regex '.*\(ref\|crash\)test.*\.list' | while read FILENAME
+  do
     echo "Processing ${FILENAME}."
     # The following has four substitutions:
     # * The first one replaces the *first* argument to fuzzy() when it doesn't
@@ -26,7 +26,7 @@ do
     # support non-greedy matching, which is needed for the first argument to
     # fuzzy-if.
     perl -pi -e 's/(fuzzy\()([^ ,()-]*)(,[^ ,()]*\))/${1}0-${2}${3}/g;s/(fuzzy\([^ ,()]*,)([^ ,()-]*)(\))/${1}0-${2}${3}/g;s/(fuzzy-if\([^ ]*?,)([^ ,()-]*)(,[^ ,()]*\))/${1}0-${2}${3}/g;s/(fuzzy-if\([^ ]*?,[^ ,()]*,)([^ ,()-]*)(\))/${1}0-${2}${3}/g' "${FILENAME}"
-done
+  done
 
 Differential Revision: https://phabricator.services.mozilla.com/D2974
 

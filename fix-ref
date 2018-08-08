@@ -2,6 +2,8 @@ From: L. David Baron <dbaron@dbaron.org>
 
 Bug 1481698 - Make reference have same blending characteritics as test.
 
+Differential Revision: https://phabricator.services.mozilla.com/D2907
+
 diff --git a/testing/web-platform/tests/css/filter-effects/filter-cb-abspos-inline-001-ref.html b/testing/web-platform/tests/css/filter-effects/filter-cb-abspos-inline-001-ref.html
 --- a/testing/web-platform/tests/css/filter-effects/filter-cb-abspos-inline-001-ref.html
 +++ b/testing/web-platform/tests/css/filter-effects/filter-cb-abspos-inline-001-ref.html

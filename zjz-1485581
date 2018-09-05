@@ -1,3 +1,7 @@
+From: 張俊芝 <zjz@zjz.name>
+
+Bug 1485581 - Make nsImageFrame report intrinsic inline sizes in the correct dimension (height) when writing-mode is vertical.  r=dbaron
+
 diff --git a/layout/generic/nsFrame.h b/layout/generic/nsFrame.h
 --- a/layout/generic/nsFrame.h
 +++ b/layout/generic/nsFrame.h

@@ -5,7 +5,12 @@ Bug 1485581 - Make nsImageFrame report intrinsic inline sizes in the correct dim
 diff --git a/layout/generic/nsFrame.h b/layout/generic/nsFrame.h
 --- a/layout/generic/nsFrame.h
 +++ b/layout/generic/nsFrame.h
-@@ -854,6 +854,8 @@ public:
+@@ -849,16 +849,18 @@ public:
+   };
+ 
+ #define DISPLAY_REFLOW(dr_pres_context, dr_frame, dr_rf_state, dr_rf_metrics, dr_rf_status) \
+   DR_cookie dr_cookie(dr_pres_context, dr_frame, dr_rf_state, dr_rf_metrics, dr_rf_status);
+ #define DISPLAY_REFLOW_CHANGE() \
    dr_cookie.Change();
  #define DISPLAY_LAYOUT(dr_frame) \
    DR_layout_cookie dr_cookie(dr_frame);
@@ -14,10 +19,20 @@ diff --git a/layout/generic/nsFrame.h b/layout/generic/nsFrame.h
  #define DISPLAY_MIN_WIDTH(dr_frame, dr_result) \
    DR_intrinsic_width_cookie dr_cookie(dr_frame, "Min", dr_result)
  #define DISPLAY_PREF_WIDTH(dr_frame, dr_result) \
+   DR_intrinsic_width_cookie dr_cookie(dr_frame, "Pref", dr_result)
+ #define DISPLAY_PREF_SIZE(dr_frame, dr_result) \
+   DR_intrinsic_size_cookie dr_cookie(dr_frame, "Pref", dr_result)
+ #define DISPLAY_MIN_SIZE(dr_frame, dr_result) \
+   DR_intrinsic_size_cookie dr_cookie(dr_frame, "Min", dr_result)
 diff --git a/layout/generic/nsImageFrame.cpp b/layout/generic/nsImageFrame.cpp
 --- a/layout/generic/nsImageFrame.cpp
 +++ b/layout/generic/nsImageFrame.cpp
-@@ -1034,26 +1034,28 @@ nsImageFrame::GetContinuationOffset() co
+@@ -1029,36 +1029,38 @@ nsImageFrame::GetContinuationOffset() co
+   }
+   NS_ASSERTION(offset >= 0, "bogus GetContentRect");
+   return offset;
+ }
+ 
  /* virtual */ nscoord
  nsImageFrame::GetMinISize(gfxContext *aRenderingContext)
  {
@@ -54,10 +69,20 @@ diff --git a/layout/generic/nsImageFrame.cpp b/layout/generic/nsImageFrame.cpp
  }
  
  /* virtual */ IntrinsicSize
+ nsImageFrame::GetIntrinsicSize()
+ {
+   return mIntrinsicSize;
+ }
+ 
 diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta/MANIFEST.json
 --- a/testing/web-platform/meta/MANIFEST.json
 +++ b/testing/web-platform/meta/MANIFEST.json
-@@ -159707,6 +159707,30 @@
+@@ -159726,16 +159726,40 @@
+       [
+        "/css/css-writing-modes/horizontal-rule-vrl-004-ref.xht",
+        "=="
+       ]
+      ],
       {}
      ]
     ],
@@ -88,7 +113,17 @@ diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta
     "css/css-writing-modes/inline-block-alignment-002.xht": [
      [
       "/css/css-writing-modes/inline-block-alignment-002.xht",
-@@ -266304,6 +266328,11 @@
+      [
+       [
+        "/css/css-writing-modes/inline-block-alignment-002-ref.xht",
+        "=="
+       ]
+@@ -266333,16 +266357,21 @@
+      {}
+     ]
+    ],
+    "css/css-writing-modes/horizontal-rule-vrl-004-ref.xht": [
+     [
       {}
      ]
     ],
@@ -100,7 +135,17 @@ diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta
     "css/css-writing-modes/inline-block-alignment-002-ref.xht": [
      [
       {}
-@@ -267764,6 +267793,11 @@
+     ]
+    ],
+    "css/css-writing-modes/inline-block-alignment-003-ref.xht": [
+     [
+      {}
+@@ -267793,16 +267822,21 @@
+      {}
+     ]
+    ],
+    "css/css-writing-modes/support/block-flow-direction-066-exp-res.png": [
+     [
       {}
      ]
     ],
@@ -112,7 +157,17 @@ diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta
     "css/css-writing-modes/support/blue-horiz-line-220x1.png": [
      [
       {}
-@@ -565556,6 +565590,18 @@
+     ]
+    ],
+    "css/css-writing-modes/support/blue-horiz-line-320x1.png": [
+     [
+      {}
+@@ -565601,16 +565635,28 @@
+   "css/css-writing-modes/horizontal-rule-vrl-004-ref.xht": [
+    "b64d2b2c429b309ade08ba061b387a524bce3d27",
+    "support"
+   ],
+   "css/css-writing-modes/horizontal-rule-vrl-004.xht": [
     "d33fb6f6d119443f41217c2ac1b808cb3eb79b7f",
     "reftest"
    ],
@@ -131,7 +186,17 @@ diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta
    "css/css-writing-modes/inline-block-alignment-002-ref.xht": [
     "ce478e7499247e6277482b9c16c9dd2b1b76f275",
     "support"
-@@ -567984,6 +568030,10 @@
+   ],
+   "css/css-writing-modes/inline-block-alignment-002.xht": [
+    "7568c087d2caca5e2f48762ab570960e6bca92e1",
+    "reftest"
+   ],
+@@ -568029,16 +568075,20 @@
+   "css/css-writing-modes/support/block-flow-direction-025-exp-res.png": [
+    "851eeea03982414e3e707cc7d3d0d83d760c118f",
+    "support"
+   ],
+   "css/css-writing-modes/support/block-flow-direction-066-exp-res.png": [
     "d325b15a4cf3f12e54adf85c3691de11bebac057",
     "support"
    ],
@@ -142,7 +207,17 @@ diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta
    "css/css-writing-modes/support/blue-horiz-line-220x1.png": [
     "3898d5a2d9eb14ad80343ecbcd9d8216d2e2f755",
     "support"
-@@ -636977,7 +637027,7 @@
+   ],
+   "css/css-writing-modes/support/blue-horiz-line-320x1.png": [
+    "7d9151c848aa9b6d59fc9d61d6c7a47b462c9325",
+    "support"
+   ],
+@@ -637022,17 +637072,17 @@
+    "327bc92f75d4732e76330f1105d0e5b409c03b22",
+    "testharness"
+   ],
+   "streams/readable-streams/patched-global.html": [
+    "869e9109e025e5e2391d51d336f03e6df335fd69",
     "testharness"
    ],
    "streams/readable-streams/patched-global.js": [
@@ -151,7 +226,17 @@ diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta
     "support"
    ],
    "streams/readable-streams/patched-global.serviceworker.https.html": [
-@@ -637217,7 +637267,7 @@
+    "addb438ba6fe407662232f97bb6c2583f3f17cf4",
+    "testharness"
+   ],
+   "streams/readable-streams/patched-global.sharedworker.html": [
+    "6dba52fa67f53c4c0437ebd4ad7166ca5ceb1d7d",
+@@ -637262,17 +637312,17 @@
+    "327bc92f75d4732e76330f1105d0e5b409c03b22",
+    "testharness"
+   ],
+   "streams/transform-streams/patched-global.html": [
+    "869e9109e025e5e2391d51d336f03e6df335fd69",
     "testharness"
    ],
    "streams/transform-streams/patched-global.js": [
@@ -160,6 +245,11 @@ diff --git a/testing/web-platform/meta/MANIFEST.json b/testing/web-platform/meta
     "support"
    ],
    "streams/transform-streams/patched-global.serviceworker.https.html": [
+    "addb438ba6fe407662232f97bb6c2583f3f17cf4",
+    "testharness"
+   ],
+   "streams/transform-streams/patched-global.sharedworker.html": [
+    "6dba52fa67f53c4c0437ebd4ad7166ca5ceb1d7d",
 diff --git a/testing/web-platform/tests/css/css-writing-modes/img-intrinsic-size-contribution-001.html b/testing/web-platform/tests/css/css-writing-modes/img-intrinsic-size-contribution-001.html
 new file mode 100644
 --- /dev/null

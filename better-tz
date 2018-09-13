@@ -165,7 +165,7 @@ diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
 +                        continue;
 +
 +                    // Reject leading, trailing, or consecutive '/' characters.
-+                    if (c == '/' && i > 0 && i + 1 < timeZoneLen && timeZone[i + 1] != '/')
++                    if (c == '/' && i > 0 && i + 1 < tzidLen && tzid[i + 1] != char16_t('/'))
 +                        continue;
 +                }
 +

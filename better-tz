@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Bug 1484829 followup - Better handling of TZ environment variable.
+Bug 1491159 - More complete handling of TZ environment variable when initializing ICU timezone.
 
 diff --git a/js/src/tests/non262/Date/time-zone-etc_localetime.js b/js/src/tests/non262/Date/time-zone-path.js
 copy from js/src/tests/non262/Date/time-zone-etc_localetime.js

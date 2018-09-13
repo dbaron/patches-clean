@@ -1,0 +1,184 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Bug 1484829 followup - Better handling of TZ environment variable.
+
+diff --git a/js/src/tests/non262/Date/time-zone-etc_localetime.js b/js/src/tests/non262/Date/time-zone-path.js
+copy from js/src/tests/non262/Date/time-zone-etc_localetime.js
+copy to js/src/tests/non262/Date/time-zone-path.js
+--- a/js/src/tests/non262/Date/time-zone-etc_localetime.js
++++ b/js/src/tests/non262/Date/time-zone-path.js
+@@ -1,29 +1,35 @@
+ // |reftest| skip-if(xulRuntime.OS=="WINNT"||!xulRuntime.shell)
+ 
+ assertEq(/^(PST|PDT)$/.test(getTimeZone()), true,
+          "The default time zone is set to PST8PDT for all jstests (when run in the shell)");
+ 
+ function timeZoneName() {
+     var dtf = new Intl.DateTimeFormat("en-US", {timeZoneName: "long"});
+-    return dtf.formatToParts().filter(x => x.type === "timeZoneName")[0].value;
++    return dtf.formatToParts(Date.UTC(2017, 3, 31, 12, 0, 0)).filter(x => x.type === "timeZoneName")[0].value;
+ }
+ 
+ // Calling setTimeZone() with an undefined argument clears the TZ environment
+-// variable and by that reveal the actual system time zone.
++// variable and thus reveals the actual system time zone.
+ setTimeZone(undefined);
+-var systemTimeZone = getTimeZone();
+ var systemTimeZoneName = timeZoneName();
+ 
+-// Set to an unlikely system time zone, so that the next call to setTimeZone()
+-// will lead to a time zone change.
+-setTimeZone("Antarctica/Troll");
++setTimeZone("Europe/Paris");
++assertEq(timeZoneName(), "CEST");
++
++setTimeZone(":Europe/Helsinki");
++assertEq(timeZoneName(), "EEST");
+ 
+-// Now call with the file path ":/etc/localtime" which is special-cased in
+-// DateTimeInfo to read the system time zone.
+-setTimeZone(":/etc/localtime");
++setTimeZone("::Europe/London"); // two colons, invalid
++assertEq(timeZoneName(), systemTimeZoneName);
+ 
+-assertEq(getTimeZone(), systemTimeZone);
++setTimeZone("/usr/share/zoneinfo/America/Chicago");
++assertEq(timeZoneName(), "CST");
++
++setTimeZone(":/usr/share/zoneinfo/America/Phoenix");
++assertEq(timeZoneName(), "MST");
++
++setTimeZone(":/usr/share/zoneinfo/America/Los_Angeles"); // two colons, invalid
+ assertEq(timeZoneName(), systemTimeZoneName);
+ 
+ if (typeof reportCompare === "function")
+     reportCompare(true, true);
+diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
+--- a/js/src/vm/DateTime.cpp
++++ b/js/src/vm/DateTime.cpp
+@@ -620,25 +620,16 @@ IsOlsonCompatibleWindowsTimeZoneId(const
+     for (const auto& allowedId : allowedIds) {
+         if (std::strcmp(allowedId, tz) == 0) {
+             return true;
+         }
+     }
+     return false;
+ }
+ #elif ENABLE_INTL_API && defined(ICU_TZ_HAS_RECREATE_DEFAULT)
+-static inline const char*
+-TZContainsPath(const char* tzVar)
+-{
+-    // A TZ beginning with a colon is expected to be followed by a path --
+-    // typically an absolute path (often /etc/localtime), but alternatively a
+-    // path relative to /usr/share/zoneinfo/.
+-    // NB: We currently only support absolute paths.
+-    return tzVar[0] == ':' && tzVar[1] == '/' ? tzVar + 1 : nullptr;
+-}
+ 
+ /**
+  * Given a presumptive path |tz| to a zoneinfo time zone file
+  * (e.g. /etc/localtime), attempt to compute the time zone encoded by that
+  * path by repeatedly resolving symlinks until a path containing "/zoneinfo/"
+  * followed by time zone looking components is found. If a symlink is broken,
+  * symlink-following recurs too deeply, non time zone looking components are
+  * encountered, or some other error is encountered, return the empty string.
+@@ -725,36 +716,16 @@ ReadTimeZoneLink(const char* tz)
+             return icu::UnicodeString();
+ 
+         // Keep it simple and just concatenate the path names.
+         std::strcat(linkName, linkTarget);
+     }
+ 
+     const char* timeZone = timeZoneWithZoneInfo + ZoneInfoPathLength;
+     size_t timeZoneLen = std::strlen(timeZone);
+-
+-    // Reject the result if it doesn't match the time zone id pattern or
+-    // legacy time zone names.
+-    // See <https://github.com/eggert/tz/blob/master/theory.html>.
+-    for (size_t i = 0; i < timeZoneLen; i++) {
+-        char c = timeZone[i];
+-
+-        // According to theory.html, '.' is allowed in time zone ids, but the
+-        // accompanying zic.c file doesn't allow it. Assume the source file is
+-        // correct and disallow '.' here, too.
+-        if (mozilla::IsAsciiAlphanumeric(c) || c == '_' || c == '-' || c == '+')
+-            continue;
+-
+-        // Reject leading, trailing, or consecutive '/' characters.
+-        if (c == '/' && i > 0 && i + 1 < timeZoneLen && timeZone[i + 1] != '/')
+-            continue;
+-
+-        return icu::UnicodeString();
+-    }
+-
+     return icu::UnicodeString(timeZone, timeZoneLen, US_INV);
+ }
+ #endif /* ENABLE_INTL_API && defined(ICU_TZ_HAS_RECREATE_DEFAULT) */
+ 
+ void
+ js::ResyncICUDefaultTimeZone()
+ {
+ #if ENABLE_INTL_API && defined(ICU_TZ_HAS_RECREATE_DEFAULT)
+@@ -772,21 +743,59 @@ js::ResyncICUDefaultTimeZone()
+             if (IsOlsonCompatibleWindowsTimeZoneId(tz)) {
+                 tzid.setTo(icu::UnicodeString(tz, -1, US_INV));
+             } else {
+                 // If |tz| isn't a supported time zone identifier, use the
+                 // default Windows time zone for ICU.
+                 // TODO: Handle invalid time zone identifiers (bug 342068).
+             }
+ #else
+-            // Handle links (starting with ':') manually because ICU currently
++            // One of the formats for the TZ environment variable is a
++            // filename.  This format optionally starts with a ':' and
++            // then contains either an absolute path or a relative one.
++            // Relative paths are relative to /usr/share/zoneinfo and
++            // are the way Olson time zone names are expressed in the TZ
++            // environment variable.
++            // Handle these cases manually because ICU currently
+             // doesn't support the TZ filespec format.
+             // <https://unicode-org.atlassian.net/browse/ICU-13694>
+-            if (const char* tzlink = TZContainsPath(tz))
+-                tzid.setTo(ReadTimeZoneLink(tzlink));
++            if (tz[0] == ':') {
++                // Skip optional ':'.
++                ++tz;
++            }
++            if (tz[0] == '/') {
++                tzid.setTo(ReadTimeZoneLink(tz));
++            } else {
++                tzid.setTo(tz);
++            }
++
++            // Reject the result if it doesn't match the time zone id pattern or
++            // legacy time zone names.
++            // See <https://github.com/eggert/tz/blob/master/theory.html>.
++            for (size_t i = 0, tzidLen = tzid.length(); i < tzidLen; i++) {
++                char16_t uc = tzid[i];
++                if (uc < 128) {
++                    char c = uc;
++
++                    // According to theory.html, '.' is allowed in time zone ids, but the
++                    // accompanying zic.c file doesn't allow it. Assume the source file is
++                    // correct and disallow '.' here, too.
++                    if (mozilla::IsAsciiAlphanumeric(c) || c == '_' || c == '-' || c == '+')
++                        continue;
++
++                    // Reject leading, trailing, or consecutive '/' characters.
++                    if (c == '/' && i > 0 && i + 1 < timeZoneLen && timeZone[i + 1] != '/')
++                        continue;
++                }
++
++                tzid.truncate(0);
++            }
++
++
++
+ #endif /* defined(XP_WIN) */
+ 
+             if (!tzid.isEmpty()) {
+                 mozilla::UniquePtr<icu::TimeZone> newTimeZone(icu::TimeZone::createTimeZone(tzid));
+                 MOZ_ASSERT(newTimeZone);
+                 if (*newTimeZone != icu::TimeZone::getUnknown()) {
+                     // adoptDefault() takes ownership of the time zone.
+                     icu::TimeZone::adoptDefault(newTimeZone.release());

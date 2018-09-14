@@ -2,10 +2,11 @@ From: L. David Baron <dbaron@dbaron.org>
 
 Bug 1491159 - More complete handling of TZ environment variable when initializing ICU timezone.
 
-This improves on the changes in bug 1484829 by handling the filename
-form of TZ environment variables both with and without an initial ':'
-character, and as both relative and absolute paths.  (Note that relative
-paths without the ':' are just Olson time zone names.)
+This improves on the changes in bug 1484829 by handling the absolute
+filename form of TZ environment variables both with and without an
+initial ':' character, and by improving comments about relative and
+absolute paths.  (Note that relative paths without the ':' are just
+Olson time zone names.)
 
 Note that the only test that failed without the patch was:
   setTimeZone("/usr/share/zoneinfo/America/Chicago");
@@ -73,8 +74,7 @@ copy to js/src/tests/non262/Date/time-zone-path.js
 diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
 --- a/js/src/vm/DateTime.cpp
 +++ b/js/src/vm/DateTime.cpp
-@@ -620,25 +620,16 @@ IsOlsonCompatibleWindowsTimeZoneId(const
-     for (const auto& allowedId : allowedIds) {
+@@ -621,23 +621,27 @@ IsOlsonCompatibleWindowsTimeZoneId(const
          if (std::strcmp(allowedId, tz) == 0) {
              return true;
          }
@@ -82,15 +82,25 @@ diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
      return false;
  }
  #elif ENABLE_INTL_API && defined(ICU_TZ_HAS_RECREATE_DEFAULT)
--static inline const char*
+ static inline const char*
 -TZContainsPath(const char* tzVar)
--{
++TZContainsAbsolutePath(const char* tzVar)
+ {
 -    // A TZ beginning with a colon is expected to be followed by a path --
 -    // typically an absolute path (often /etc/localtime), but alternatively a
 -    // path relative to /usr/share/zoneinfo/.
 -    // NB: We currently only support absolute paths.
 -    return tzVar[0] == ':' && tzVar[1] == '/' ? tzVar + 1 : nullptr;
--}
++    // A TZ environment variable may be an absolute path.  The path
++    // format of TZ may begin with a colon.  (ICU handles relative paths.)
++    if (tzVar[0] == ':' && tzVar[1] == '/') {
++        return tzVar + 1;
++    }
++    if (tzVar[0] == '/') {
++        return tzVar;
++    }
++    return nullptr;
+ }
  
  /**
   * Given a presumptive path |tz| to a zoneinfo time zone file
@@ -98,45 +108,7 @@ diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
   * path by repeatedly resolving symlinks until a path containing "/zoneinfo/"
   * followed by time zone looking components is found. If a symlink is broken,
   * symlink-following recurs too deeply, non time zone looking components are
-  * encountered, or some other error is encountered, return the empty string.
-@@ -725,36 +716,16 @@ ReadTimeZoneLink(const char* tz)
-             return icu::UnicodeString();
- 
-         // Keep it simple and just concatenate the path names.
-         std::strcat(linkName, linkTarget);
-     }
- 
-     const char* timeZone = timeZoneWithZoneInfo + ZoneInfoPathLength;
-     size_t timeZoneLen = std::strlen(timeZone);
--
--    // Reject the result if it doesn't match the time zone id pattern or
--    // legacy time zone names.
--    // See <https://github.com/eggert/tz/blob/master/theory.html>.
--    for (size_t i = 0; i < timeZoneLen; i++) {
--        char c = timeZone[i];
--
--        // According to theory.html, '.' is allowed in time zone ids, but the
--        // accompanying zic.c file doesn't allow it. Assume the source file is
--        // correct and disallow '.' here, too.
--        if (mozilla::IsAsciiAlphanumeric(c) || c == '_' || c == '-' || c == '+')
--            continue;
--
--        // Reject leading, trailing, or consecutive '/' characters.
--        if (c == '/' && i > 0 && i + 1 < timeZoneLen && timeZone[i + 1] != '/')
--            continue;
--
--        return icu::UnicodeString();
--    }
--
-     return icu::UnicodeString(timeZone, timeZoneLen, US_INV);
- }
- #endif /* ENABLE_INTL_API && defined(ICU_TZ_HAS_RECREATE_DEFAULT) */
- 
- void
- js::ResyncICUDefaultTimeZone()
- {
- #if ENABLE_INTL_API && defined(ICU_TZ_HAS_RECREATE_DEFAULT)
-@@ -772,21 +743,61 @@ js::ResyncICUDefaultTimeZone()
+@@ -772,20 +776,23 @@ js::ResyncICUDefaultTimeZone()
              if (IsOlsonCompatibleWindowsTimeZoneId(tz)) {
                  tzid.setTo(icu::UnicodeString(tz, -1, US_INV));
              } else {
@@ -146,53 +118,16 @@ diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
              }
  #else
 -            // Handle links (starting with ':') manually because ICU currently
-+            // One of the formats for the TZ environment variable is a
-+            // filename.  This format optionally starts with a ':' and
-+            // then contains either an absolute path or a relative one.
-+            // Relative paths are relative to /usr/share/zoneinfo and
-+            // are the way Olson time zone names are expressed in the TZ
-+            // environment variable.
-+            // Handle these cases manually because ICU currently
-             // doesn't support the TZ filespec format.
+-            // doesn't support the TZ filespec format.
++            // The TZ environment variable allows both absolute and
++            // relative paths, optionally beginning with a colon (':').
++            // (Relative paths, without the colon, are just Olson time
++            // zone names.)  We need to handle absolute paths ourselves,
++            // including handling that they might be symlinks.
              // <https://unicode-org.atlassian.net/browse/ICU-13694>
 -            if (const char* tzlink = TZContainsPath(tz))
--                tzid.setTo(ReadTimeZoneLink(tzlink));
-+            if (tz[0] == ':') {
-+                // Skip optional ':'.
-+                ++tz;
-+            }
-+            if (tz[0] == '/') {
-+                tzid.setTo(ReadTimeZoneLink(tz));
-+            } else {
-+                tzid.setTo(tz);
-+            }
-+
-+            // Reject the result if it doesn't match the time zone id pattern or
-+            // legacy time zone names.
-+            // See <https://github.com/eggert/tz/blob/master/theory.html>.
-+            for (size_t i = 0, tzidLen = tzid.length(); i < tzidLen; i++) {
-+                char16_t uc = tzid[i];
-+                if (uc < 128) {
-+                    char c = uc;
-+
-+                    // According to theory.html, '.' is allowed in time zone ids, but the
-+                    // accompanying zic.c file doesn't allow it. Assume the source file is
-+                    // correct and disallow '.' here, too.
-+                    if (mozilla::IsAsciiAlphanumeric(c) || c == '_' || c == '-' || c == '+') {
-+                        continue;
-+                    }
-+
-+                    // Reject leading, trailing, or consecutive '/' characters.
-+                    if (c == '/' && i > 0 && i + 1 < tzidLen && tzid[i + 1] != char16_t('/')) {
-+                        continue;
-+                    }
-+                }
-+
-+                tzid.truncate(0);
-+            }
-+
-+
-+
++            if (const char* tzlink = TZContainsAbsolutePath(tz))
+                 tzid.setTo(ReadTimeZoneLink(tzlink));
  #endif /* defined(XP_WIN) */
  
              if (!tzid.isEmpty()) {
@@ -200,4 +135,3 @@ diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
                  MOZ_ASSERT(newTimeZone);
                  if (*newTimeZone != icu::TimeZone::getUnknown()) {
                      // adoptDefault() takes ownership of the time zone.
-                     icu::TimeZone::adoptDefault(newTimeZone.release());

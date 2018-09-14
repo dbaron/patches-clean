@@ -2,6 +2,20 @@ From: L. David Baron <dbaron@dbaron.org>
 
 Bug 1491159 - More complete handling of TZ environment variable when initializing ICU timezone.
 
+This improves on the changes in bug 1484829 by handling the filename
+form of TZ environment variables both with and without an initial ':'
+character, and as both relative and absolute paths.  (Note that relative
+paths without the ':' are just Olson time zone names.)
+
+Note that the only test that failed without the patch was:
+  setTimeZone("/usr/share/zoneinfo/America/Chicago");
+  assertEq(timeZoneName(), "Central Daylight Time");
+and it reported
+  Error: Assertion failed: got "GMT-06:00", expected "Central Daylight Time"
+which seems to be a sign that ICU gets some information out of that time
+zone identifier (i.e., it reported the correct standard-time GMT
+offset), but not everything.
+
 diff --git a/js/src/tests/non262/Date/time-zone-etc_localetime.js b/js/src/tests/non262/Date/time-zone-path.js
 copy from js/src/tests/non262/Date/time-zone-etc_localetime.js
 copy to js/src/tests/non262/Date/time-zone-path.js

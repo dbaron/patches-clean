@@ -32,7 +32,7 @@ copy to js/src/tests/non262/Date/time-zone-path.js
  function timeZoneName() {
      var dtf = new Intl.DateTimeFormat("en-US", {timeZoneName: "long"});
 -    return dtf.formatToParts().filter(x => x.type === "timeZoneName")[0].value;
-+    return dtf.formatToParts(Date.UTC(2017, 3, 31, 12, 0, 0)).filter(x => x.type === "timeZoneName")[0].value;
++    return dtf.formatToParts(Date.UTC(2017, 2, 31, 12, 0, 0)).filter(x => x.type === "timeZoneName")[0].value;
  }
  
  // Calling setTimeZone() with an undefined argument clears the TZ environment

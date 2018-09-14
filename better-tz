@@ -21,19 +21,20 @@ copy to js/src/tests/non262/Date/time-zone-path.js
  
  // Calling setTimeZone() with an undefined argument clears the TZ environment
 -// variable and by that reveal the actual system time zone.
-+// variable and thus reveals the actual system time zone.
- setTimeZone(undefined);
+-setTimeZone(undefined);
 -var systemTimeZone = getTimeZone();
++// variable and thus reveals the actual system time zone.
++setTimeZone("not a time zone");
  var systemTimeZoneName = timeZoneName();
  
 -// Set to an unlikely system time zone, so that the next call to setTimeZone()
 -// will lead to a time zone change.
 -setTimeZone("Antarctica/Troll");
 +setTimeZone("Europe/Paris");
-+assertEq(timeZoneName(), "CEST");
++assertEq(timeZoneName(), "Central European Summer Time");
 +
 +setTimeZone(":Europe/Helsinki");
-+assertEq(timeZoneName(), "EEST");
++assertEq(timeZoneName(), "Eastern European Summer Time");
  
 -// Now call with the file path ":/etc/localtime" which is special-cased in
 -// DateTimeInfo to read the system time zone.
@@ -43,12 +44,12 @@ copy to js/src/tests/non262/Date/time-zone-path.js
  
 -assertEq(getTimeZone(), systemTimeZone);
 +setTimeZone("/usr/share/zoneinfo/America/Chicago");
-+assertEq(timeZoneName(), "CST");
++assertEq(timeZoneName(), "Central Daylight Time");
 +
 +setTimeZone(":/usr/share/zoneinfo/America/Phoenix");
-+assertEq(timeZoneName(), "MST");
++assertEq(timeZoneName(), "Mountain Standard Time");
 +
-+setTimeZone(":/usr/share/zoneinfo/America/Los_Angeles"); // two colons, invalid
++setTimeZone("::/usr/share/zoneinfo/America/Los_Angeles"); // two colons, invalid
  assertEq(timeZoneName(), systemTimeZoneName);
  
  if (typeof reportCompare === "function")

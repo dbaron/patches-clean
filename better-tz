@@ -16,6 +16,8 @@ which seems to be a sign that ICU gets some information out of that time
 zone identifier (i.e., it reported the correct standard-time GMT
 offset), but not everything.
 
+Differential Revision: https://phabricator.services.mozilla.com/D5827
+
 diff --git a/js/src/tests/non262/Date/time-zone-etc_localetime.js b/js/src/tests/non262/Date/time-zone-path.js
 copy from js/src/tests/non262/Date/time-zone-etc_localetime.js
 copy to js/src/tests/non262/Date/time-zone-path.js

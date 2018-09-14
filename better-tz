@@ -136,7 +136,7 @@ diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
  js::ResyncICUDefaultTimeZone()
  {
  #if ENABLE_INTL_API && defined(ICU_TZ_HAS_RECREATE_DEFAULT)
-@@ -772,21 +743,59 @@ js::ResyncICUDefaultTimeZone()
+@@ -772,21 +743,61 @@ js::ResyncICUDefaultTimeZone()
              if (IsOlsonCompatibleWindowsTimeZoneId(tz)) {
                  tzid.setTo(icu::UnicodeString(tz, -1, US_INV));
              } else {
@@ -178,12 +178,14 @@ diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
 +                    // According to theory.html, '.' is allowed in time zone ids, but the
 +                    // accompanying zic.c file doesn't allow it. Assume the source file is
 +                    // correct and disallow '.' here, too.
-+                    if (mozilla::IsAsciiAlphanumeric(c) || c == '_' || c == '-' || c == '+')
++                    if (mozilla::IsAsciiAlphanumeric(c) || c == '_' || c == '-' || c == '+') {
 +                        continue;
++                    }
 +
 +                    // Reject leading, trailing, or consecutive '/' characters.
-+                    if (c == '/' && i > 0 && i + 1 < tzidLen && tzid[i + 1] != char16_t('/'))
++                    if (c == '/' && i > 0 && i + 1 < tzidLen && tzid[i + 1] != char16_t('/')) {
 +                        continue;
++                    }
 +                }
 +
 +                tzid.truncate(0);

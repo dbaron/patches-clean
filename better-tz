@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Bug 1491159 - More complete handling of TZ environment variable when initializing ICU timezone.
+Bug 1491159 - More complete handling of TZ environment variable when initializing ICU timezone.  r=anba
 
 This improves on the changes in bug 1484829 by handling the absolute
 filename form of TZ environment variables both with and without an
@@ -24,7 +24,7 @@ copy from js/src/tests/non262/Date/time-zone-etc_localetime.js
 copy to js/src/tests/non262/Date/time-zone-path.js
 --- a/js/src/tests/non262/Date/time-zone-etc_localetime.js
 +++ b/js/src/tests/non262/Date/time-zone-path.js
-@@ -1,29 +1,35 @@
+@@ -1,29 +1,30 @@
  // |reftest| skip-if(xulRuntime.OS=="WINNT"||!xulRuntime.shell)
  
  assertEq(/^(PST|PDT)$/.test(getTimeZone()), true,
@@ -36,38 +36,36 @@ copy to js/src/tests/non262/Date/time-zone-path.js
 +    return dtf.formatToParts(Date.UTC(2017, 2, 31, 12, 0, 0)).filter(x => x.type === "timeZoneName")[0].value;
  }
  
- // Calling setTimeZone() with an undefined argument clears the TZ environment
+-// Calling setTimeZone() with an undefined argument clears the TZ environment
 -// variable and by that reveal the actual system time zone.
 -setTimeZone(undefined);
 -var systemTimeZone = getTimeZone();
-+// variable and thus reveals the actual system time zone.
-+setTimeZone("not a time zone");
- var systemTimeZoneName = timeZoneName();
- 
--// Set to an unlikely system time zone, so that the next call to setTimeZone()
--// will lead to a time zone change.
--setTimeZone("Antarctica/Troll");
+-var systemTimeZoneName = timeZoneName();
 +setTimeZone("Europe/Paris");
 +assertEq(timeZoneName(), "Central European Summer Time");
 +
 +setTimeZone(":Europe/Helsinki");
 +assertEq(timeZoneName(), "Eastern European Summer Time");
++
++setTimeZone("::Europe/London"); // two colons, invalid
++assertEq(timeZoneName(), "Coordinated Universal Time");
+ 
+-// Set to an unlikely system time zone, so that the next call to setTimeZone()
+-// will lead to a time zone change.
+-setTimeZone("Antarctica/Troll");
++setTimeZone("/this-part-is-ignored/zoneinfo/America/Chicago");
++assertEq(timeZoneName(), "Central Daylight Time");
  
 -// Now call with the file path ":/etc/localtime" which is special-cased in
 -// DateTimeInfo to read the system time zone.
 -setTimeZone(":/etc/localtime");
-+setTimeZone("::Europe/London"); // two colons, invalid
-+assertEq(timeZoneName(), systemTimeZoneName);
++setTimeZone(":/this-part-is-ignored/zoneinfo/America/Phoenix");
++assertEq(timeZoneName(), "Mountain Standard Time");
  
 -assertEq(getTimeZone(), systemTimeZone);
-+setTimeZone("/usr/share/zoneinfo/America/Chicago");
-+assertEq(timeZoneName(), "Central Daylight Time");
-+
-+setTimeZone(":/usr/share/zoneinfo/America/Phoenix");
-+assertEq(timeZoneName(), "Mountain Standard Time");
-+
-+setTimeZone("::/usr/share/zoneinfo/America/Los_Angeles"); // two colons, invalid
- assertEq(timeZoneName(), systemTimeZoneName);
+-assertEq(timeZoneName(), systemTimeZoneName);
++setTimeZone("::/this-part-is-ignored/zoneinfo/America/Los_Angeles"); // two colons, invalid
++assertEq(timeZoneName(), "Coordinated Universal Time");
  
  if (typeof reportCompare === "function")
      reportCompare(true, true);
@@ -91,8 +89,8 @@ diff --git a/js/src/vm/DateTime.cpp b/js/src/vm/DateTime.cpp
 -    // path relative to /usr/share/zoneinfo/.
 -    // NB: We currently only support absolute paths.
 -    return tzVar[0] == ':' && tzVar[1] == '/' ? tzVar + 1 : nullptr;
-+    // A TZ environment variable may be an absolute path.  The path
-+    // format of TZ may begin with a colon.  (ICU handles relative paths.)
++    // A TZ environment variable may be an absolute path. The path
++    // format of TZ may begin with a colon. (ICU handles relative paths.)
 +    if (tzVar[0] == ':' && tzVar[1] == '/') {
 +        return tzVar + 1;
 +    }

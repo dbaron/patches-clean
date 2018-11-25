@@ -3,7 +3,7 @@ From: L. David Baron <dbaron@dbaron.org>
 diff --git a/toolkit/xre/nsAppRunner.cpp b/toolkit/xre/nsAppRunner.cpp
 --- a/toolkit/xre/nsAppRunner.cpp
 +++ b/toolkit/xre/nsAppRunner.cpp
-@@ -4449,16 +4449,19 @@ XREMain::XRE_mainRun()
+@@ -4449,16 +4449,20 @@ XREMain::XRE_mainRun()
  
      comp = do_GetService("@mozilla.org/focus-event-suppressor-service;1");
    }
@@ -14,6 +14,7 @@ diff --git a/toolkit/xre/nsAppRunner.cpp b/toolkit/xre/nsAppRunner.cpp
  
 +  // DO NOT CHECK IN: leak a String
 +  nsString *s = new nsString;
++  s->Truncate(); // avoid unused variable warning/error
 +
    // tell the crash reporter to also send the release channel
    nsCOMPtr<nsIPrefService> prefs = do_GetService("@mozilla.org/preferences-service;1", &rv);

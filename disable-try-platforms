@@ -7,11 +7,11 @@ https://wiki.mozilla.org/Build:TryChooser
 http://trychooser.pub.build.mozilla.org/
 
 try: -b do -p all -u all -t none
-try: -b d -p linux64,linux64-st-an -u all -t none
-try: -b o -p linux64,linux64-st-an -u all -t all
-try: -b d -p linux,linux64-st-an,macosx64,win32,android-api-15 -u all[x64] -t none
+try: -b d -p linux64 -u all -t none
+try: -b o -p linux64 -u all -t all
+try: -b d -p linux,macosx64,win32,android-api-15 -u all[x64] -t none
 try: -b do -p all -u crashtest[x64,10.6,b2g],reftest[x64,10.6,b2g],mochitests[x64,10.6,b2g],marionette[x64,10.6,b2g] -t none
-try: -b d -p linux,linux64-st-an,macosx64,win32 -u crashtest,reftest,mochitests,marionette -t none
+try: -b d -p linux,macosx64,win32 -u crashtest,reftest,mochitests,marionette -t none
 try: -b d -p win32 -u crashtest[Windows 7],reftest[Windows 7],mochitests[Windows 7],marionette[Windows 7] -t none
 
 diff --git a/build/mozconfig.common.override b/build/mozconfig.common.override

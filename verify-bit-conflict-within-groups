@@ -1,0 +1,105 @@
+From: L. David Baron <dbaron@dbaron.org>
+
+Bug 1511730 patch 2 - Verify there are no frame state bit conflicts within groups.
+
+diff --git a/layout/build/nsLayoutStatics.cpp b/layout/build/nsLayoutStatics.cpp
+--- a/layout/build/nsLayoutStatics.cpp
++++ b/layout/build/nsLayoutStatics.cpp
+@@ -22,16 +22,17 @@
+ #include "nsCSSKeywords.h"
+ #include "nsCSSProps.h"
+ #include "nsCSSPseudoElements.h"
+ #include "nsCSSRendering.h"
+ #include "nsGenericHTMLFrameElement.h"
+ #include "mozilla/dom/Attr.h"
+ #include "mozilla/EventListenerManager.h"
+ #include "nsFrame.h"
++#include "nsFrameState.h"
+ #include "nsGlobalWindow.h"
+ #include "nsGkAtoms.h"
+ #include "nsImageFrame.h"
+ #include "nsLayoutStylesheetCache.h"
+ #include "nsRange.h"
+ #include "nsRegion.h"
+ #include "nsRepeatService.h"
+ #include "nsFloatManager.h"
+@@ -137,16 +138,17 @@ nsresult nsLayoutStatics::Initialize() {
+ 
+   nsCSSKeywords::AddRefTable();
+   nsCSSProps::AddRefTable();
+   nsColorNames::AddRefTable();
+ 
+ #ifdef DEBUG
+   nsCSSPseudoElements::AssertAtoms();
+   nsCSSAnonBoxes::AssertAtoms();
++  DebugVerifyFrameStateBits();
+ #endif
+ 
+   StartupJSEnvironment();
+   nsJSContext::EnsureStatics();
+ 
+   nsGlobalWindowInner::Init();
+   nsGlobalWindowOuter::Init();
+   Navigator::Init();
+diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
+--- a/layout/generic/nsFrameState.cpp
++++ b/layout/generic/nsFrameState.cpp
+@@ -65,11 +65,41 @@ nsCString GetFrameState(nsIFrame* aFrame
+   }
+ 
+   return result;
+ }
+ 
+ void PrintFrameState(nsIFrame* aFrame) {
+   printf("%s\n", GetFrameState(aFrame).get());
+ }
++
++enum class FrameStateGroupId {
++  #define FRAME_STATE_GROUP_NAME(name_) name_,
++  #include "nsFrameStateBits.h"
++  #undef FRAME_STATE_GROUP_NAME
++
++  LENGTH
++};
++
++void DebugVerifyFrameStateBits() {
++  // Build an array of all of the bits used by each group.  While
++  // building this we assert that a bit isn't used multiple times within
++  // the same group.
++  nsFrameState bitsUsedPerGroup[FrameStateGroupId::LENGTH];
++
++  #define FRAME_STATE_BIT(group_, value_, name_)                              \
++    {                                                                         \
++      auto bit = NS_FRAME_STATE_BIT(value_)                                   \
++      auto group = FrameStateGroupId::group_;                                 \
++      MOZ_ASSERT(!(bitsUsedPerGroup[group] & bit), #name_                     \
++                 " must not use a bit already declared within its group"      \
++      bitsUsedPerGroup[group] |= bit;                                         \
++    }
++
++  #include "nsFrameStateBits.h"
++  #undef FRAME_STATE_BIT
++
++  // FIXME: Can we somehow check across the groups as well???
++}
++
+ #endif
+ 
+ }  // namespace mozilla
+diff --git a/layout/generic/nsFrameState.h b/layout/generic/nsFrameState.h
+--- a/layout/generic/nsFrameState.h
++++ b/layout/generic/nsFrameState.h
+@@ -62,12 +62,13 @@ inline nsFrameState& operator^=(nsFrameS
+ // Bits 20-31 and 60-63 of the frame state are reserved for implementations.
+ #define NS_FRAME_IMPL_RESERVED nsFrameState(0xF0000000FFF00000)
+ #define NS_FRAME_RESERVED ~NS_FRAME_IMPL_RESERVED
+ 
+ namespace mozilla {
+ #ifdef DEBUG
+ nsCString GetFrameState(nsIFrame* aFrame);
+ void PrintFrameState(nsIFrame* aFrame);
++void DebugVerifyFrameStateBits();
+ #endif
+ }  // namespace mozilla
+ 
+ #endif /* nsFrameState_h_ */

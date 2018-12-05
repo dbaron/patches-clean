@@ -1,6 +1,3 @@
-bullet-frame-group
-refactor-group-macros
-verify-bit-conflict-within-groups
 leak-a-string
 0008-1-output-warning.patch
 0008-2-StyleRule-SetSelectorText.patch

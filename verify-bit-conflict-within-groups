@@ -49,7 +49,7 @@ diff --git a/layout/build/nsLayoutStatics.cpp b/layout/build/nsLayoutStatics.cpp
 diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
 --- a/layout/generic/nsFrameState.cpp
 +++ b/layout/generic/nsFrameState.cpp
-@@ -65,11 +65,42 @@ nsCString GetFrameState(nsIFrame* aFrame
+@@ -65,11 +65,45 @@ nsCString GetFrameState(nsIFrame* aFrame
    }
  
    return result;
@@ -86,7 +86,10 @@ diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
 +#include "nsFrameStateBits.h"
 +#undef FRAME_STATE_BIT
 +
-+  // FIXME: Can we somehow check across the groups as well???
++  // FIXME: Can we somehow check across the groups as well???  In other
++  // words, find the pairs of groups that could be used on the same
++  // frame (Generic paired with everything else, and a few other pairs),
++  // and check that we don't have bits in common between those pairs.
 +}
 +
  #endif

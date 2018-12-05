@@ -87,7 +87,7 @@ diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
 +      auto bit = NS_FRAME_STATE_BIT(value_);                                  \
 +      size_t group = size_t(FrameStateGroupId::group_);                       \
 +      MOZ_ASSERT(!(bitsUsedPerGroup[group] & bit), #name_                     \
-+                 " must not use a bit already declared within its group")     \
++                 " must not use a bit already declared within its group");    \
 +      bitsUsedPerGroup[group] |= bit;                                         \
 +    }
 +

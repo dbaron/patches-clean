@@ -2,6 +2,8 @@ From: L. David Baron <dbaron@dbaron.org>
 
 Bug 1511730 patch 2 - Refactor the frame state group macros so that there's a unique header for every group.  r?heycam
 
+Differential Revision: https://phabricator.services.mozilla.com/D13778
+
 diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
 --- a/layout/generic/nsFrameState.cpp
 +++ b/layout/generic/nsFrameState.cpp

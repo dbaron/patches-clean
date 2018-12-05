@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Bug 1511730 patch 1 - But nsBulletFrame-specific state bits in the correct group.
+Bug 1511730 patch 1 - But nsBulletFrame-specific state bits in the correct group.  r?heycam
 
 diff --git a/layout/generic/nsFrameStateBits.h b/layout/generic/nsFrameStateBits.h
 --- a/layout/generic/nsFrameStateBits.h

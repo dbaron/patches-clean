@@ -7,7 +7,7 @@ Differential Revision: https://phabricator.services.mozilla.com/D13778
 diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
 --- a/layout/generic/nsFrameState.cpp
 +++ b/layout/generic/nsFrameState.cpp
-@@ -36,17 +36,17 @@ nsCString GetFrameState(nsIFrame* aFrame
+@@ -36,33 +36,33 @@ nsCString GetFrameState(nsIFrame* aFrame
  
    nsFrameState state = aFrame->GetStateBits();
  
@@ -26,6 +26,23 @@ diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
    }
  #define FRAME_STATE_BIT(group_, value_, name_)                            \
    if ((state & NS_FRAME_STATE_BIT(value_)) && groups.Contains(#group_)) { \
+     if (!result.IsEmpty()) {                                              \
+       result.InsertLiteral(" | ", 0);                                     \
+     }                                                                     \
+     result.InsertLiteral(#name_, 0);                                      \
+     state = state & ~NS_FRAME_STATE_BIT(value_);                          \
+   }
+ #include "nsFrameStateBits.h"
+-#undef FRAME_STATE_GROUP
++#undef FRAME_STATE_GROUP_CLASS
+ #undef FRAME_STATE_BIT
+ 
+   if (state) {
+     result.AppendPrintf(" | 0x%0" PRIx64, static_cast<uint64_t>(state));
+   }
+ 
+   return result;
+ }
 diff --git a/layout/generic/nsFrameStateBits.h b/layout/generic/nsFrameStateBits.h
 --- a/layout/generic/nsFrameStateBits.h
 +++ b/layout/generic/nsFrameStateBits.h

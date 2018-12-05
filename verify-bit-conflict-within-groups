@@ -49,21 +49,7 @@ diff --git a/layout/build/nsLayoutStatics.cpp b/layout/build/nsLayoutStatics.cpp
 diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
 --- a/layout/generic/nsFrameState.cpp
 +++ b/layout/generic/nsFrameState.cpp
-@@ -52,24 +52,55 @@ nsCString GetFrameState(nsIFrame* aFrame
-   if ((state & NS_FRAME_STATE_BIT(value_)) && groups.Contains(#group_)) { \
-     if (!result.IsEmpty()) {                                              \
-       result.InsertLiteral(" | ", 0);                                     \
-     }                                                                     \
-     result.InsertLiteral(#name_, 0);                                      \
-     state = state & ~NS_FRAME_STATE_BIT(value_);                          \
-   }
- #include "nsFrameStateBits.h"
--#undef FRAME_STATE_GROUP
-+#undef FRAME_STATE_GROUP_CLASS
- #undef FRAME_STATE_BIT
- 
-   if (state) {
-     result.AppendPrintf(" | 0x%0" PRIx64, static_cast<uint64_t>(state));
+@@ -65,11 +65,42 @@ nsCString GetFrameState(nsIFrame* aFrame
    }
  
    return result;

@@ -84,10 +84,10 @@ diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
 +
 +  #define FRAME_STATE_BIT(group_, value_, name_)                              \
 +    {                                                                         \
-+      auto bit = NS_FRAME_STATE_BIT(value_)                                   \
++      auto bit = NS_FRAME_STATE_BIT(value_);                                  \
 +      auto group = FrameStateGroupId::group_;                                 \
 +      MOZ_ASSERT(!(bitsUsedPerGroup[group] & bit), #name_                     \
-+                 " must not use a bit already declared within its group"      \
++                 " must not use a bit already declared within its group")     \
 +      bitsUsedPerGroup[group] |= bit;                                         \
 +    }
 +

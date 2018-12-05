@@ -1,6 +1,6 @@
 From: L. David Baron <dbaron@dbaron.org>
 
-Bug 1511730 patch 3 - Verify there are no frame state bit conflicts within groups.  r?heycam
+Bug 1511730 patch 3 - Verify there are no frame state bit conflicts within groups.  r=heycam
 
 Without patch 1, this correctly triggers:
 Assertion failure: !(bitsUsedPerGroup[group] & bit) (BULLET_FRAME_HAS_FONT_INFLATION must not use a bit already declared within its group), at /home/dbaron/builds/mozilla-central/mozilla/layout/generic/nsFrameStateBits.h:594

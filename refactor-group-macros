@@ -95,7 +95,29 @@ diff --git a/layout/generic/nsFrameStateBits.h b/layout/generic/nsFrameStateBits
  // frames' Reflow() by calling MarkInReflow() and unset in DidReflow().
  FRAME_STATE_BIT(Generic, 0, NS_FRAME_IN_REFLOW)
  
-@@ -655,18 +667,19 @@ FRAME_STATE_BIT(TableCell, 31, NS_TABLE_
+@@ -369,18 +381,19 @@ FRAME_STATE_BIT(GridContainer, 26, NS_ST
+ // The container contains one or more items subgridded in its block axis.
+ FRAME_STATE_BIT(GridContainer, 27, NS_STATE_GRID_HAS_ROW_SUBGRID_ITEM)
+ 
+ // We've merged some OverflowList children since last reflow.
+ FRAME_STATE_BIT(GridContainer, 28, NS_STATE_GRID_HAS_CHILD_NIFS)
+ 
+ // == Frame state bits that apply to SVG frames ===============================
+ 
+-FRAME_STATE_GROUP(SVG, nsSVGDisplayableFrame)
+-FRAME_STATE_GROUP(SVG, nsSVGContainerFrame)
++FRAME_STATE_GROUP_NAME(SVG)
++FRAME_STATE_GROUP_CLASS(SVG, nsSVGDisplayableFrame)
++FRAME_STATE_GROUP_CLASS(SVG, nsSVGContainerFrame)
+ 
+ FRAME_STATE_BIT(SVG, 20, NS_STATE_IS_OUTER_SVG)
+ 
+ // If this bit is set, we are a <clipPath> element or descendant.
+ FRAME_STATE_BIT(SVG, 21, NS_STATE_SVG_CLIPPATH_CHILD)
+ 
+ // For SVG text, the NS_FRAME_IS_DIRTY and NS_FRAME_HAS_DIRTY_CHILDREN bits
+ // indicate that our anonymous block child needs to be reflowed, and that
+@@ -655,18 +668,19 @@ FRAME_STATE_BIT(TableCell, 31, NS_TABLE_
  // Bits 28-31 on nsTableColFrames are used to store the column type.
  
  // == Frame state bits that apply to table column group frames ================
@@ -117,7 +139,7 @@ diff --git a/layout/generic/nsFrameStateBits.h b/layout/generic/nsFrameStateBits
  
  FRAME_STATE_GROUP(TableRow, nsTableRowFrame)
  
-@@ -685,17 +698,24 @@ FRAME_STATE_BIT(TableRowGroup, 30, NS_RO
+@@ -685,17 +699,24 @@ FRAME_STATE_BIT(TableRowGroup, 30, NS_RO
  
  // thead or tfoot should be repeated on every printed page
  FRAME_STATE_BIT(TableRowGroup, 31, NS_ROWGROUP_REPEATABLE)

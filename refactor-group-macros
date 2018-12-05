@@ -29,13 +29,17 @@ diff --git a/layout/generic/nsFrameState.cpp b/layout/generic/nsFrameState.cpp
 diff --git a/layout/generic/nsFrameStateBits.h b/layout/generic/nsFrameStateBits.h
 --- a/layout/generic/nsFrameStateBits.h
 +++ b/layout/generic/nsFrameStateBits.h
-@@ -10,49 +10,61 @@
+@@ -7,52 +7,64 @@
+ /* a list of all frame state bits, for preprocessing */
+ 
+ /******
  
    This file contains definitions for frame state bits -- values used
    in nsIFrame::mState -- and groups of frame state bits and which
    classes they apply to.
  
-   There are two macros that can be defined before #including this
+-  There are two macros that can be defined before #including this
++  There are three macros that can be defined before #including this
    file:
  
 -  FRAME_STATE_GROUP(name_, class_)

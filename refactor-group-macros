@@ -86,8 +86,8 @@ diff --git a/layout/generic/nsFrameStateBits.h b/layout/generic/nsFrameStateBits
  
 +// Helper macro for the common case of a single class
 +#define FRAME_STATE_GROUP(name_, class_) \
-+  FRAME_STATE_GROUP_NAME(name_) \
-+  FRAME_STATE_GROUP_CLASS(name_, class_) \
++  FRAME_STATE_GROUP_NAME(name_)          \
++  FRAME_STATE_GROUP_CLASS(name_, class_)
 +
  // == Frame state bits that apply to all frames ===============================
  
